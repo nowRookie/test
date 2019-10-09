@@ -1,0 +1,22 @@
+/* components/select/select.js.wxss */
+
+.picker {
+  position: relative;
+  padding: 0 45rpx 0 15rpx;
+  border: 1rpx solid #ddd;
+  border-radius: 5rpx;
+}
+
+.picker::after {
+  position: absolute;
+  right: 10rpx;
+  top: 50%;
+  margin-top: -4rpx;
+  content: "";
+  display: block;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 12rpx;
+  border-color: #ddd transparent transparent transparent;
+}

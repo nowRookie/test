@@ -1,0 +1,7 @@
+/* components/province.wxss */
+
+.between {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}

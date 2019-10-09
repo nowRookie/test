@@ -1,0 +1,23 @@
+<!--身份证上传组件-->
+<view class="identitycard" bindtap="chooseImage">
+  <view class="between content" style="color:{{theme}};align-items:center;" wx:if="{{currentImage==''}}">
+    <view class="left">
+      <view class="fb title">{{title}}</view>
+      <view class="between" style="margin-top:50rpx;align-items:flex-end;">
+        <view>
+          <image src="../../assets/images/img3.png" class="card"></image>
+        </view>
+        <text class="description">{{description}}</text>
+      </view>
+    </view>
+    <view class="right">
+      <view class="add" style="border:8rpx solid {{theme}};">
+        <view class="rowline" style="background:{{theme}};"></view>
+        <view class="colline" style="background:{{theme}};"></view>
+      </view>
+    </view>
+  </view>
+  <view style="height:100%;" wx:else>
+    <image src="{{currentImage}}" class="image"></image>
+  </view>
+</view>

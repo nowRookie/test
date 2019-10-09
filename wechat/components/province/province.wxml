@@ -1,0 +1,18 @@
+<!--components/province.wxml-->
+<view>
+  <view class="between" style="padding:0 30rpx;line-height:60rpx;border-bottom:1rpx solid #ddd;">
+    <text catchtap="cancel">取消</text>
+    <text style="color:rgb(230, 92, 14);" catchtap="ok">确定</text>
+  </view>
+  <picker-view indicator-style="height: 80rpx;" style="padding:0 30rpx;width: 100%; height: 400rpx;box-sizing:border-box;" value="{{value}}" bindchange="bindChange">
+    <picker-view-column>
+      <view wx:for="{{provinceList}}" wx:key="{{item.index}}" style="line-height: 80rpx">{{item.name}}</view>
+    </picker-view-column>
+    <picker-view-column>
+      <view wx:for="{{cityList}}" wx:key="{{item.index}}" style="line-height: 80rpx">{{item.name}}</view>
+    </picker-view-column>
+    <picker-view-column>
+      <view wx:for="{{areaList}}" wx:key="{{item.index}}" style="line-height: 80rpx">{{item.name}}</view>
+    </picker-view-column>
+  </picker-view>
+</view>

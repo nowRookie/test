@@ -1,0 +1,326 @@
+<template>
+  <div class="bgf container_input">
+    <el-form
+      :model="formData"
+      ref="formRef"
+      :label-width="labelWidth||'80px'"
+      :inline="false"
+      label-position="right"
+      :disabled="type=='detail'"
+    >
+      <el-row>
+        <el-col :span="confirm==undefined?20:24">
+          <el-col
+            :span="item.span||span||6"
+            class="unit"
+            v-for="item in itemsConfig"
+            :key="item.key"
+          >
+            <!-- text -->
+            <el-form-item
+              :label-width="item.labelWidth||labelWidth"
+              :label="item.title"
+              :prop="item.key"
+              :required="item.required"
+              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'blur'}]:[]"
+              v-if="!item.type||(item.type=='text')"
+            >
+              <el-input
+                v-model="formData[item.key]"
+                :disabled="item.disabled"
+                clearable
+                autocomplete="off"
+              ></el-input>
+            </el-form-item>
+            <!-- textarea -->
+            <el-form-item
+              :label-width="item.labelWidth||labelWidth"
+              :label="item.title"
+              :prop="item.key"
+              :required="item.required"
+              :rules="item.rules?[{ required: true, message: `请输入${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请输入${item.title}`,trigger:'blur'}]:[]"
+              v-if="(item.type=='textarea')"
+            >
+              <el-input
+                type="textarea"
+                v-model="formData[item.key]"
+                autocomplete="off"
+                :disabled="item.disabled"
+              ></el-input>
+            </el-form-item>
+            <!-- select -->
+            <el-form-item
+              :label-width="item.labelWidth||labelWidth"
+              :label="item.title"
+              :prop="item.key"
+              :required="item.required"
+              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'blur'}]:[]"
+              v-else-if="item.type=='select'"
+            >
+              <el-select
+                :disabled="item.disabled"
+                clearable
+                v-model="formData[item.key]"
+                :placeholder="`请选择${item.title}`"
+                style="width:100%;"
+              >
+                <el-option
+                  v-for="unit in item.dataList"
+                  :key="unit.key"
+                  :label="unit.label"
+                  :value="unit.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+            <!-- autocomplete -->
+            <el-form-item
+              :label-width="item.labelWidth||labelWidth"
+              :label="item.title"
+              :prop="item.key"
+              :required="item.required"
+              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'blur'}]:[]"
+              v-else-if="item.type=='autocomplete'"
+            >
+              <el-select
+                v-model="formData[item.key]"
+                :disabled="item.disabled"
+                filterable
+                clearable
+                :placeholder="`请选择${item.title}`"
+                style="width:100%;"
+              >
+                <el-option
+                  v-for="unit in item.dataList"
+                  :key="unit.key"
+                  :label="unit.label"
+                  :value="unit.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+            <!-- multipleDate -->
+            <el-form-item
+              :label-width="item.labelWidth||labelWidth"
+              :label="item.title"
+              :required="item.required"
+              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'blur'}]:[]"
+              v-else-if="(item.type=='multipleDate')"
+            >
+              <el-col :span="11">
+                <el-date-picker
+                  :disabled="item.disabled"
+                  type="date"
+                  placeholder="选择开始日期"
+                  v-model="formData[item.key].start"
+                  style="width: 100%;"
+                ></el-date-picker>
+              </el-col>
+              <el-col class="tc line" :span="2">-</el-col>
+              <el-col :span="11">
+                <el-date-picker
+                  :disabled="item.disabled"
+                  type="date"
+                  placeholder="选择结束日期"
+                  v-model="formData[item.key].end"
+                  style="width: 100%;"
+                ></el-date-picker>
+              </el-col>
+            </el-form-item>
+            <!-- date -->
+            <el-form-item
+              :label-width="item.labelWidth||labelWidth"
+              :label="item.title"
+              :prop="item.key"
+              :required="item.required"
+              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'blur'}]:[]"
+              v-else-if="(item.type=='date')"
+            >
+              <el-date-picker
+                :disabled="item.disabled"
+                type="date"
+                placeholder="选择日期"
+                v-model="formData[item.key]"
+                style="width: 100%;"
+              ></el-date-picker>
+            </el-form-item>
+            <!-- checkbox -->
+            <el-form-item
+              :label-width="item.labelWidth||labelWidth"
+              :label="item.title"
+              :prop="item.key"
+              :required="item.required"
+              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'blur'}]:[]"
+              v-else-if="(item.type=='checkbox')"
+            >
+              <el-checkbox-group v-model="formData[item.key]" :disabled="item.disabled">
+                <el-checkbox
+                  v-for="(unit,index) in item.dataList"
+                  :disabled="unit.disabled"
+                  :key="index"
+                  :label="unit"
+                  :name="item.key"
+                ></el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+            <!-- radio -->
+            <el-form-item
+              :label-width="item.labelWidth||labelWidth"
+              :label="item.title"
+              :prop="item.key"
+              :required="item.required"
+              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'blur'}]:[]"
+              v-else-if="(item.type=='radio')"
+            >
+              <el-radio-group v-model="formData[item.key]" :disabled="item.disabled">
+                <el-radio
+                  v-for="(unit,index) in item.dataList"
+                  :disabled="unit.disabled"
+                  :key="index"
+                  :label="unit"
+                ></el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <!-- switch -->
+            <el-form-item
+              :label-width="item.labelWidth||labelWidth"
+              :label="item.title"
+              :prop="item.key"
+              :required="item.required"
+              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'blur'}]:[]"
+              v-else-if="(item.type=='switch')"
+            >
+              <el-switch v-model="formData[item.key]" :disabled="item.disabled"></el-switch>
+            </el-form-item>
+            <!-- area省/市/区 -->
+            <el-form-item
+              :label-width="item.labelWidth||labelWidth"
+              :label="item.title"
+              :prop="item.key"
+              :required="item.required"
+              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'blur'}]:[]"
+              v-else-if="(item.type=='area')"
+            >
+              <el-cascader
+                :size="item.size"
+                :options="regionData"
+                placeholder="请选择:省 / 市 / 区"
+                v-model="formData[item.key].area"
+                @change="handleChange"
+              ></el-cascader>
+              <el-input
+                v-model="formData[item.key].detail"
+                placeholder="详细地址"
+                style="margin-top:10px;"
+              ></el-input>
+            </el-form-item>
+            <!-- tree -->
+            <el-form-item
+              :label-width="item.labelWidth||labelWidth"
+              :label="item.title"
+              :prop="item.key"
+              :required="item.required"
+              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'blur'}]:[]"
+              v-else-if="(item.type=='tree')"
+            >
+              <el-tree
+                :ref="item.key"
+                :data="formData[item.key].data"
+                show-checkbox
+                node-key="id"
+                :default-expanded-keys="item.default_expanded_keys"
+                :default-checked-keys="item.default_checked_keys"
+                :props="defaultProps"
+              ></el-tree>
+            </el-form-item>
+            <slot v-else-if="(item.type=='slot')" :name="item.key"></slot>
+          </el-col>
+        </el-col>
+        <el-col v-if="confirm==undefined" :span="3" :offset="1">
+          <el-button style="color:#fff;border:none;background:#4abbaa;" @click="ok">搜索</el-button>
+          <!-- <slot name="operate" v-bind="{data:formData,params:params}"></slot> -->
+        </el-col>
+      </el-row>
+    </el-form>
+  </div>
+</template>
+
+<script>
+import { regionData, CodeToText, TextToCode } from "element-china-area-data";
+export default {
+  props: ["span", "labelWidth", "itemsConfig", "confirm", "type"],
+  data() {
+    let formData = {};
+    _.each(this.$props.itemsConfig, item => {
+      if (item.type == "checkbox") {
+        formData[item.key] = item.data ? item.data : [];
+      } else if (item.type == "multipleDate") {
+        formData[item.key] = {};
+        formData[item.key].start = item.data ? item.data.start : "";
+        formData[item.key].end = item.data ? item.data.end : "";
+      } else if (item.type == "area") {
+        formData[item.key] = {};
+        formData[item.key].area = item.data ? item.data.area : [];
+        formData[item.key].detail = item.data ? item.data.detail : "";
+      } else if (item.type == "tree") {
+        formData[item.key] = {};
+        formData[item.key].type = "tree";
+        formData[item.key].data = item.data;
+      } else {
+        formData[item.key] = item.data !== undefined ? item.data : "";
+      }
+    });
+    return {
+      formData,
+      regionData: regionData,
+      defaultProps: {
+        children: "children",
+        label: "label"
+      }
+    };
+  },
+  methods: {
+    handleChange(value, key) {},
+    computedTreeData({ key, data }) {
+      let tree = this.$refs[key][0];
+      if (tree.getCheckedKeys().length == 0) {
+        return {};
+      }
+      return {
+        getCheckedNodes: tree.getCheckedNodes(),
+        getCheckedKeys: tree.getCheckedKeys(),
+        getHalfCheckedNodes: tree.getHalfCheckedNodes(),
+        getHalfCheckedKeys: tree.getHalfCheckedKeys(),
+        getCurrentKey: tree.getCurrentKey(),
+        getCurrentNode: tree.getCurrentNode(),
+        getNode: tree.getNode()
+      };
+    },
+    ok() {
+      this.$refs.formRef.validate((boolean, object) => {
+        if (boolean) {
+          this.$emit("ok", this.formData);
+        }
+      });
+    },
+    getData() {
+      return new Promise(resolve => {
+        this.$refs.formRef.validate(boolean => {
+          if (boolean) {
+            // 给tree单元，设置checked属性
+            for (let i in this.formData) {
+              if (this.formData[i].type == "tree") {
+                this.formData[i].checked = this.computedTreeData({
+                  key: i,
+                  data: this.formData[i].data
+                });
+              }
+            }
+            resolve(this.formData);
+          }
+        });
+      });
+    }
+  }
+};
+</script>
+
+<style lang="less" scoped></style>

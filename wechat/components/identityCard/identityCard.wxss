@@ -1,0 +1,68 @@
+/* components/identityCard/index.wxss */
+
+.identitycard {
+  overflow: hidden;
+  box-sizing: border-box;
+  width: 100%;
+  height: 250rpx;
+  background: #f4f4f4;
+  border-radius: 17rpx;
+  box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.15);
+}
+
+.content {
+  margin: 30rpx 80rpx;
+  height: 190rpx;
+}
+
+.fb {
+  font-weight: bold;
+}
+
+.description {
+  position: relative;
+  top: -10rpx;
+  font-size: 22rpx;
+  margin-left: 10rpx;
+}
+
+.card {
+  width: 70rpx;
+  height: 42rpx;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+}
+
+.add {
+  position: relative;
+  width: 66rpx;
+  height: 66rpx;
+  border-radius: 50%;
+}
+
+.rowline {
+  position: absolute;
+  left: 15rpx;
+  top: 29rpx;
+  width: 36rpx;
+  height: 8rpx;
+  border-radius: 15rpx;
+}
+
+.colline {
+  position: absolute;
+  top: 15rpx;
+  left: 29rpx;
+  width: 8rpx;
+  height: 36rpx;
+  border-radius: 15rpx;
+}
+
+.between {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
