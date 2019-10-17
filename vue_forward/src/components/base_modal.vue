@@ -190,6 +190,35 @@
               >
                 <el-switch v-model="formData[item.key]" :disabled="item.disabled"></el-switch>
               </el-form-item>
+              <!-- uploadFile -->
+              <el-form-item
+                :label-width="item.labelWidth||labelWidth"
+                :label="item.title"
+                :prop="item.key"
+                :required="item.required"
+                :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'blur'}]:[]"
+                v-else-if="(item.type=='uploadFile')"
+              >
+                <el-upload
+                  class="upload-demo"
+                  :multiple="true"
+                  :ref="item.key"
+                  :action="item.options?item.options.action||'':'#'"
+                  :name="item.options?item.options.name:'file'"
+                  :on-change="handleChange.bind(this,item.key)"
+                  :on-remove="handleRemove.bind(this,item.key)"
+                  :file-list="formData[item.key]"
+                  :auto-upload="false"
+                >
+                  <el-button
+                    slot="trigger"
+                    size="small"
+                    type="primary"
+                    :disabled="item.disabled"
+                  >选取文件</el-button>
+                  <div slot="tip" class="el-upload__tip">{{item.options?item.options.tip:""}}</div>
+                </el-upload>
+              </el-form-item>
               <!-- area省/市/区 -->
               <el-form-item
                 :label-width="item.labelWidth||labelWidth"
@@ -204,7 +233,6 @@
                   :options="regionData"
                   placeholder="请选择:省 / 市 / 区"
                   v-model="formData[item.key].area"
-                  @change="handleChange"
                 ></el-cascader>
                 <el-input
                   v-model="formData[item.key].detail"
@@ -247,7 +275,8 @@
 </template>
 
 <script>
-import { regionData, CodeToText, TextToCode } from "element-china-area-data";
+// import { regionData, CodeToText, TextToCode } from "element-china-area-data";
+import regionData from "@/utils/province";
 import _ from "lodash";
 export default {
   name: "modal",
@@ -265,7 +294,7 @@ export default {
   data() {
     let formData = {};
     _.each(this.$props.itemsConfig, item => {
-      if (item.type == "checkbox") {
+      if (item.type == "checkbox" || item.type == "uploadFile") {
         formData[item.key] = item.data ? item.data : [];
       } else if (item.type == "multipleDate") {
         formData[item.key] = {};
@@ -293,7 +322,12 @@ export default {
     };
   },
   methods: {
-    handleChange(value, key) {},
+    handleChange(key, file, fileList) {
+      this.formData[key] = fileList;
+    },
+    handleRemove(key, file, fileList) {
+      this.formData[key] = fileList;
+    },
     ok() {
       this.$refs.formRef.validate((boolean, object) => {
         if (boolean) {
@@ -343,7 +377,7 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .head_title {
   font-size: 18px;
 }

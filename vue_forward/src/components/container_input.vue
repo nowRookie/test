@@ -9,7 +9,7 @@
       :disabled="type=='detail'"
     >
       <el-row>
-        <el-col :span="confirm==undefined?20:24">
+        <el-col :span="(confirm==undefined||confirm)?20:24">
           <el-col
             :span="item.span||span||6"
             class="unit"
@@ -190,6 +190,30 @@
             >
               <el-switch v-model="formData[item.key]" :disabled="item.disabled"></el-switch>
             </el-form-item>
+            <!-- uploadFile -->
+            <el-form-item
+              :label-width="item.labelWidth||labelWidth"
+              :label="item.title"
+              :prop="item.key"
+              :required="item.required"
+              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'blur'}]:[]"
+              v-else-if="(item.type=='uploadFile')"
+            >
+              <el-upload
+                class="upload-demo"
+                :multiple="true"
+                :ref="item.key"
+                :action="item.options?item.options.action||'':'#'"
+                :name="item.options?item.options.name:'file'"
+                :on-change="handleChange.bind(this,item.key)"
+                :on-remove="handleRemove.bind(this,item.key)"
+                :file-list="formData[item.key]"
+                :auto-upload="false"
+              >
+                <el-button slot="trigger" size="small" type="primary" :disabled="item.disabled">选取文件</el-button>
+                <div slot="tip" class="el-upload__tip">{{item.options?item.options.tip:""}}</div>
+              </el-upload>
+            </el-form-item>
             <!-- area省/市/区 -->
             <el-form-item
               :label-width="item.labelWidth||labelWidth"
@@ -204,7 +228,6 @@
                 :options="regionData"
                 placeholder="请选择:省 / 市 / 区"
                 v-model="formData[item.key].area"
-                @change="handleChange"
               ></el-cascader>
               <el-input
                 v-model="formData[item.key].detail"
@@ -234,9 +257,9 @@
             <slot v-else-if="(item.type=='slot')" :name="item.key"></slot>
           </el-col>
         </el-col>
-        <el-col v-if="confirm==undefined" :span="3" :offset="1">
-          <el-button style="color:#fff;border:none;background:#4abbaa;" @click="ok">搜索</el-button>
-          <!-- <slot name="operate" v-bind="{data:formData,params:params}"></slot> -->
+        <el-col v-if="confirm==undefined||confirm" :span="3" :offset="1">
+          <el-button type="primary" @click="ok">搜索</el-button>
+          <slot name="operate" v-bind="{data:this.formData}"></slot>
         </el-col>
       </el-row>
     </el-form>
@@ -244,13 +267,14 @@
 </template>
 
 <script>
-import { regionData, CodeToText, TextToCode } from "element-china-area-data";
+// import { regionData, CodeToText, TextToCode } from "element-china-area-data";
+import regionData from "@/utils/province";
 export default {
   props: ["span", "labelWidth", "itemsConfig", "confirm", "type"],
   data() {
     let formData = {};
     _.each(this.$props.itemsConfig, item => {
-      if (item.type == "checkbox") {
+      if (item.type == "checkbox" || item.type == "uploadFile") {
         formData[item.key] = item.data ? item.data : [];
       } else if (item.type == "multipleDate") {
         formData[item.key] = {};
@@ -278,7 +302,22 @@ export default {
     };
   },
   methods: {
-    handleChange(value, key) {},
+    ok() {
+      this.$refs.formRef.validate((boolean, object) => {
+        if (boolean) {
+          this.$emit("ok", this.formData);
+        }
+      });
+    },
+    // 上传文件change方法
+    handleChange(key, file, fileList) {
+      this.formData[key] = fileList;
+    },
+    // 上传文件remove方法
+    handleRemove(key, file, fileList) {
+      this.formData[key] = fileList;
+    },
+    // 组装tree数据
     computedTreeData({ key, data }) {
       let tree = this.$refs[key][0];
       if (tree.getCheckedKeys().length == 0) {
@@ -294,13 +333,7 @@ export default {
         getNode: tree.getNode()
       };
     },
-    ok() {
-      this.$refs.formRef.validate((boolean, object) => {
-        if (boolean) {
-          this.$emit("ok", this.formData);
-        }
-      });
-    },
+    // 父组件通过ref调用此方法-获取form数据
     getData() {
       return new Promise(resolve => {
         this.$refs.formRef.validate(boolean => {
@@ -323,4 +356,4 @@ export default {
 };
 </script>
 
-<style lang="less" scoped></style>
+<style lang="scss" scoped></style>
