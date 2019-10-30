@@ -329,6 +329,10 @@ export default {
       this.formData[key] = fileList;
     },
     ok() {
+      if (this.type == "detail") {
+        this.$emit("cancel");
+        return;
+      }
       this.$refs.formRef.validate((boolean, object) => {
         if (boolean) {
           // 给tree单元，设置checked属性
@@ -345,8 +349,6 @@ export default {
             this.$emit("add", this.formData);
           } else if (this.type == "edit") {
             this.$emit("edit", this.formData, this.params);
-          } else {
-            this.$emit("cancel");
           }
         }
       });

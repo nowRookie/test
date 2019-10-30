@@ -1,3 +1,5 @@
+import axios from "axios"
+
 export default {}
 // 手动上传文件
 export function upload({ url, data }) {// data必须为数组
