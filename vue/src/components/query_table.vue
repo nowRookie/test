@@ -60,7 +60,7 @@ export default Vue.extend({
       this.getTableList({ pageNum, pageSize: this.page.pageSize });
     },
     // 获取table数据
-    getTableList(options) {
+    getTableList(options: any) {
       let option = options
         ? Object.assign({}, options, {
             curPage: options.pageNum

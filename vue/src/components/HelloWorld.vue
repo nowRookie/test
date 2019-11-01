@@ -13,6 +13,20 @@
     <div class="mt20">
       <h2 style="color:purple">modal:</h2>
       <el-button @click="visible=true">modal</el-button>
+      <base-modal
+        v-if="visible"
+        :visible.sync="visible"
+        :itemsConfig="modalItems"
+        :type="modalType"
+        :params="params"
+        @add="handleAdd"
+        @edit="handleEdit"
+        @cancel="cancelBtn"
+        :title="modalTitle"
+        labelWidth="100px"
+        width="800px"
+        :span="24"
+      ></base-modal>
     </div>
     <!-- base-table -->
     <div class="mt20">
@@ -37,22 +51,6 @@
         </template>
       </query-table>
     </div>
-
-    <!-- 弹窗modal -->
-    <base-modal
-      v-if="visible"
-      :visible.sync="visible"
-      :itemsConfig="modalItems"
-      :type="modalType"
-      :params="params"
-      @add="handleAdd"
-      @edit="handleEdit"
-      @cancel="cancelBtn"
-      :title="modalTitle"
-      labelWidth="100px"
-      width="800px"
-      :span="24"
-    ></base-modal>
   </div>
 </template>
 
