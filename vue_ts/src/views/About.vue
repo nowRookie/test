@@ -88,7 +88,7 @@ export default Vue.extend({
     // let mySquare = createSquare({ width: 100, cl: "black" }); //直接传对象会报错（额外属性检查）
     // mySquare = createSquare({ width: 100, opacity: 0.5 } as SquareConfig); //通过断言处理，可以正确
     let mm = { width: 100, cl: "black" };
-    let mySquare = createSquare(mm); //把对象赋值给变量之后-跳过额外属性检查
+    // let mySquare = createSquare(mm); //把对象赋值给变量之后-跳过额外属性检查
     // 添加额外属性
     interface deprecate {
       imitate: number;

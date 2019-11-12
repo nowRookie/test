@@ -61,6 +61,7 @@ import baseTable from "./base_table";
 import queryTable from "./query_table";
 
 import axios from "axios";
+import { type } from "../utils/utils";
 
 export default {
   name: "HelloWorld",
@@ -297,6 +298,12 @@ export default {
       };
       this.tableConfigs.pages = res;
     }, 3000);
+    console.log(
+      "%cthis word has style",
+      "color:red;background: yellow;font-size:24px;"
+    );
+    console.table(this.tableDataList);
+    // console.dir(this.tableDataList)
   }
 };
 </script>
