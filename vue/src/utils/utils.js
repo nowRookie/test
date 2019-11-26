@@ -6,10 +6,43 @@ const api = process.env.VUE_APP_API_URL;
 
 export default {}
 
-// 手动上传文件
-export function upload({ url, data }) {// data必须为数组
+// 下载二进制文件
+export function downloadBlob({ name, ieName, url, method, data, params } = {}) {
+  const options = method == "get" ? getOptions({
+    method: "get",
+    url,
+    responseType: "blob",
+    params
+  }) : getOptions({
+    method: "post",
+    url,
+    responseType: "blob",
+    data
+  });
+  axios(options).then(res => {
+    //这里res.data是返回的blob对象,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet这里表示xlsx类型
+    var blob = new Blob([res.data], {
+      type:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+    });
+    var downloadElement = document.createElement("a");
+    var href = window.URL.createObjectURL(blob); //创建下载的链接
+    downloadElement.href = href;
+    if (navigator.msSaveBlob) {
+      navigator.msSaveBlob(blob, name);
+    } else {
+      downloadElement.download = ieName; //下载后文件名
+    }
+    document.body.appendChild(downloadElement);
+    downloadElement.click(); //点击下载
+    document.body.removeChild(downloadElement); //下载完成移除元素
+    window.URL.revokeObjectURL(href); //释放掉blob对象
+  });
+}
+
+// 手动上传文件，data必须为[File]数组
+export function upload({ url, data }) {
   return new Promise((resolve, reject) => {
-    const api = process.env.VUE_APP_API_URL;
     let params = new FormData();
     _.map(data, unit => {
       params.append("files", unit);
@@ -22,12 +55,6 @@ export function upload({ url, data }) {// data必须为数组
       },
       data: params
     }).then(res => {
-      // if (res.status !== 200 || res.data.code != 0) {
-      //   reject(
-      //     res.statusText || res.data.message || "请求错误!"
-      //   );
-      //   return;
-      // }
       resolve(res)
     }).catch(err => {
       reject(err)
@@ -35,15 +62,18 @@ export function upload({ url, data }) {// data必须为数组
   })
 }
 
+// 判断是否为对象
 export function isObject(value) {
   return value === Object(value)
 }
 
-export function type(value) {
+// 类型判断(可以细致区分date、array等等)
+export function typeOf(value) {
   let str = Object.prototype.toString.call(value)
   return str.match(/\[object (.*?)\]/)[1].toLowerCase()
 }
 
+// 获取axios请求配置
 export function getOptions(options) {
   return {
     ...options,
@@ -56,10 +86,12 @@ export function getOptions(options) {
   }
 }
 
-export function dealDate(val) {
-  return (val + "").slice(0, 4) +
+// 处理20190101这种8位数的时间
+export function dealDate({ value, format } = {}) {
+  let str = (value + "").slice(0, 4) +
     "-" +
-    (val + "").slice(4, 6) +
+    (value + "").slice(4, 6) +
     "-" +
-    (val + "").slice(6)
+    (value + "").slice(6)
+  return format ? moment(str).format(format) : str
 }
