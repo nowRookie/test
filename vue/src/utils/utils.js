@@ -55,9 +55,9 @@ export function upload({ url, data }) {
       },
       data: params
     }).then(res => {
-      resolve(res)
+      resolve({ error: false, message: "请求成功", res: res, data: res.data.data })
     }).catch(err => {
-      reject(err)
+      reject({ error: true, message: "请求错误" })
     })
   })
 }

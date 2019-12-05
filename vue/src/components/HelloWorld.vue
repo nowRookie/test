@@ -3,7 +3,7 @@
     <!-- container-input -->
     <div class="mt20">
       <h2 style="color:purple">containerInput:</h2>
-      <container-input :itemsConfig="modalItems" :confirm="true" labelWidth="100px">
+      <container-input :itemsConfig="modalItems" :confirm="true" labelWidth="120px">
         <template v-slot:operate="scope">
           <el-button @click="operate(scope)">按钮</el-button>
         </template>
@@ -23,7 +23,7 @@
         @edit="handleEdit"
         @cancel="cancelBtn"
         :title="modalTitle"
-        labelWidth="100px"
+        labelWidth="120px"
         width="800px"
         :span="24"
       ></base-modal>
@@ -73,7 +73,7 @@ export default {
       modalTitle: "",
       params: {},
       query: {
-        url: "http://192.168.1.115:8500/pc/partner/getPartnerList",
+        url: "#",
         method: "post",
         data: {}
       },
@@ -126,7 +126,7 @@ export default {
           title: "text",
           key: "text",
           type: "text",
-          labelWidth: "100px",
+          labelWidth: "120px",
           span: 8,
           required: true,
           data: "text"
@@ -135,33 +135,47 @@ export default {
           title: "select",
           key: "select",
           type: "select",
-          labelWidth: "100px",
+          labelWidth: "120px",
           span: 8,
           required: true,
           dataList: [
             { label: "项目1", value: "val1" },
             { label: "项目2", value: "val2" }
           ],
-          data: "val1"
+          data: { label: "项目1", value: "val1" }
         },
         {
           title: "autocomplete",
           key: "autocomplete",
           type: "autocomplete",
-          labelWidth: "100px",
+          labelWidth: "120px",
           span: 8,
           required: true,
           dataList: [
             { label: "内容1", value: "val1" },
             { label: "内容2", value: "val2" }
           ],
-          data: "val2"
+          loading: false,
+          method: function(query) {
+            let random = Math.random();
+            console.log(random, query);
+            if (this.loading) return;
+            this.loading = true;
+            setTimeout(() => {
+              this.loading = false;
+              this.dataList =
+                random > 0.5
+                  ? [{ label: "内容3", value: "val3" }]
+                  : [{ label: "内容4", value: "val4" }];
+            }, 1000);
+          },
+          data: { label: "内容2", value: "val2" }
         },
         {
           title: "date",
           key: "date",
           type: "date",
-          labelWidth: "100px",
+          labelWidth: "120px",
           span: 8,
           required: true,
           data: "2019-10-15"
@@ -170,7 +184,7 @@ export default {
           title: "multipleDate",
           key: "multipleDate",
           type: "multipleDate",
-          labelWidth: "100px",
+          labelWidth: "120px",
           span: 16,
           required: true,
           data: {
@@ -182,27 +196,35 @@ export default {
           title: "checkbox",
           key: "checkbox",
           type: "checkbox",
-          labelWidth: "100px",
+          labelWidth: "120px",
           span: 16,
           required: true,
-          dataList: ["状态1", "状态2", "状态3"],
-          data: ["状态2"]
+          dataList: [
+            { label: "状态1", value: 1 },
+            { label: "状态2", value: 2 },
+            { label: "状态3", value: 3 }
+          ],
+          data: [2, 3]
         },
         {
           title: "radio",
           key: "radio",
           type: "radio",
-          labelWidth: "100px",
+          labelWidth: "120px",
           span: 16,
           required: true,
-          dataList: ["选项1", "选项2", "选项3"],
-          data: "选项2"
+          dataList: [
+            { label: "选项1", value: 1 },
+            { label: "选项2", value: 2 },
+            { label: "选项3", value: 3 }
+          ],
+          data: 3
         },
         {
           title: "area",
           key: "area",
           type: "area",
-          labelWidth: "100px",
+          labelWidth: "120px",
           span: 24,
           required: true,
           data: {
@@ -214,7 +236,7 @@ export default {
           title: "switch",
           key: "switch",
           type: "switch",
-          labelWidth: "100px",
+          labelWidth: "120px",
           span: 8,
           required: true,
           data: true
@@ -223,7 +245,7 @@ export default {
           title: "uploadFile",
           key: "uploadFile",
           type: "uploadFile",
-          labelWidth: "100px",
+          labelWidth: "120px",
           span: 24,
           required: true,
           data: [{ name: "文件1", url: "" }]
@@ -232,7 +254,7 @@ export default {
           title: "tree",
           key: "tree",
           type: "tree",
-          labelWidth: "100px",
+          labelWidth: "120px",
           span: 24,
           required: true,
           data: [
@@ -271,9 +293,7 @@ export default {
     operate(scope) {
       console.log(scope);
     },
-    cradle(scope) {
-      console.log("scope=====", scope);
-    },
+    cradle(scope) {},
     addBtn() {
       this.visible = true;
       this.modalType = "add";
@@ -281,29 +301,21 @@ export default {
     },
     handleAdd() {},
     handleView() {},
-    handleEdit(data) {
-      console.log(data);
-    },
+    handleEdit(data) {},
     cancelBtn() {
       this.visible = false;
     }
   },
   mounted() {
-    setTimeout(() => {
-      let res = {
-        pageNum: 1,
-        pageSize: 10,
-        totalPageNum: 20,
-        total: 198
-      };
-      this.tableConfigs.pages = res;
-    }, 3000);
-    console.log(
-      "%cthis word has style",
-      "color:red;background: yellow;font-size:24px;"
-    );
-    console.table(this.tableDataList);
-    // console.dir(this.tableDataList)
+    // setTimeout(() => {
+    //   let res = {
+    //     pageNum: 1,
+    //     pageSize: 10,
+    //     totalPageNum: 20,
+    //     total: 198
+    //   };
+    //   this.tableConfigs.pages = res;
+    // }, 3000);
   }
 };
 </script>

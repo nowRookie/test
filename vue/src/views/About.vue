@@ -1,5 +1,7 @@
 <template>
-  <div class="about"></div>
+  <div class="about">
+    <progress value="22" max="100"></progress>
+  </div>
 </template>
 
 <script>

@@ -55,19 +55,22 @@
                 :prop="item.key"
                 :required="item.required"
                 :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'blur'}]:[]"
-                v-else-if="(item.type=='select')"
+                v-else-if="item.type=='select'"
               >
                 <el-select
-                  v-model="formData[item.key]"
-                  clearable
-                  :placeholder="`请选择${item.title}`"
                   :disabled="item.disabled"
+                  clearable
+                  filterable
+                  value-key="value"
+                  v-model="formData[item.key]"
+                  :placeholder="`请选择${item.title}`"
+                  style="width:100%;"
                 >
                   <el-option
                     v-for="unit in item.dataList"
                     :key="unit.key"
                     :label="unit.label"
-                    :value="unit.value"
+                    :value="unit"
                   ></el-option>
                 </el-select>
               </el-form-item>
@@ -78,20 +81,25 @@
                 :prop="item.key"
                 :required="item.required"
                 :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'blur'}]:[]"
-                v-else-if="(item.type=='autocomplete')"
+                v-else-if="item.type=='autocomplete'"
               >
                 <el-select
-                  clearable
                   v-model="formData[item.key]"
-                  filterable
-                  :placeholder="`请选择${item.title}`"
                   :disabled="item.disabled"
+                  filterable
+                  clearable
+                  remote
+                  :loading="item.loading"
+                  :remote-method="(query)=>{remoteMethod(query,item)}"
+                  value-key="value"
+                  :placeholder="`请选择${item.title}`"
+                  style="width:100%;"
                 >
                   <el-option
                     v-for="unit in item.dataList"
                     :key="unit.key"
                     :label="unit.label"
-                    :value="unit.value"
+                    :value="unit"
                   ></el-option>
                 </el-select>
               </el-form-item>
@@ -154,9 +162,9 @@
                     v-for="(unit,index) in item.dataList"
                     :disabled="unit.disabled"
                     :key="index"
-                    :label="unit"
-                    name="type"
-                  ></el-checkbox>
+                    :label="unit.value"
+                    :name="item.key"
+                  >{{unit.label}}</el-checkbox>
                 </el-checkbox-group>
               </el-form-item>
               <!-- radio -->
@@ -173,8 +181,8 @@
                     v-for="(unit,index) in item.dataList"
                     :disabled="unit.disabled"
                     :key="index"
-                    :label="unit"
-                  ></el-radio>
+                    :label="unit.value"
+                  >{{unit.label}}</el-radio>
                 </el-radio-group>
               </el-form-item>
               <!-- switch -->
@@ -356,6 +364,12 @@ export default {
     },
     reset() {
       this.$refs.formRef.resetFields();
+    },
+    // autocomplete的远程方法
+    remoteMethod(query, item) {
+      if (query !== "") {
+        item.method(query);
+      }
     },
     computedTreeData({ key, data }) {
       let tree = this.$refs[key][0];

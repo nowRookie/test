@@ -1,0 +1,11 @@
+<!--components/autocomplete/autocomplete.wxml-->
+<view class="autocomplete">
+  <view>
+    <input bindinput="onInput" value="{{value}}" bindblur="onBlur" placeholder="{{placeholder}}" style="{{inputStyle}}" class="input"></input>
+  </view>
+  <view class="lists" bind:touchstart="returnBlur" style="listsStyle" wx:if="{{array.length}}">
+    <view wx:for="{{array}}" style="listStyle" class="list" data-list="{{item}}" bindtap="choose">
+      {{item[key]}}
+    </view>
+  </view>
+</view>

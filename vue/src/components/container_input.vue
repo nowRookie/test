@@ -60,6 +60,8 @@
               <el-select
                 :disabled="item.disabled"
                 clearable
+                filterable
+                value-key="value"
                 v-model="formData[item.key]"
                 :placeholder="`请选择${item.title}`"
                 style="width:100%;"
@@ -68,7 +70,7 @@
                   v-for="unit in item.dataList"
                   :key="unit.key"
                   :label="unit.label"
-                  :value="unit.value"
+                  :value="unit"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -86,6 +88,10 @@
                 :disabled="item.disabled"
                 filterable
                 clearable
+                remote
+                :loading="item.loading"
+                :remote-method="(query)=>{remoteMethod(query,item)}"
+                value-key="value"
                 :placeholder="`请选择${item.title}`"
                 style="width:100%;"
               >
@@ -93,7 +99,7 @@
                   v-for="unit in item.dataList"
                   :key="unit.key"
                   :label="unit.label"
-                  :value="unit.value"
+                  :value="unit"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -156,9 +162,9 @@
                   v-for="(unit,index) in item.dataList"
                   :disabled="unit.disabled"
                   :key="index"
-                  :label="unit"
+                  :label="unit.value"
                   :name="item.key"
-                ></el-checkbox>
+                >{{unit.label}}</el-checkbox>
               </el-checkbox-group>
             </el-form-item>
             <!-- radio -->
@@ -175,8 +181,8 @@
                   v-for="(unit,index) in item.dataList"
                   :disabled="unit.disabled"
                   :key="index"
-                  :label="unit"
-                ></el-radio>
+                  :label="unit.value"
+                >{{unit.label}}</el-radio>
               </el-radio-group>
             </el-form-item>
             <!-- switch -->
@@ -334,6 +340,12 @@ export default {
         getCurrentNode: tree.getCurrentNode(),
         getNode: tree.getNode()
       };
+    },
+    // autocomplete的远程方法
+    remoteMethod(query, item) {
+      if (query !== "") {
+        item.method(query);
+      }
     },
     // 父组件通过ref调用此方法-获取form数据
     getData() {

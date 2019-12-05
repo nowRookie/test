@@ -107,7 +107,10 @@ export default Vue.extend({
           this.page.total = res.data.total || res.data.totalSize;
         })
         .catch(err => {
-          console.log("err===", err);
+          this.$message({
+            type: "error",
+            message: err
+          });
         });
     },
     handleSelectionChange(val) {
