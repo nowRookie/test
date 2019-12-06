@@ -1,0 +1,14 @@
+<!--身份证上传组件-->
+<view class="tc smallcard" bindtap="chooseImage">
+  <view class="content" style="color:{{theme}};" wx:if="{{currentImage==''}}">
+    <view class="fb title">{{title}}</view>
+    <view class="mt20 description">{{description}}</view>
+    <view class="mt20 add" style="border:8rpx solid {{theme}};">
+      <view class="rowline" style="background:{{theme}};"></view>
+      <view class="colline" style="background:{{theme}};"></view>
+    </view>
+  </view>
+  <view style="height:100%;" wx:else>
+    <image src="{{currentImage}}" class="image"></image>
+  </view>
+</view>

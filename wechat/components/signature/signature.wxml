@@ -1,0 +1,6 @@
+<view class="canvas">
+  <canvas class='firstCanvas' canvas-id="firstCanvas" bindtouchmove='move' bindtouchstart='start' bindtouchend='end' bindtouchcancel='cancel' bindlongtap='tap' disable-scroll='true' binderror='error'>
+  </canvas>
+  <button bindtap="clearClick">清除</button>
+  <button bindtap="saveClick">完成</button>
+</view>

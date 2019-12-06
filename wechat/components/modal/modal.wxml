@@ -1,0 +1,14 @@
+<!--components/modal/modal.wxml-->
+
+<view class="modal" wx:if="{{visible}}">
+  <view class="oh modal-content" style="margin-top:-{{(height/2)+(title==''?40:80)}}rpx">
+    <view class="head" wx:if="{{title!==''}}">{{title}}</view>
+    <view class="body">
+      <slot></slot>
+    </view>
+    <view class="tc foot">
+      <view class="w50 bluebtn" bindtap="ok">确认</view>
+      <view class="w50" style="border-top:1px solid #ddd;" bindtap="cancel">取消</view>
+    </view>
+  </view>
+</view>

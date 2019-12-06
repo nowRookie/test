@@ -1,0 +1,10 @@
+/* components/cell/cell.wxss */
+
+.row {
+  padding: 0 20px;
+  display: flex;
+}
+
+.tr {
+  text-align: right;
+}
