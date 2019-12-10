@@ -45,7 +45,7 @@
     <!-- query-table -->
     <div class="mt20">
       <h2 style="color:purple">query-table:</h2>
-      <query-table :items="tableConfigs.items" :query="query">
+      <query-table :items="tableConfigs.items" :query="query" :type="''||'selection'">
         <template v-slot:value="scope">
           <el-button @click="cradle(scope)">按钮</el-button>
         </template>
