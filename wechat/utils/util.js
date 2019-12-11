@@ -152,7 +152,6 @@ module.exports.api = host;
 module.exports.getData = getData;
 module.exports.axios = axios
 module.exports.upload = upload
-module.exports.uploadfile = uploadfile
 
 module.exports.chooseImage = chooseImage
 module.exports.getOpenId = getOpenId
