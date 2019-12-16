@@ -67,6 +67,7 @@ export default {
   name: "HelloWorld",
   components: { baseModal, containerInput, baseTable, queryTable },
   data() {
+    let self = this;
     return {
       visible: false,
       modalType: "add",
@@ -142,7 +143,10 @@ export default {
             { label: "项目1", value: "val1" },
             { label: "项目2", value: "val2" }
           ],
-          data: { label: "项目1", value: "val1" }
+          data: { label: "项目1", value: "val1" },
+          method: function(val) {
+            console.log("###", val, self.modalItems);
+          }
         },
         {
           title: "autocomplete",
@@ -239,7 +243,10 @@ export default {
           labelWidth: "120px",
           span: 8,
           required: true,
-          data: true
+          data: true,
+          method: function(val) {
+            console.log("###", val);
+          }
         },
         {
           title: "uploadFile",

@@ -62,6 +62,7 @@
                 clearable
                 filterable
                 value-key="value"
+                @change="(val)=>selectChange(val,item)"
                 v-model="formData[item.key]"
                 :placeholder="`请选择${item.title}`"
                 style="width:100%;"
@@ -194,7 +195,11 @@
               :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'blur'}]:[]"
               v-else-if="(item.type=='switch')"
             >
-              <el-switch v-model="formData[item.key]" :disabled="item.disabled"></el-switch>
+              <el-switch
+                v-model="formData[item.key]"
+                :disabled="item.disabled"
+                @change="val=>switchChange(val,item)"
+              ></el-switch>
             </el-form-item>
             <!-- uploadFile -->
             <el-form-item
@@ -340,6 +345,12 @@ export default {
         getCurrentNode: tree.getCurrentNode(),
         getNode: tree.getNode()
       };
+    },
+    selectChange(val, item) {
+      item.method(val);
+    },
+    switchChange(val, item) {
+      item.method(val);
     },
     // autocomplete的远程方法
     remoteMethod(query, item) {
