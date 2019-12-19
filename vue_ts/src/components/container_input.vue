@@ -268,7 +268,7 @@
 
 <script>
 // import { regionData, CodeToText, TextToCode } from "element-china-area-data";
-import regionData from "@/utils/province";
+import regionData from "@/assets/js/province";
 export default {
   props: ["span", "labelWidth", "itemsConfig", "confirm", "type"],
   data() {

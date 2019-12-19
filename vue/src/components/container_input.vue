@@ -279,7 +279,7 @@
 
 <script>
 // import { regionData, CodeToText, TextToCode } from "element-china-area-data";
-import regionData from "@/utils/province";
+import regionData from "@/assets/js/province";
 import _ from "lodash";
 
 export default {
