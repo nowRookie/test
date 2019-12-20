@@ -53,7 +53,6 @@
         ref="menu"
         default-active="1"
         class="el-menu-vertical-demo"
-        @select="handleSelect"
         text-color="#fff"
         background-color="#3e424b"
         router
@@ -64,30 +63,30 @@
             <!-- <i class="el-icon-location"></i> -->
             <span>管理中心</span>
           </template>
-          <el-menu-item index="organizationalManagement">机构管理</el-menu-item>
-          <el-menu-item index="staffManagement">员工管理</el-menu-item>
-          <el-menu-item index="rolelManagement">角色管理</el-menu-item>
-          <el-menu-item index="userManagement">用户管理</el-menu-item>
-          <el-menu-item index="agentTeam">代理/团队</el-menu-item>
-          <el-menu-item index="projectManagement">项目管理</el-menu-item>
+          <el-menu-item index="/organizationalManagement">机构管理</el-menu-item>
+          <el-menu-item index="/staffManagement">员工管理</el-menu-item>
+          <el-menu-item index="/rolelManagement">角色管理</el-menu-item>
+          <el-menu-item index="/userManagement">用户管理</el-menu-item>
+          <el-menu-item index="/agentTeam">代理/团队</el-menu-item>
+          <el-menu-item index="/projectManagement">项目管理</el-menu-item>
         </el-submenu>
         <el-submenu index="2">
           <template slot="title">
             <span>保险公司管理</span>
           </template>
-          <el-menu-item index="operate_conduct_out">保险公司帐号管理</el-menu-item>
+          <el-menu-item index="/operate_conduct_out">保险公司帐号管理</el-menu-item>
         </el-submenu>
         <el-submenu index="3">
           <template slot="title">
             <span>客户管理</span>
           </template>
-          <el-menu-item index="operate_conduct_out">客户信息列表</el-menu-item>
+          <el-menu-item index="/operate_conduct_out">客户信息列表</el-menu-item>
         </el-submenu>
         <el-submenu index="4">
           <template slot="title">
             <span>产品管理</span>
           </template>
-          <el-menu-item index="insure_prod_conduct">保险产品管理</el-menu-item>
+          <el-menu-item index="/insure_prod_conduct">保险产品管理</el-menu-item>
           <el-menu-item index>费率折扣管理</el-menu-item>
           <el-menu-item index>佣金管理</el-menu-item>
           <el-menu-item index>协议管理</el-menu-item>
@@ -142,10 +141,6 @@ export default {
     };
   },
   methods: {
-    handleSelect(key, keyPath) {
-      this.$router.push({ name: key });
-      // this.$refs.menu.open(key);
-    },
     signOut() {
       sessionStorage.removeItem("token");
       this.$router.replace("/login");
