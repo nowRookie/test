@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="w100 bgtheme cf between header">
-      <div class="tc logo">气瓶管理系统</div>
+      <div class="tc logo">经纪人系统</div>
       <div class="between navigator">
         <div>
           <!-- <ul class="row">
@@ -51,47 +51,79 @@
     <div class="slider">
       <el-menu
         ref="menu"
-        default-active="2"
+        default-active="1"
         class="el-menu-vertical-demo"
         @select="handleSelect"
         text-color="#fff"
         background-color="#3e424b"
+        router
+        unique-opened
       >
         <el-submenu index="1">
           <template slot="title">
             <!-- <i class="el-icon-location"></i> -->
-            <img src="../assets/images/icon1.png" class="icon" />
-            <span>气瓶管理</span>
+            <span>管理中心</span>
           </template>
-          <el-menu-item index="air_bottle_all">全部气瓶</el-menu-item>
-          <el-menu-item index="tips_conduct">标签管理</el-menu-item>
-          <el-menu-item index="air_bottle_state1">库存中</el-menu-item>
-          <el-menu-item index="air_bottle_state2">已充装</el-menu-item>
-          <el-menu-item index="air_bottle_state3">已出库</el-menu-item>
-          <el-menu-item index="air_bottle_state0">已过期</el-menu-item>
-          <el-menu-item index="air_bottle_state_1">已作废</el-menu-item>
+          <el-menu-item index="organizationalManagement">机构管理</el-menu-item>
+          <el-menu-item index="staffManagement">员工管理</el-menu-item>
+          <el-menu-item index="rolelManagement">角色管理</el-menu-item>
+          <el-menu-item index="userManagement">用户管理</el-menu-item>
+          <el-menu-item index="agentTeam">代理/团队</el-menu-item>
+          <el-menu-item index="projectManagement">项目管理</el-menu-item>
         </el-submenu>
         <el-submenu index="2">
           <template slot="title">
-            <!-- <i class="el-icon-location"></i> -->
-            <img src="../assets/images/icon1.png" class="icon" />
-            <span>操作管理</span>
+            <span>保险公司管理</span>
           </template>
-          <el-menu-item index="operate_conduct_out">出库</el-menu-item>
-          <el-menu-item index="operate_conduct_in">入库</el-menu-item>
-          <el-menu-item index="operate_conduct_fill">充装</el-menu-item>
+          <el-menu-item index="operate_conduct_out">保险公司帐号管理</el-menu-item>
         </el-submenu>
-        <el-menu-item index="customer_index">
-          <i class="cf iconfont iconsize icon">&#xe8c7;</i>
-          <span slot="title">客户管理</span>
-        </el-menu-item>
         <el-submenu index="3">
           <template slot="title">
-            <i class="cf iconfont iconsize icon">&#xe642;</i>
-            <span>信息维护</span>
+            <span>客户管理</span>
           </template>
-          <el-menu-item index="add_material">充装介质</el-menu-item>
-          <el-menu-item index="specification">规格配置</el-menu-item>
+          <el-menu-item index="operate_conduct_out">客户信息列表</el-menu-item>
+        </el-submenu>
+        <el-submenu index="4">
+          <template slot="title">
+            <span>产品管理</span>
+          </template>
+          <el-menu-item index="insure_prod_conduct">保险产品管理</el-menu-item>
+          <el-menu-item index>费率折扣管理</el-menu-item>
+          <el-menu-item index>佣金管理</el-menu-item>
+          <el-menu-item index>协议管理</el-menu-item>
+        </el-submenu>
+        <el-submenu index="5">
+          <template slot="title">
+            <span>保险业务操作</span>
+          </template>
+          <el-menu-item index>投保</el-menu-item>
+          <el-menu-item index>批改</el-menu-item>
+          <el-menu-item index>保单审核</el-menu-item>
+        </el-submenu>
+        <el-submenu index="6">
+          <template slot="title">
+            <span>业务管理</span>
+          </template>
+          <el-menu-item index>保险订单管理</el-menu-item>
+          <el-menu-item index>保单管理</el-menu-item>
+        </el-submenu>
+        <el-submenu index="7">
+          <template slot="title">
+            <span>票内对账管理</span>
+          </template>
+          <el-menu-item index>对账列表</el-menu-item>
+        </el-submenu>
+        <el-submenu index="8">
+          <template slot="title">
+            <span>票外对账管理</span>
+          </template>
+          <el-menu-item index>对账列表</el-menu-item>
+        </el-submenu>
+        <el-submenu index="0">
+          <template slot="title">
+            <span>结算管理</span>
+          </template>
+          <el-menu-item index>结算单列表</el-menu-item>
         </el-submenu>
       </el-menu>
     </div>
@@ -111,7 +143,6 @@ export default {
   },
   methods: {
     handleSelect(key, keyPath) {
-      console.log(key, keyPath);
       this.$router.push({ name: key });
       // this.$refs.menu.open(key);
     },
@@ -121,7 +152,7 @@ export default {
     }
   },
   mounted() {
-    this.username = sessionStorage.getItem("username");
+    this.username = sessionStorage.getItem("username") || this.username;
   }
 };
 </script>
@@ -168,8 +199,25 @@ export default {
   z-index: 500;
   width: 200px;
   background: #3e424b;
+  overflow-y: scroll;
+  overflow-x: hidden;
   .icon {
     margin-right: 8px;
+  }
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-thumb {
+    /*滚动条里面小块*/
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    background: #797979;
+  }
+  &::-webkit-scrollbar-track {
+    /*滚动条里面轨道*/
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    background: #ededed;
   }
 }
 .container {

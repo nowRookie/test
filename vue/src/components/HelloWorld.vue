@@ -51,6 +51,22 @@
         </template>
       </query-table>
     </div>
+    <!-- add-table -->
+    <div class="mt20">
+      <h2 style="color:purple">add-table:</h2>
+      <add-table
+        ref="addTableRef"
+        :items="addTableItems"
+        :data="addTableData"
+        :select-age="selectAge"
+        @select-change="selectChange"
+      >
+        <template v-slot:title>
+          <span style="font-size:18px;">标题</span>
+        </template>
+      </add-table>
+      <el-button @click="button">获取add-table数据</el-button>
+    </div>
   </div>
 </template>
 
@@ -59,13 +75,14 @@ import baseModal from "./base_modal";
 import containerInput from "./container_input";
 import baseTable from "./base_table";
 import queryTable from "./query_table";
+import addTable from "@/components/add_table";
 
 import axios from "axios";
 import { type } from "../utils/utils";
 
 export default {
   name: "HelloWorld",
-  components: { baseModal, containerInput, baseTable, queryTable },
+  components: { baseModal, containerInput, baseTable, queryTable, addTable },
   data() {
     let self = this;
     return {
@@ -282,6 +299,65 @@ export default {
           default_expanded_keys: ["1"],
           default_checked_keys: ["1-1"]
         }
+      ],
+      addTableItems: [
+        {
+          type: "text",
+          key: "username",
+          title: "用户名",
+          required: true
+        },
+        {
+          type: "number",
+          key: "num",
+          title: "数量"
+        },
+        {
+          type: "select",
+          key: "age",
+          title: "年龄",
+          rules: []
+        },
+        {
+          type: "switch",
+          key: "beauty",
+          title: "是否美女"
+        },
+        {
+          type: "date",
+          key: "dates",
+          title: "日期",
+          rules: []
+        }
+      ],
+      selectAge: [
+        {
+          label: "年龄1",
+          value: 1
+        },
+        {
+          label: "年龄2",
+          value: 2
+        }
+      ],
+      addTableData: [
+        {
+          id: 0,
+          age: {
+            label: "年龄2",
+            value: 2
+          },
+          username: "zhang",
+          beauty: true
+        },
+        {
+          id: 1,
+          age: {
+            label: "年龄1",
+            value: 1
+          },
+          username: "wang"
+        }
       ]
     };
   },
@@ -311,6 +387,19 @@ export default {
     handleEdit(data) {},
     cancelBtn() {
       this.visible = false;
+    },
+    selectChange(val, item) {
+      console.log(11111, val, item);
+    },
+    button() {
+      this.$refs.addTableRef
+        .getData()
+        .then(res => {
+          console.log(res);
+        })
+        .catch(() => {
+          console.log("验证有错误！");
+        });
     }
   },
   mounted() {

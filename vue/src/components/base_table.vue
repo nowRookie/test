@@ -6,6 +6,7 @@
         :label="item.title"
         v-for="(item,index) in items"
         :key="index"
+        align="center"
       >
         <template slot-scope="scope">
           <slot
@@ -20,6 +21,7 @@
       </el-table-column>
     </el-table>
     <el-pagination
+      hide-on-single-page
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="pages.pageNum"
@@ -28,7 +30,7 @@
       :page-size="pages.pageSize"
       layout="total, sizes, prev, pager, next, jumper"
       :total="pages.total"
-      style="margin-top:15px;"
+      style="margin-top:15px;text-align:right"
     ></el-pagination>
   </div>
 </template>

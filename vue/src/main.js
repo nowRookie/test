@@ -30,6 +30,15 @@ axios.interceptors.response.use(function (response) {
   }
   return Promise.reject(error);
 });
+// 路由拦截
+// router.beforeEach((to, from, next) => {
+//   if (!sessionStorage.getItem("username") && !to.meta.noValidate) {
+//     router.replace("/login");
+//     next(false); //阻止路由跳转
+//     return;
+//   }
+//   next(); //路由跳转
+// })
 
 new Vue({
   router,

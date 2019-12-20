@@ -9,7 +9,7 @@
       :disabled="type=='detail'"
     >
       <el-row>
-        <el-col :span="(confirm==undefined||confirm)?20:24">
+        <el-col :span="(confirm==undefined||confirm)?18:24">
           <el-col
             :span="item.span||span||6"
             class="unit"
@@ -268,7 +268,7 @@
             <slot v-else-if="(item.type=='slot')" :name="item.key"></slot>
           </el-col>
         </el-col>
-        <el-col v-if="confirm==undefined||confirm" :span="3" :offset="1">
+        <el-col v-if="confirm==undefined||confirm" :span="4" :offset="1">
           <el-button type="primary" @click="ok">搜索</el-button>
           <slot name="operate" v-bind="{data:this.formData}"></slot>
         </el-col>
