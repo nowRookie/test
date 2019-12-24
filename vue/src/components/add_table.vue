@@ -47,7 +47,7 @@
                 style="width:100%;"
                 value-key="value"
                 v-model="scope.row[item.key]"
-                @change="(val)=>selectChange(val,scope.row)"
+                @change="(val)=>selectChange(item.key,val,scope.row)"
               >
                 <el-option
                   v-for="unit in $attrs['select-'+[item.key]]"
@@ -97,8 +97,8 @@ export default {
   },
   computed: {},
   methods: {
-    selectChange(val, row) {
-      this.$emit("select-change", val, row);
+    selectChange(key, val, row) {
+      this.$emit(`change-${key}`, val, row);
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;

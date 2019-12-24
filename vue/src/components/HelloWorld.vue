@@ -59,7 +59,9 @@
         :items="addTableItems"
         :data="addTableData"
         :select-age="selectAge"
-        @select-change="selectChange"
+        @change-age="selectChangeAge"
+        :select-height="selectHeight"
+        @change-height="selectChangeHeight"
       >
         <template v-slot:title>
           <span style="font-size:18px;">标题</span>
@@ -320,6 +322,11 @@ export default {
           rules: []
         },
         {
+          type: "select",
+          key: "height",
+          title: "身高"
+        },
+        {
           type: "switch",
           key: "beauty",
           title: "是否美女"
@@ -339,6 +346,20 @@ export default {
         {
           label: "年龄2",
           value: 2
+        }
+      ],
+      selectHeight: [
+        {
+          label: "170",
+          value: 170
+        },
+        {
+          label: "175",
+          value: 175
+        },
+        {
+          label: "180",
+          value: 180
         }
       ],
       addTableData: [
@@ -389,8 +410,11 @@ export default {
     cancelBtn() {
       this.visible = false;
     },
-    selectChange(val, item) {
-      console.log(11111, val, item);
+    selectChangeAge(val, row) {
+      console.log("age:::", val, row);
+    },
+    selectChangeHeight(val, row) {
+      console.log("height:::", val, row);
     },
     button() {
       this.$refs.addTableRef
@@ -416,4 +440,3 @@ export default {
   }
 };
 </script>
-</style>
