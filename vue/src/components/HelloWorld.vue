@@ -206,6 +206,7 @@ export default {
           key: "multipleDate",
           type: "multipleDate",
           labelWidth: "120px",
+          disabled: true,
           span: 16,
           required: true,
           data: {

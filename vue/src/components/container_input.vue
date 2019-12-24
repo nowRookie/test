@@ -22,7 +22,7 @@
               :label="item.title"
               :prop="item.key"
               :required="item.required"
-              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'blur'}]:[]"
+              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
               v-if="!item.type||(item.type=='text')"
             >
               <el-input
@@ -38,7 +38,7 @@
               :label="item.title"
               :prop="item.key"
               :required="item.required"
-              :rules="item.rules?[{ required: true, message: `请输入${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请输入${item.title}`,trigger:'blur'}]:[]"
+              :rules="item.rules?[{ required: true, message: `请输入${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请输入${item.title}`,trigger:'change'}]:[]"
               v-if="(item.type=='textarea')"
             >
               <el-input
@@ -54,7 +54,7 @@
               :label="item.title"
               :prop="item.key"
               :required="item.required"
-              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'blur'}]:[]"
+              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
               v-else-if="item.type=='select'"
             >
               <el-select
@@ -81,7 +81,7 @@
               :label="item.title"
               :prop="item.key"
               :required="item.required"
-              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'blur'}]:[]"
+              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
               v-else-if="item.type=='autocomplete'"
             >
               <el-select
@@ -109,7 +109,7 @@
               :label-width="item.labelWidth||labelWidth"
               :label="item.title"
               :required="item.required"
-              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'blur'}]:[]"
+              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
               v-else-if="(item.type=='multipleDate')"
             >
               <el-col :span="11">
@@ -138,7 +138,7 @@
               :label="item.title"
               :prop="item.key"
               :required="item.required"
-              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'blur'}]:[]"
+              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
               v-else-if="(item.type=='date')"
             >
               <el-date-picker
@@ -155,7 +155,7 @@
               :label="item.title"
               :prop="item.key"
               :required="item.required"
-              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'blur'}]:[]"
+              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
               v-else-if="(item.type=='checkbox')"
             >
               <el-checkbox-group v-model="formData[item.key]" :disabled="item.disabled">
@@ -174,7 +174,7 @@
               :label="item.title"
               :prop="item.key"
               :required="item.required"
-              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'blur'}]:[]"
+              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
               v-else-if="(item.type=='radio')"
             >
               <el-radio-group v-model="formData[item.key]" :disabled="item.disabled">
@@ -192,7 +192,7 @@
               :label="item.title"
               :prop="item.key"
               :required="item.required"
-              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'blur'}]:[]"
+              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
               v-else-if="(item.type=='switch')"
             >
               <el-switch
@@ -207,7 +207,7 @@
               :label="item.title"
               :prop="item.key"
               :required="item.required"
-              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'blur'}]:[]"
+              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
               v-else-if="(item.type=='uploadFile')"
             >
               <el-upload
@@ -231,7 +231,7 @@
               :label="item.title"
               :prop="item.key"
               :required="item.required"
-              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'blur'}]:[]"
+              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
               v-else-if="(item.type=='area')"
             >
               <el-cascader
@@ -252,7 +252,7 @@
               :label="item.title"
               :prop="item.key"
               :required="item.required"
-              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'blur'}]:[]"
+              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
               v-else-if="(item.type=='tree')"
             >
               <el-tree
