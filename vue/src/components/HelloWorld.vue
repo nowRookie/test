@@ -26,7 +26,11 @@
         labelWidth="120px"
         width="800px"
         :span="24"
-      ></base-modal>
+      >
+        <template v-slot:hg="scope">
+          <el-button @click="operate(scope)">自定义内容</el-button>
+        </template>
+      </base-modal>
     </div>
     <!-- base-table -->
     <div class="mt20">
@@ -301,6 +305,10 @@ export default {
           ],
           default_expanded_keys: ["1"],
           default_checked_keys: ["1-1"]
+        },
+        {
+          key: "hg",
+          type: "slot"
         }
       ],
       addTableItems: [
