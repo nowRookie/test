@@ -23,7 +23,7 @@ axios.interceptors.request.use(function (config) {
 axios.interceptors.response.use(function (response) {
   return response;
 }, function (error) {
-  if (error.response.status == 401) {
+  if (error.response && error.response.status == 401) {
     Message({ type: "error", message: "登陆过期！" })
     sessionStorage.removeItem("token")
     location.href = '#/login'

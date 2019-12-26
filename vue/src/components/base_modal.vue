@@ -214,6 +214,7 @@
                   class="upload-demo"
                   :multiple="true"
                   :ref="item.key"
+                  :disabled="item.disabled"
                   :action="item.options?item.options.action||'':'#'"
                   :name="item.options?item.options.name:'file'"
                   :on-change="handleChange.bind(this,item.key)"
@@ -242,12 +243,16 @@
                 <el-cascader
                   :size="item.size"
                   :options="regionData"
+                  clearable
+                  :disabled="item.disabled"
                   placeholder="请选择:省 / 市 / 区"
                   v-model="formData[item.key].area"
                 ></el-cascader>
                 <el-input
                   v-model="formData[item.key].detail"
                   placeholder="详细地址"
+                  clearable
+                  :disabled="item.disabled"
                   style="margin-top:10px;"
                 ></el-input>
               </el-form-item>

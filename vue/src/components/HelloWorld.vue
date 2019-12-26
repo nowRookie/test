@@ -93,7 +93,7 @@ export default {
     let self = this;
     return {
       visible: false,
-      modalType: "add",
+      modalType: "add", //可选值add,edit,detail
       modalTitle: "",
       params: {},
       query: {
