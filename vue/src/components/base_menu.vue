@@ -63,67 +63,68 @@
             <!-- <i class="el-icon-location"></i> -->
             <span>管理中心</span>
           </template>
-          <el-menu-item index="/organizationalManagement">机构管理</el-menu-item>
-          <el-menu-item index="/staffManagement">员工管理</el-menu-item>
-          <el-menu-item index="/rolelManagement">角色管理</el-menu-item>
-          <el-menu-item index="/userManagement">用户管理</el-menu-item>
-          <el-menu-item index="/agentTeam">代理/团队</el-menu-item>
-          <el-menu-item index="/projectManagement">项目管理</el-menu-item>
+          <el-menu-item index="/organizational_manage">机构管理</el-menu-item>
+          <el-menu-item index="/staff_manage">员工管理</el-menu-item>
+          <el-menu-item index="/role_manage">角色管理</el-menu-item>
+          <el-menu-item index="/user_manage">用户管理</el-menu-item>
+          <el-menu-item index="/agent_team">代理/团队</el-menu-item>
+          <el-menu-item index="/project_manage">项目管理</el-menu-item>
         </el-submenu>
         <el-submenu index="2">
           <template slot="title">
             <span>保险公司管理</span>
           </template>
-          <el-menu-item index="/operate_conduct_out">保险公司帐号管理</el-menu-item>
+          <el-menu-item index="/insurance_account">保险公司帐号管理</el-menu-item>
         </el-submenu>
         <el-submenu index="3">
           <template slot="title">
             <span>客户管理</span>
           </template>
-          <el-menu-item index="/operate_conduct_out">客户信息列表</el-menu-item>
+          <el-menu-item index="/customer_list">客户信息列表</el-menu-item>
         </el-submenu>
         <el-submenu index="4">
           <template slot="title">
             <span>产品管理</span>
           </template>
           <el-menu-item index="/insure_prod_conduct">保险产品管理</el-menu-item>
-          <el-menu-item index>费率折扣管理</el-menu-item>
-          <el-menu-item index>佣金管理</el-menu-item>
-          <el-menu-item index>协议管理</el-menu-item>
+          <el-menu-item index="/rate_discount">费率折扣管理</el-menu-item>
+          <el-menu-item index="/brokerage_manage">佣金管理</el-menu-item>
+          <el-menu-item index="/protocol_manage">协议管理</el-menu-item>
         </el-submenu>
         <el-submenu index="5">
           <template slot="title">
             <span>保险业务操作</span>
           </template>
-          <el-menu-item index>投保</el-menu-item>
-          <el-menu-item index>批改</el-menu-item>
-          <el-menu-item index>保单审核</el-menu-item>
+          <el-menu-item index="/insure">投保</el-menu-item>
+          <el-menu-item index="/modify_list">批改</el-menu-item>
+          <el-menu-item index="/verify_list">保单审核</el-menu-item>
         </el-submenu>
         <el-submenu index="6">
           <template slot="title">
             <span>业务管理</span>
           </template>
-          <el-menu-item index>保险订单管理</el-menu-item>
-          <el-menu-item index>保单管理</el-menu-item>
+          <el-menu-item index="/order_list">保险订单管理</el-menu-item>
+          <el-menu-item index="/insureNum_list">保单管理</el-menu-item>
         </el-submenu>
         <el-submenu index="7">
           <template slot="title">
             <span>票内对账管理</span>
           </template>
-          <el-menu-item index>对账列表</el-menu-item>
+          <el-menu-item index="/InList">对账列表</el-menu-item>
         </el-submenu>
         <el-submenu index="8">
           <template slot="title">
             <span>票外对账管理</span>
           </template>
-          <el-menu-item index>对账列表</el-menu-item>
+          <el-menu-item index="/OutList">对账列表</el-menu-item>
         </el-submenu>
         <el-submenu index="0">
           <template slot="title">
             <span>结算管理</span>
           </template>
-          <el-menu-item index>结算单列表</el-menu-item>
+          <el-menu-item index="/settlement_list">结算单列表</el-menu-item>
         </el-submenu>
+        <el-menu-item index="/HelloWorld">hellowrold</el-menu-item>
       </el-menu>
     </div>
     <div class="container">
@@ -218,7 +219,7 @@ export default {
 .container {
   margin: 10vh 0 0 200px;
   min-height: 90vh;
-  padding: 20px;
+  padding: 20px 20px 40px;
 }
 .logo {
   width: 200px;

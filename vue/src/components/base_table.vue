@@ -1,12 +1,25 @@
 <template>
   <div>
-    <el-table :data="data" border style="width: 100%">
+    <el-table
+      ref="multipleTable"
+      :data="data"
+      border
+      style="width:100%;"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column
+        v-if="type=='selection'"
+        type="selection"
+        width="55"
+        :selectable="selectableFun"
+      ></el-table-column>
       <el-table-column
         :prop="item.key"
         :label="item.title"
         v-for="(item,index) in items"
         :key="index"
         align="center"
+        :width="item.width||''"
       >
         <template slot-scope="scope">
           <slot
@@ -21,7 +34,7 @@
       </el-table-column>
     </el-table>
     <el-pagination
-      hide-on-single-page
+      v-if="!(hidePage===true)"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="pages.pageNum"
@@ -35,25 +48,37 @@
   </div>
 </template>
 
-<script lang="ts">
+<script >
 import Vue from "vue";
-export default Vue.extend({
-  props: ["items", "pages", "data"],
+
+export default {
+  props: ["items", "pages", "data", "hidePage", "type"],
   data() {
-    return {};
+    return {
+      multipleSelection: []
+    };
   },
   computed: {},
   methods: {
+    selectableFun(row, index) {
+      if (row.checkable === false) return false;
+      return true;
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
     handleSizeChange(pageSize) {
-      console.log(1111);
       this.$emit("change", { pageSize });
     },
     handleCurrentChange(pageNum) {
       this.$emit("change", { pageNum });
+    },
+    getChecked() {
+      return this.multipleSelection;
     }
   },
   mounted() {}
-});
+};
 </script>
 
 <style lang="scss">

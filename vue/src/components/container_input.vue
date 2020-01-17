@@ -3,33 +3,43 @@
     <el-form
       :model="formData"
       ref="formRef"
-      :label-width="labelWidth||'80px'"
+      :label-width="labelWidth||'100px'"
       :inline="false"
       label-position="right"
-      :disabled="type=='detail'"
     >
       <el-row>
-        <el-col :span="(confirm==undefined||confirm)?18:24">
-          <el-col
-            :span="item.span||span||6"
-            class="unit"
-            v-for="item in itemsConfig"
-            :key="item.key"
-          >
+        <el-col :span="(content==''||content===true)?24:18">
+          <el-col :span="item.span||span||6" class="unit" v-for="item in items" :key="item.key">
             <!-- text -->
             <el-form-item
               :label-width="item.labelWidth||labelWidth"
               :label="item.title"
               :prop="item.key"
               :required="item.required"
-              :rules="item.rules?[{ required: true, message: `请输入${item.title}`, trigger: 'change' },{required:true,message:`请输入${item.title}`,trigger:'blur'}].concat(item.rules):item.required?[{required:true,message:`请输入${item.title}`,trigger:'change'},{required:true,message:`请输入${item.title}`,trigger:'blur'}]:[]"
+              :rules="item.rules?[{ required: true, message: `请输入${item.title}`, trigger: 'change' },{ required: true, message: `请输入${item.title}`, trigger: 'blur' },{ validator: validateTrim, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请输入${item.title}`,trigger:'change'},{ required: true, message: `请输入${item.title}`, trigger: 'blur' },{ validator: validateTrim, trigger: 'blur' }]:[]"
               v-if="!item.type||(item.type=='text')"
             >
               <el-input
                 v-model="formData[item.key]"
-                :disabled="item.disabled"
-                clearable
                 autocomplete="off"
+                :disabled="disabled||item.disabled"
+                clearable
+              ></el-input>
+            </el-form-item>
+            <!-- number -->
+            <el-form-item
+              :label-width="item.labelWidth||labelWidth"
+              :label="item.title"
+              :prop="item.key"
+              :required="item.required"
+              :rules="item.rules?[{ required: true, message: `请输入${item.title}`, trigger: 'change' },{ required: true, message: `请输入${item.title}`, trigger: 'blur' },{validator:validateNumber,trigger:'change'},{validator:validateNumber,trigger:'blur'},{ validator: validateTrim, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请输入${item.title}`,trigger:'change'},{ required: true, message: `请输入${item.title}`, trigger: 'blur' },{validator:validateNumber,trigger:'change'},{validator:validateNumber,trigger:'blur'},{ validator: validateTrim, trigger: 'blur' }]:[]"
+              v-if="item.type=='number'"
+            >
+              <el-input
+                v-model="formData[item.key]"
+                autocomplete="off"
+                :disabled="disabled||item.disabled"
+                clearable
               ></el-input>
             </el-form-item>
             <!-- textarea -->
@@ -37,15 +47,14 @@
               :label-width="item.labelWidth||labelWidth"
               :label="item.title"
               :prop="item.key"
-              :required="item.required"
-              :rules="item.rules?[{ required: true, message: `请输入${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请输入${item.title}`,trigger:'change'}]:[]"
+              :rules="item.rules?[{ required: true, message: `请输入${item.title}`, trigger: 'change' },{ validator: validateTrim, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请输入${item.title}`,trigger:'change'},{ validator: validateTrim, trigger: 'blur' }]:[]"
               v-if="(item.type=='textarea')"
             >
               <el-input
                 type="textarea"
                 v-model="formData[item.key]"
                 autocomplete="off"
-                :disabled="item.disabled"
+                :disabled="disabled||item.disabled"
               ></el-input>
             </el-form-item>
             <!-- select -->
@@ -53,16 +62,15 @@
               :label-width="item.labelWidth||labelWidth"
               :label="item.title"
               :prop="item.key"
-              :required="item.required"
               :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
               v-else-if="item.type=='select'"
             >
               <el-select
-                :disabled="item.disabled"
+                :disabled="disabled||item.disabled"
                 clearable
                 filterable
                 value-key="value"
-                @change="(val)=>selectChange(val,item)"
+                @change="(val)=>selectChange(item, val)"
                 v-model="formData[item.key]"
                 :placeholder="`请选择${item.title}`"
                 style="width:100%;"
@@ -80,18 +88,17 @@
               :label-width="item.labelWidth||labelWidth"
               :label="item.title"
               :prop="item.key"
-              :required="item.required"
               :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
               v-else-if="item.type=='autocomplete'"
             >
               <el-select
                 v-model="formData[item.key]"
-                :disabled="item.disabled"
+                :disabled="disabled||item.disabled"
                 filterable
                 clearable
                 remote
                 :loading="item.loading"
-                :remote-method="(query)=>{remoteMethod(query,item)}"
+                :remote-method="(query)=>{remoteMethod(item,query)}"
                 value-key="value"
                 :placeholder="`请选择${item.title}`"
                 style="width:100%;"
@@ -108,13 +115,12 @@
             <el-form-item
               :label-width="item.labelWidth||labelWidth"
               :label="item.title"
-              :required="item.required"
               :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
               v-else-if="(item.type=='multipleDate')"
             >
               <el-col :span="11">
                 <el-date-picker
-                  :disabled="item.disabled"
+                  :disabled="disabled||item.disabled"
                   type="date"
                   placeholder="选择开始日期"
                   v-model="formData[item.key].start"
@@ -124,7 +130,7 @@
               <el-col class="tc line" :span="2">-</el-col>
               <el-col :span="11">
                 <el-date-picker
-                  :disabled="item.disabled"
+                  :disabled="disabled||item.disabled"
                   type="date"
                   placeholder="选择结束日期"
                   v-model="formData[item.key].end"
@@ -137,15 +143,15 @@
               :label-width="item.labelWidth||labelWidth"
               :label="item.title"
               :prop="item.key"
-              :required="item.required"
               :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
               v-else-if="(item.type=='date')"
             >
               <el-date-picker
-                :disabled="item.disabled"
+                :disabled="disabled||item.disabled"
                 type="date"
                 placeholder="选择日期"
                 v-model="formData[item.key]"
+                @change="(val)=>{datePickerChange(item,val)}"
                 style="width: 100%;"
               ></el-date-picker>
             </el-form-item>
@@ -154,11 +160,10 @@
               :label-width="item.labelWidth||labelWidth"
               :label="item.title"
               :prop="item.key"
-              :required="item.required"
               :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
               v-else-if="(item.type=='checkbox')"
             >
-              <el-checkbox-group v-model="formData[item.key]" :disabled="item.disabled">
+              <el-checkbox-group v-model="formData[item.key]" :disabled="disabled||item.disabled">
                 <el-checkbox
                   v-for="(unit,index) in item.dataList"
                   :disabled="unit.disabled"
@@ -173,11 +178,10 @@
               :label-width="item.labelWidth||labelWidth"
               :label="item.title"
               :prop="item.key"
-              :required="item.required"
               :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
               v-else-if="(item.type=='radio')"
             >
-              <el-radio-group v-model="formData[item.key]" :disabled="item.disabled">
+              <el-radio-group v-model="formData[item.key]" :disabled="disabled||item.disabled">
                 <el-radio
                   v-for="(unit,index) in item.dataList"
                   :disabled="unit.disabled"
@@ -191,14 +195,13 @@
               :label-width="item.labelWidth||labelWidth"
               :label="item.title"
               :prop="item.key"
-              :required="item.required"
               :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
               v-else-if="(item.type=='switch')"
             >
               <el-switch
                 v-model="formData[item.key]"
-                :disabled="item.disabled"
-                @change="val=>switchChange(val,item)"
+                :disabled="disabled||item.disabled"
+                @change="val=>switchChange(item, val)"
               ></el-switch>
             </el-form-item>
             <!-- uploadFile -->
@@ -206,7 +209,6 @@
               :label-width="item.labelWidth||labelWidth"
               :label="item.title"
               :prop="item.key"
-              :required="item.required"
               :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
               v-else-if="(item.type=='uploadFile')"
             >
@@ -214,16 +216,78 @@
                 class="upload-demo"
                 :multiple="true"
                 :ref="item.key"
-                :disabled="item.disabled"
-                :action="item.options?item.options.action||'':'#'"
-                :name="item.options?item.options.name:'file'"
-                :on-change="handleChange.bind(this,item.key)"
-                :on-remove="handleRemove.bind(this,item.key)"
+                :disabled="disabled||item.disabled"
+                :accept="item.accept"
+                :action="item.action?item.action:''"
+                :name="item.name||'file'"
+                :list-type="item.listType?item.listType:'text'"
+                :on-change="(file,fileList)=>{handleChange(item,file,fileList)}"
+                :on-error="(file,fileList)=>{handleError(item,file,fileList)}"
+                :before-upload="beforeUpload"
+                :on-remove="(file,fileList)=>{handleRemove(item,file,fileList)}"
+                :on-preview="(file)=>{handlePrevie(item,file)}"
                 :file-list="formData[item.key]"
                 :auto-upload="false"
               >
-                <el-button slot="trigger" size="small" type="primary" :disabled="item.disabled">选取文件</el-button>
+                <i class="el-icon-plus" slot="trigger" v-if="item.listType=='picture-card'"></i>
+                <el-button
+                  slot="trigger"
+                  size="small"
+                  type="primary"
+                  :disabled="disabled||item.disabled"
+                  v-else
+                >选取文件</el-button>
                 <div slot="tip" class="el-upload__tip">{{item.options?item.options.tip:""}}</div>
+                <el-dialog
+                  :visible.sync="dialogVisible"
+                  append-to-body
+                  v-if="item.listType=='picture-card'"
+                >
+                  <img width="100%" :src="dialogImageUrl" alt />
+                </el-dialog>
+              </el-upload>
+            </el-form-item>
+            <!-- autoupload -->
+            <el-form-item
+              :label-width="item.labelWidth||labelWidth"
+              :label="item.title"
+              :prop="item.key"
+              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
+              v-else-if="(item.type=='autoupload')"
+            >
+              <el-upload
+                class="upload-demo"
+                :multiple="true"
+                :ref="item.key"
+                :disabled="disabled||item.disabled"
+                :accept="item.accept"
+                :action="item.action?(api+item.action):''"
+                :name="item.name||'file'"
+                :list-type="item.listType?item.listType:'text'"
+                :on-success="(response, file, fileList)=>{handleSuccess(item,file,fileList)}"
+                :on-error="(err,file,fileList)=>{handleError(item,file,fileList)}"
+                :before-upload="beforeUpload"
+                :on-remove="(file,fileList)=>{handleRemove(item,file,fileList)}"
+                :on-preview="(file)=>{handlePrevie(item,file)}"
+                :file-list="formData[item.key]"
+                :auto-upload="true"
+              >
+                <i class="el-icon-plus" slot="trigger" v-if="item.listType=='picture-card'"></i>
+                <el-button
+                  slot="trigger"
+                  size="small"
+                  type="primary"
+                  :disabled="disabled||item.disabled"
+                  v-else
+                >选取文件</el-button>
+                <div slot="tip" class="el-upload__tip">{{item.options?item.options.tip:""}}</div>
+                <el-dialog
+                  :visible.sync="dialogVisible"
+                  append-to-body
+                  v-if="item.listType=='picture-card'"
+                >
+                  <img width="100%" :src="dialogImageUrl" alt />
+                </el-dialog>
               </el-upload>
             </el-form-item>
             <!-- area省/市/区 -->
@@ -231,7 +295,6 @@
               :label-width="item.labelWidth||labelWidth"
               :label="item.title"
               :prop="item.key"
-              :required="item.required"
               :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
               v-else-if="(item.type=='area')"
             >
@@ -239,7 +302,7 @@
                 :size="item.size"
                 :options="regionData"
                 clearable
-                :disabled="item.disabled"
+                :disabled="disabled||item.disabled"
                 placeholder="请选择:省 / 市 / 区"
                 v-model="formData[item.key].area"
               ></el-cascader>
@@ -247,7 +310,7 @@
                 v-model="formData[item.key].detail"
                 placeholder="详细地址"
                 clearable
-                :disabled="item.disabled"
+                :disabled="disabled||item.disabled"
                 style="margin-top:10px;"
               ></el-input>
             </el-form-item>
@@ -256,7 +319,6 @@
               :label-width="item.labelWidth||labelWidth"
               :label="item.title"
               :prop="item.key"
-              :required="item.required"
               :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
               v-else-if="(item.type=='tree')"
             >
@@ -273,9 +335,9 @@
             <slot v-else-if="(item.type=='slot')" :name="item.key"></slot>
           </el-col>
         </el-col>
-        <el-col v-if="confirm==undefined||confirm" :span="4" :offset="1">
+        <el-col v-if="!(content==''||content===true)" :span="4" :offset="1">
           <el-button type="primary" @click="ok">搜索</el-button>
-          <slot name="operate" v-bind="{data:this.formData}"></slot>
+          <slot name="operate" :data="formData"></slot>
         </el-col>
       </el-row>
     </el-form>
@@ -286,13 +348,18 @@
 // import { regionData, CodeToText, TextToCode } from "element-china-area-data";
 import regionData from "@/assets/js/province";
 import _ from "lodash";
-
+import { upload } from "../utils/utils";
+const api = process.env.VUE_APP_API_URL;
 export default {
-  props: ["span", "labelWidth", "itemsConfig", "confirm", "type"],
+  props: ["span", "labelWidth", "items", "content", "disabled"],
   data() {
     let formData = {};
-    _.each(this.$props.itemsConfig, item => {
-      if (item.type == "checkbox" || item.type == "uploadFile") {
+    _.each(this.$props.items, item => {
+      if (
+        item.type == "checkbox" ||
+        item.type == "uploadFile" ||
+        item.type == "autoupload"
+      ) {
         formData[item.key] = item.data ? item.data : [];
       } else if (item.type == "multipleDate") {
         formData[item.key] = {};
@@ -307,10 +374,15 @@ export default {
         formData[item.key].type = "tree";
         formData[item.key].data = item.data;
       } else {
-        formData[item.key] = item.data !== undefined ? item.data : "";
+        formData[item.key] =
+          item.data !== undefined && item.data !== null ? item.data : "";
       }
     });
     return {
+      api,
+      dialogVisible: false,
+      dialogImageUrl: "",
+      autouploadList: [],
       formData,
       regionData: regionData,
       defaultProps: {
@@ -320,20 +392,102 @@ export default {
     };
   },
   methods: {
+    validateTrim(rule, value, callback) {
+      let reg = /^\s+|\s+$/;
+      if (reg.test(value)) {
+        callback(new Error("首尾不能为空格"));
+      } else {
+        callback();
+      }
+    },
+    validateNumber(rule, value, callback) {
+      let reg = /^\d+(\.\d{0,5})?$/;
+      if (reg.test(value)) {
+        callback();
+      } else {
+        callback(new Error("请输入数字,不超过5位小数！"));
+      }
+    },
+    datePickerChange(item, val) {
+      item.method && item.method(this.formData, val);
+    },
+    handleChange(item, file, fileList) {
+      this.formData[item.key] = fileList;
+    },
+    handleSuccess(item, file, fileList) {
+      this.formData[item.key] = fileList.map(unit => {
+        return {
+          ...unit,
+          url: unit.response
+            ? unit.response && api + unit.response.data[0]
+            : unit.url,
+          urlTip: unit.response
+            ? unit.response && unit.response.data[0]
+            : unit.url
+        };
+      });
+    },
+    handleError(item, file, fileList) {
+      console.log("error!!!");
+    },
+    beforeUpload(file) {
+      const limit_10M = file.size / 1024 / 1024 < 10;
+      if (!limit_10M) {
+        this.$message.error("请上传10M以下的文件");
+        return false;
+      }
+    },
+    handleRemove(item, file, fileList) {
+      this.formData[item.key] = fileList;
+    },
+    handlePrevie(item, file) {
+      if (item.listType == "picture-card") {
+        this.dialogImageUrl = file.url;
+        this.dialogVisible = true;
+        return;
+      }
+      item.preview && item.preview(file);
+    },
+    httpRequest(item, request) {
+      upload({
+        url: request.action,
+        data: [request.file]
+      })
+        .then(({ res, data }) => {
+          if (res.status !== 200 || res.data.code != 0) {
+            this.$message.error(
+              res.statusText || res.data.message || "请求错误!"
+            );
+            request.onError({
+              status: "error",
+              uid: request.file.uid
+            });
+            return;
+          }
+          let curFile = {
+            status: "success",
+            urlTip: data[0],
+            url: api + data[0],
+            uid: request.file.uid,
+            name: request.file["name"]
+          };
+          this.autouploadList.push(curFile);
+          request.onSuccess();
+        })
+        .catch(err => {
+          request.onError({
+            status: "error",
+            uid: request.file.uid
+          });
+          this.$message.error(err || "请求错误!");
+        });
+    },
     ok() {
       this.$refs.formRef.validate((boolean, object) => {
         if (boolean) {
           this.$emit("ok", this.formData);
         }
       });
-    },
-    // 上传文件change方法
-    handleChange(key, file, fileList) {
-      this.formData[key] = fileList;
-    },
-    // 上传文件remove方法
-    handleRemove(key, file, fileList) {
-      this.formData[key] = fileList;
     },
     // 组装tree数据
     computedTreeData({ key, data }) {
@@ -351,21 +505,21 @@ export default {
         getNode: tree.getNode()
       };
     },
-    selectChange(val, item) {
-      item.method(val);
+    selectChange(item, val) {
+      item.method && item.method(this.formData, val);
     },
-    switchChange(val, item) {
-      item.method(val);
+    switchChange(item, val) {
+      item.method && item.method(this.formData, val);
     },
     // autocomplete的远程方法
-    remoteMethod(query, item) {
+    remoteMethod(item, query) {
       if (query !== "") {
-        item.method(query);
+        item.method && item.method(this.formData, query);
       }
     },
     // 父组件通过ref调用此方法-获取form数据
     getData() {
-      return new Promise(resolve => {
+      return new Promise((resolve, reject) => {
         this.$refs.formRef.validate(boolean => {
           if (boolean) {
             // 给tree单元，设置checked属性
@@ -378,11 +532,14 @@ export default {
               }
             }
             resolve(this.formData);
+          } else {
+            reject("验证不通过");
           }
         });
       });
     }
-  }
+  },
+  mounted() {}
 };
 </script>
 

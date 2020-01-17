@@ -10,8 +10,17 @@
 <style></style>
 
 <body>
+  <input type="file" onchange="reader()" id="input">
 </body>
 <script>
+  function reader() {
+    var input = document.getElementById("input")
+    var reader = new FileReader()
+    console.log(reader.readAsDataURL(input.files[0]))
+    reader.onload = function () {
+      console.log(reader.result);
+    }
+  }
 </script>
 
 </html>

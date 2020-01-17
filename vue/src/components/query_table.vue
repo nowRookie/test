@@ -7,7 +7,12 @@
       style="width: 100%"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55" v-if="type=='selection'"></el-table-column>
+      <el-table-column
+        type="selection"
+        width="55"
+        v-if="type=='selection'"
+        :selectable="selectableFun"
+      ></el-table-column>
       <el-table-column
         :prop="item.key"
         :label="item.title"
@@ -28,7 +33,7 @@
       </el-table-column>
     </el-table>
     <el-pagination
-      hide-on-single-page
+      v-if="!(hidePage===true)"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="page.pageNum"
@@ -48,7 +53,7 @@ import axios from "axios";
 const api = process.env.VUE_APP_API_URL;
 
 export default Vue.extend({
-  props: ["items", "query", "type"],
+  props: ["items", "query", "type", "hidePage"],
   data() {
     return {
       multipleSelection: [],
@@ -63,6 +68,10 @@ export default Vue.extend({
   },
   computed: {},
   methods: {
+    selectableFun(row, index) {
+      if (row.checkable === false) return false;
+      return true;
+    },
     handleSizeChange(pageSize) {
       this.getTableList({ pageSize, pageNum: this.page.pageNum });
     },
@@ -100,7 +109,15 @@ export default Vue.extend({
       }
       axios(options)
         .then(res => {
-          this.dataList = res.data.data;
+          if (res.status !== 200 || res.data.code != 0) {
+            this.$message.error(
+              res.statusText || res.data.message || "请求错误!"
+            );
+            return;
+          }
+          this.dataList = this.$attrs.afterQuery
+            ? this.$attrs.afterQuery({ res, data: res.data && res.data.data })
+            : res.data.data;
           this.page.pageNum = res.data.pageNum || res.data.curPage;
           this.page.pageSize = res.data.pageSize;
           this.page.totalPageNum = res.data.totalPageNum || res.data.totalPage;

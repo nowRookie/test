@@ -3,75 +3,161 @@
     <!-- container-input -->
     <div class="mt20">
       <h2 style="color:purple">containerInput:</h2>
-      <container-input :itemsConfig="modalItems" :confirm="true" labelWidth="120px">
+      <!-- 
+        属性:
+          items:array,必须,根据对应项生成整个form结构
+          content:不传值||boolean,非必须,用来去掉查询按钮(常用来通过this.$refs.containerInput.getData().then(data=>{}))获取整个form数据
+          disabled:boolean,非必须,控制整个form为disabled
+          span:number,非必须,用来控制整个form的span
+          labelWidth:string,非必须,控制整个form的label宽度
+          @ok:方法,非必须,触发form验证和查询
+        备注:
+          template里可以为自定义内容,v-slot:operate为操作处(默认会有一个查询按钮),v-slot:customer为items中的某一项({key:customer,type:slot})
+          items项中{type:"tree"}的项无法通过disabled控制(只能通过它的data数据控制树结构的disabled)
+      -->
+      <container-input
+        ref="containerInput"
+        :items="inputItems"
+        content
+        labelWidth="120px"
+        @ok="inputSearch"
+      >
         <template v-slot:operate="scope">
           <el-button @click="operate(scope)">按钮</el-button>
         </template>
+        <template v-slot:customer>这是一段自定义内容</template>
       </container-input>
     </div>
+
     <!-- base-modal -->
     <div class="mt20">
       <h2 style="color:purple">modal:</h2>
-      <el-button @click="visible=true">modal</el-button>
+      <el-button type="primary" @click="modalVisible=true">modal</el-button>
+      <!-- 
+        属性:
+          visible:boolean,必须,判断modal是否显示
+          items:array,必须,根据对应项生成整个form结构
+          type:string,必须,有三种,分别是add(用来触发@add方法),edit(触发@edit方法),detail(控制整个form为disabled,仅触发@cancel方法)
+          params:{},非必须,用来传递除了整个form的键值对以外的额外参数
+          title:string,非必须,设置modal的title
+          width:string,非必须,控制整个form的宽度
+          labelWidth:string,非必须,控制整个form的label宽度
+          span:number,非必须,用来控制整个form的span
+          @add:方法,跟type绑定,当type=add时触发@add方法
+          @edit:方法,触发@edit方法
+          @cancel:方法,设置visible=false,用来关闭modal
+        备注:
+          template里可以为自定义内容,v-slot:operate为操作处(默认会有确定取消按钮),v-slot:customer为items中的某一项({key:customer,type:slot})
+      -->
       <base-modal
-        v-if="visible"
-        :visible.sync="visible"
-        :itemsConfig="modalItems"
+        v-if="modalVisible"
+        :visible.sync="modalVisible"
+        :items="modalItems"
         :type="modalType"
-        :params="params"
-        @add="handleAdd"
-        @edit="handleEdit"
-        @cancel="cancelBtn"
+        :params="modalParams"
         :title="modalTitle"
         labelWidth="120px"
         width="800px"
         :span="24"
+        @add="modalAdd"
+        @edit="modalEdit"
+        @cancel="modalCancel"
       >
-        <template v-slot:hg="scope">
-          <el-button @click="operate(scope)">自定义内容</el-button>
+        <template v-slot:customer="scope">
+          这是一段自定义内容
+          <el-button @click="operate(scope)">按钮</el-button>
         </template>
       </base-modal>
     </div>
+
     <!-- base-table -->
     <div class="mt20">
       <h2 style="color:purple">base-table:</h2>
+      <!-- 
+        属性:
+          items:array,必须,根据对应项生成table结构
+          type:"selection",非必须,整个table是否可被选中
+          data:array,必须,table组件的data
+          pages:{},仅hidePage=true时为非必须,通常为{pageNum,pageSize,totalPageNum,total}用来和@change联动
+          hidePage,boolean,非必须,隐藏page
+          @change:方法,必须,function({pageNum,PageSize})用来向后端请求对应数据
+        备注:
+          template里可以为自定义内容,v-slot:customer为items中的某一项({key:customer,type:slot})
+      -->
       <base-table
-        :items="tableConfigs.items"
-        :data="tableDataList"
-        :pages="tableConfigs.pages"
-        @change="change"
+        ref="baseTableRef"
+        :items="basetableItems"
+        type="selection"
+        :data="basetableData"
+        :pages="baseTablePages"
+        @change="tablePageChange"
+        :hidePage="true"
       >
-        <template v-slot:value="scope">
+        <template v-slot:customer="scope">
           <el-button @click="cradle(scope)">按钮</el-button>
         </template>
       </base-table>
+      <div>
+        <el-button type="primary" @click="getChecked">获取table选中项</el-button>
+      </div>
     </div>
+
     <!-- query-table -->
     <div class="mt20">
       <h2 style="color:purple">query-table:</h2>
-      <query-table :items="tableConfigs.items" :query="query" :type="''||'selection'">
-        <template v-slot:value="scope">
+      <!-- 
+        属性:
+          items:array,必须,根据对应项生成table结构
+          query:{},必须,查询条件,axios对应的请求request
+          type,"selection",非必须,整个table是否可被选中
+          afterQuery:方法,非必须,用于处理res||data，必须要return一个[],因为这是table的data
+        备注:
+          template里可以为自定义内容,v-slot:customer为items中的某一项({key:customer,type:slot})
+          通过更新query对象(Object.assign({},query))可以触发query-table数据更新
+          通过$refs的getChecked()可以拿到选中项
+      -->
+      <query-table
+        :items="querytableItems"
+        :query="queryParams"
+        type="selection"
+        :afterQuery="afterQuery"
+      >
+        <template v-slot:customer="scope">
           <el-button @click="cradle(scope)">按钮</el-button>
         </template>
       </query-table>
     </div>
+
     <!-- add-table -->
     <div class="mt20">
       <h2 style="color:purple">add-table:</h2>
+      <!-- 
+        属性:
+          items:array,必须,根据对应项生成table结构
+          data:array,必须,table组件的data
+          disabled:boolean,非必须,整个table设置为disabled
+          deletable:boolean,非必须,是否展示删除按钮
+          select-*:array,非必须,若table中有select时,用来渲染select的options项(select-age:"age"对应addTableItems中的{key:age})
+          @change-*:方法,对应select-*的chang事件
+        备注:
+          template里可以为自定义内容,v-slot:customer为items中的某一项({key:customer,type:slot})
+      -->
       <add-table
         ref="addTableRef"
+        title="标题1"
         :items="addTableItems"
         :data="addTableData"
         :select-age="selectAge"
+        :deletable="false"
         @change-age="selectChangeAge"
         :select-height="selectHeight"
         @change-height="selectChangeHeight"
       >
-        <template v-slot:title>
-          <span style="font-size:18px;">标题</span>
+        <template v-slot:customer="scope">
+          <a @click="addTableFun(scope)">自定义方法</a>
         </template>
       </add-table>
-      <el-button @click="button">获取add-table数据</el-button>
+      <el-button type="primary" @click="getAddTableData">获取add-table数据</el-button>
     </div>
   </div>
 </template>
@@ -89,48 +175,55 @@ import { type } from "../utils/utils";
 export default {
   name: "HelloWorld",
   components: { baseModal, containerInput, baseTable, queryTable, addTable },
+  computed: {
+    inputItems() {
+      return [].concat(this.modalItems);
+    },
+    basetableItems() {
+      return [].concat(this.querytableItems);
+    }
+  },
   data() {
     let self = this;
     return {
-      visible: false,
-      modalType: "add", //可选值add,edit,detail
+      modalVisible: false,
+      modalType: "detail",
       modalTitle: "",
-      params: {},
-      query: {
+      modalParams: {},
+      baseTablePages: {},
+      queryParams: {
         url: "#",
         method: "post",
         data: {}
       },
-      tableConfigs: {
-        pages: {},
-        items: [
-          {
-            key: "value",
-            type: "slot",
-            width: 200,
-            title: "姓名"
-          },
-          {
-            key: "certificateCode",
-            title: "年龄"
-          },
-          {
-            key: "animal",
-            type: "slot",
-            title: "动物"
-          },
-          {
-            key: "color",
-            title: "颜色"
-          }
-        ]
-      },
-      tableDataList: [
+      querytableItems: [
+        {
+          key: "customer",
+          type: "slot",
+          width: 200,
+          title: "姓名"
+        },
+        {
+          key: "certificateCode",
+          title: "年龄"
+        },
+        {
+          key: "animal",
+          type: "slot",
+          title: "动物"
+        },
+        {
+          key: "color",
+          title: "颜色"
+        }
+      ],
+      basetableData: [
         {
           value: "zhang",
           age: 18,
           color: "purple",
-          animal: "seal"
+          animal: "seal",
+          checkable: false
         },
         {
           value: "wang",
@@ -156,6 +249,15 @@ export default {
           data: "text"
         },
         {
+          title: "number",
+          key: "number",
+          type: "number",
+          labelWidth: "120px",
+          span: 8,
+          required: true,
+          data: 10
+        },
+        {
           title: "select",
           key: "select",
           type: "select",
@@ -167,7 +269,7 @@ export default {
             { label: "项目2", value: "val2" }
           ],
           data: { label: "项目1", value: "val1" },
-          method: function(val) {
+          method: function(childData, val) {
             console.log("###", val, self.modalItems);
           }
         },
@@ -205,7 +307,11 @@ export default {
           labelWidth: "120px",
           span: 8,
           required: true,
-          data: "2019-10-15"
+          data: "2019-10-15",
+          method: function(childData, val) {
+            self.modalItems[1].dataList = [{ label: 11111, value: 11 }]; //改其他项的dataList
+            childData["text"] = "YYYY-MM-DD"; //改其他项的data
+          }
         },
         {
           title: "multipleDate",
@@ -268,14 +374,39 @@ export default {
           span: 8,
           required: true,
           data: true,
-          method: function(val) {
+          method: function(childData, val) {
             console.log("###", val);
           }
+        },
+        {
+          title: "textarea",
+          key: "textarea",
+          type: "textarea",
+          labelWidth: "120px",
+          span: 24,
+          required: false,
+          data: null
         },
         {
           title: "uploadFile",
           key: "uploadFile",
           type: "uploadFile",
+          // listType: "picture-card",
+          // accept: "image/*",
+          // name: "file",
+          labelWidth: "120px",
+          span: 24,
+          required: true,
+          data: [{ name: "文件1", url: "" }]
+        },
+        {
+          title: "autoupload",
+          key: "autoupload",
+          type: "autoupload",
+          listType: "picture-card",
+          accept: "image/*",
+          action: "/fileUpload/protocol",
+          name: "files",
           labelWidth: "120px",
           span: 24,
           required: true,
@@ -307,7 +438,7 @@ export default {
           default_checked_keys: ["1-1"]
         },
         {
-          key: "hg",
+          key: "customer",
           type: "slot"
         }
       ],
@@ -321,7 +452,8 @@ export default {
         {
           type: "number",
           key: "num",
-          title: "数量"
+          title: "数量",
+          rules: []
         },
         {
           type: "select",
@@ -344,6 +476,10 @@ export default {
           key: "dates",
           title: "日期",
           rules: []
+        },
+        {
+          key: "customer",
+          type: "slot"
         }
       ],
       selectAge: [
@@ -372,27 +508,40 @@ export default {
       ],
       addTableData: [
         {
-          id: 0,
           age: {
             label: "年龄2",
             value: 2
           },
           username: "zhang",
-          beauty: true
+          beauty: true,
+          disabled: true
         },
         {
-          id: 1,
           age: {
             label: "年龄1",
             value: 1
           },
-          username: "wang"
+          username: "wang",
+          checkable: false
         }
       ]
     };
   },
   methods: {
-    change({ pageSize, pageNum }) {
+    getChecked() {
+      let checkedData = this.$refs.baseTableRef.getChecked();
+      console.log(checkedData);
+    },
+    addTableFun(scope) {
+      console.log(scope);
+    },
+    inputSearch(data) {
+      console.log(data);
+    },
+    afterQuery({ res, data }) {
+      return data;
+    },
+    tablePageChange({ pageSize, pageNum }) {
       setTimeout(() => {
         let res = {
           pageNum: 5,
@@ -408,15 +557,16 @@ export default {
     },
     cradle(scope) {},
     addBtn() {
-      this.visible = true;
+      this.modalVisible = true;
       this.modalType = "add";
       this.modalTitle = "新增";
     },
-    handleAdd() {},
-    handleView() {},
-    handleEdit(data) {},
-    cancelBtn() {
-      this.visible = false;
+    modalAdd(data, params) {
+      console.log(data);
+    },
+    modalEdit(data, params) {},
+    modalCancel() {
+      this.modalVisible = false;
     },
     selectChangeAge(val, row) {
       console.log("age:::", val, row);
@@ -424,7 +574,7 @@ export default {
     selectChangeHeight(val, row) {
       console.log("height:::", val, row);
     },
-    button() {
+    getAddTableData() {
       this.$refs.addTableRef
         .getData()
         .then(res => {
@@ -445,6 +595,38 @@ export default {
     //   };
     //   this.tableConfigs.pages = res;
     // }, 3000);
+
+    // let objA = {
+    //   "name": "戈德斯文"
+    // };
+    // let objB = _.cloneDeep(objA);
+    // console.log(objA);
+    // console.log(objB);
+    // console.log(objA === objB);
+
+    // var ownerArr = [{
+    //   "owner": "Colin",
+    //   "pets": [{"name": "dog1"}, {"name": "dog2"}]
+    // }, {
+    //   "owner": "John",
+    //   "pets": [{"name": "dog3"}, {"name": "dog4"}]
+    // }];
+
+    // var jsMap = ownerArr.map(function (owner) {
+    //   return owner.pets[0].name;
+    // });
+    // console.log('------- jsMap -------');
+    // console.log(jsMap);
+    //
+    // var lodashMap = _.map(ownerArr, 'pets[0].name');
+    // console.log('------- lodashMap -------');
+    // console.log(lodashMap);
+    var objA = { name: "戈德斯文", car: "宝马" };
+    var objB = { name: "柴硕", loveEat: true };
+
+    console.log(objA);
+
+    console.log(_.assign(objA, objB));
   }
 };
 </script>
