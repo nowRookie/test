@@ -21,6 +21,24 @@
       console.log(reader.result);
     }
   }
+
+  function subtract(a, b) {
+    if (typeof a !== "number") {
+      throw new Error("被除数不是数字类型！")
+    } else if (typeof b !== "number") {
+      throw new Error("除数不是数字类型！")
+    }
+    console.log(a, Number.MAX_VALUE, a > Number.MAX_VALUE)
+    if (a > Number.MAX_VALUE || a < Number.MIN_VALUE) {
+      throw new Error("被除数的数字大小超出计算范围！")
+    } else if (b > Number.MAX_VALUE || b < Number.MIN_VALUE) {
+      throw new Error("除数的数字大小超出计算范围！")
+    }
+    console.log(11)
+    let pointNum = []
+    let first = a.toString().split(".")
+  }
+  subtract(43.7554, 1.2)
 </script>
 
 </html>

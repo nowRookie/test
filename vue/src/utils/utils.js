@@ -41,23 +41,27 @@ export function downloadBlob({ name, ieName, url, method, data, params } = {}) {
 }
 
 // 手动上传文件，data必须为[File]数组
-export function upload({ url, data }) {
+export function upload({ url, data, params, name, headers }) {
   return new Promise((resolve, reject) => {
-    let params = new FormData();
+    let fileData = new FormData();
     _.map(data, unit => {
-      params.append("files", unit);
+      fileData.append(name || "files", unit);
+    });
+    _.map(params, (value, key) => {
+      fileData.append(key, value);
     });
     axios({
-      url: url ? url : api + "/fileUpload/carriersBusinessLicense",
+      url: url ? api + url : api + "/fileUpload/carriersBusinessLicense",
       method: "post",
       headers: {
+        ...headers,
         "Content-Type": "multipart/form-data"
       },
-      data: params
+      data: fileData
     }).then(res => {
-      resolve({ error: false, message: "请求成功", res: res, data: res.data.data })
+      resolve({ success: true, error: false, message: "请求成功", res: res, data: res.data.data })
     }).catch(err => {
-      reject({ error: true, message: "请求错误" })
+      reject({ success: false, error: true, message: "请求错误" })
     })
   })
 }
@@ -94,4 +98,8 @@ export function dealDate({ value, format } = {}) {
     "-" +
     (value + "").slice(6)
   return format ? moment(str).format(format) : str
+}
+
+export function calculate(val) {
+  return moment(val * 1000).format("YYYY-MM-DD HH:mm:ss");
 }
