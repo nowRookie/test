@@ -28,17 +28,22 @@
     } else if (typeof b !== "number") {
       throw new Error("除数不是数字类型！")
     }
-    console.log(a, Number.MAX_VALUE, a > Number.MAX_VALUE)
-    if (a > Number.MAX_VALUE || a < Number.MIN_VALUE) {
+    // console.log(a, Number.MAX_VALUE, a > Number.MAX_VALUE)
+    if (a > Number.MAX_VALUE) {
       throw new Error("被除数的数字大小超出计算范围！")
-    } else if (b > Number.MAX_VALUE || b < Number.MIN_VALUE) {
+    } else if (b > Number.MAX_VALUE) {
       throw new Error("除数的数字大小超出计算范围！")
     }
-    console.log(11)
-    let pointNum = []
-    let first = a.toString().split(".")
+    let aLen = a.toString().split(".")[1] ? a.toString().split(".")[1].length : 0//被除数的小数位数
+    let bLen = b.toString().split(".")[1] ? b.toString().split(".")[1].length : 0//除数的小数位数
+    let maxPointNum = Math.max.call(null, aLen, bLen)//小数位数最大值
+    const multiple = 1 * Math.pow(10, maxPointNum)
+    let result = (a * multiple) / (b * multiple)
+    return result
   }
-  subtract(43.7554, 1.2)
+  console.log("result=", subtract(1.1, 1.2))
+  let arr = [22, 15, 75, 64]
+  console.log(Math.max(...arr))
 </script>
 
 </html>

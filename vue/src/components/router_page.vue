@@ -167,7 +167,7 @@ export default {
       })
         .then(res => {
           if (res.status !== 200 || res.data.code != 0) {
-            this.$Message.error(
+            this.$message.error(
               res.statusText || res.data.message || "请求错误!"
             );
             return;
@@ -185,7 +185,7 @@ export default {
           })(data);
         })
         .catch(err => {
-          this.$Message.error(err || "请求错误！");
+          this.$message.error(err || "请求错误！");
         });
     },
     addBtn(node, data) {
@@ -251,16 +251,16 @@ export default {
       })
         .then(res => {
           if (res.status !== 200 || res.data.code != 0) {
-            this.$Message.error(
+            this.$message.error(
               res.statusText || res.data.message || "请求错误!"
             );
             return;
           }
-          this.$Message.success("删除成功！");
+          this.$message.success("删除成功！");
           this.getTree();
         })
         .catch(err => {
-          this.$Message.error(err || "请求错误！");
+          this.$message.error(err || "请求错误！");
         });
     },
     editBtn(node, data) {
@@ -326,17 +326,17 @@ export default {
           })
             .then(res => {
               if (res.status !== 200 || res.data.code != 0) {
-                this.$Message.error(
+                this.$message.error(
                   res.statusText || res.data.message || "请求错误!"
                 );
                 return;
               }
-              this.$Message.success("新增成功！");
+              this.$message.success("新增成功！");
               this.cancel();
               this.getTree();
             })
             .catch(err => {
-              this.$Message.error(err || "请求错误！");
+              this.$message.error(err || "请求错误！");
             });
         }
       });
@@ -356,17 +356,17 @@ export default {
       })
         .then(res => {
           if (res.status !== 200 || res.data.code != 0) {
-            this.$Message.error(
+            this.$message.error(
               res.statusText || res.data.message || "请求错误!"
             );
             return;
           }
-          this.$Message.success("修改成功！");
+          this.$message.success("修改成功！");
           this.cancel();
           this.getTree();
         })
         .catch(err => {
-          this.$Message.error(err || "请求错误！");
+          this.$message.error(err || "请求错误！");
         });
     },
     changeSwitch(boolean) {

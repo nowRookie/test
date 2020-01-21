@@ -125,6 +125,7 @@
           <el-menu-item index="/settlement_list">结算单列表</el-menu-item>
         </el-submenu>
         <el-menu-item index="/HelloWorld">hellowrold</el-menu-item>
+        <el-menu-item index="/router">router</el-menu-item>
       </el-menu>
     </div>
     <div class="container">
