@@ -30,7 +30,7 @@
       <div slot="title">新增</div>
       <el-form ref="form" :model="form" :disabled="formDisabled" label-width="200px">
         <el-form-item label="是否菜单" prop="isMenu">
-          <el-switch v-model="form.isMenu" :disabled="true"></el-switch>
+          <el-switch v-model="form.isMenu"></el-switch>
         </el-form-item>
         <el-form-item
           label="菜单层级"

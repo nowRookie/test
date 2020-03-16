@@ -1,6 +1,9 @@
 <template>
   <div class="hello" style="padding:50px;">
     <!-- container-input -->
+    <el-button
+      @click="test('taobao://fulushuka.tmall.com/shop/view_shop.htm?spm=a230r.7195193.1997079397.2.5yhUYD')"
+    >测试</el-button>
     <div class="mt20">
       <h2 style="color:purple">containerInput:</h2>
       <!-- 
@@ -274,6 +277,26 @@ export default {
           }
         },
         {
+          title: "multipleSelect",
+          key: "multipleSelect",
+          type: "multipleSelect",
+          labelWidth: "120px",
+          span: 8,
+          required: true,
+          dataList: [
+            { label: "项目1", value: "val1" },
+            { label: "项目3", value: "val3" },
+            { label: "项目2", value: "val2" }
+          ],
+          data: [
+            { label: "项目1", value: "val1" },
+            { label: "项目2", value: "val2" }
+          ],
+          method: function(childData, val) {
+            console.log("###", val, self.modalItems);
+          }
+        },
+        {
           title: "autocomplete",
           key: "autocomplete",
           type: "autocomplete",
@@ -522,7 +545,9 @@ export default {
             value: 1
           },
           username: "wang",
-          checkable: false
+          checkable: false,
+          selectDefault: ["age"],
+          mulDisabled: ["age"]
         }
       ]
     };
@@ -549,7 +574,7 @@ export default {
           totalPageNum: 30,
           total: 298
         };
-        this.tableConfigs.pages = res;
+        this.baseTablePages = res;
       }, 3000);
     },
     operate(scope) {

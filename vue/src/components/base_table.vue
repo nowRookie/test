@@ -4,6 +4,7 @@
       ref="multipleTable"
       :data="data"
       border
+      highlight-current-row
       style="width:100%;"
       @selection-change="handleSelectionChange"
     >

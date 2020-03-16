@@ -30,7 +30,18 @@
               :prop="item.key"
               :rules="item.rules?[{ required: true, message: `请输入${item.title}`, trigger: 'change' },{ required: true, message: `请输入${item.title}`, trigger: 'blur' },{ validator: validateTrim, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请输入${item.title}`,trigger:'change'},{ required: true, message: `请输入${item.title}`, trigger: 'blur' },{ validator: validateTrim, trigger: 'blur' }]:[]"
             >
-              <el-input v-model="scope.row[item.key]" :disabled="scope.row.disabled" clearable></el-input>
+              <el-tooltip
+                class="item"
+                effect="dark"
+                :content="scope.row[item.key]?scope.row[item.key].toString():''"
+                placement="top"
+              >
+                <el-input
+                  v-model="scope.row[item.key]"
+                  :disabled="scope.row.disabled||(scope.row.mulDisabled?scope.row.mulDisabled.indexOf(item.key)!=-1:false)"
+                  clearable
+                ></el-input>
+              </el-tooltip>
             </el-form-item>
             <!-- number -->
             <el-form-item
@@ -40,7 +51,7 @@
             >
               <el-input
                 v-model.number="scope.row[item.key]"
-                :disabled="scope.row.disabled"
+                :disabled="scope.row.disabled||(scope.row.mulDisabled?scope.row.mulDisabled.indexOf(item.key)!=-1:false)"
                 clearable
               ></el-input>
             </el-form-item>
@@ -50,22 +61,29 @@
               :prop="item.key"
               :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
             >
-              <el-select
-                clearable
-                filterable
-                :disabled="scope.row.disabled"
-                style="width:100%;"
-                value-key="value"
-                v-model="scope.row[item.key]"
-                @change="(val)=>selectChange(item.key,val,scope.row)"
+              <el-tooltip
+                class="item"
+                effect="dark"
+                :content="scope.row[item.key]?scope.row[item.key].label.toString():''"
+                placement="top"
               >
-                <el-option
-                  v-for="unit in $attrs['select-'+[item.key]]"
-                  :key="unit.key"
-                  :label="unit.label"
-                  :value="unit"
-                ></el-option>
-              </el-select>
+                <el-select
+                  clearable
+                  filterable
+                  :disabled="scope.row.disabled||(scope.row.mulDisabled?scope.row.mulDisabled.indexOf(item.key)!=-1:false)"
+                  style="width:100%;"
+                  value-key="value"
+                  v-model="scope.row[item.key]"
+                  @change="(val)=>selectChange(item.key,val,scope.row)"
+                >
+                  <el-option
+                    v-for="unit in (scope.row.selectDefault||[]).indexOf(item.key)!=-1?$attrs['select-'+[item.key]+'-default']:$attrs['select-'+[item.key]]"
+                    :key="unit.key"
+                    :label="unit.label"
+                    :value="unit"
+                  ></el-option>
+                </el-select>
+              </el-tooltip>
             </el-form-item>
             <!-- switch -->
             <el-form-item
@@ -73,7 +91,10 @@
               :prop="item.key"
               :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
             >
-              <el-switch v-model="scope.row[item.key]" :disabled="scope.row.disabled"></el-switch>
+              <el-switch
+                v-model="scope.row[item.key]"
+                :disabled="scope.row.disabled||(scope.row.mulDisabled?scope.row.mulDisabled.indexOf(item.key)!=-1:false)"
+              ></el-switch>
             </el-form-item>
             <!-- date -->
             <el-form-item
@@ -81,13 +102,20 @@
               :prop="item.key"
               :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
             >
-              <el-date-picker
-                v-model="scope.row[item.key]"
-                style="width:100%;"
-                type="date"
-                :disabled="scope.row.disabled"
-                placeholder="选择日期"
-              ></el-date-picker>
+              <el-tooltip
+                class="item"
+                effect="dark"
+                :content="scope.row[item.key]?moment(scope.row[item.key].toString()):''"
+                placement="top"
+              >
+                <el-date-picker
+                  v-model="scope.row[item.key]"
+                  style="width:100%;"
+                  type="date"
+                  :disabled="scope.row.disabled||(scope.row.mulDisabled?scope.row.mulDisabled.indexOf(item.key)!=-1:false)"
+                  placeholder="选择日期"
+                ></el-date-picker>
+              </el-tooltip>
             </el-form-item>
             <!-- slot -->
             <el-form-item v-else-if="item.type=='slot'">
@@ -107,6 +135,7 @@
 </template>
 <script>
 import _ from "lodash";
+import moment from "moment";
 export default {
   name: "add_table",
   props: ["title", "items", "data", "disabled", "deletable"],
@@ -125,6 +154,9 @@ export default {
       } else {
         callback();
       }
+    },
+    moment(value) {
+      return moment(value).format("YYYY-MM-DD");
     },
     selectableFun(row, index) {
       if (row.checkable === false) return false;

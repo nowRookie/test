@@ -4,6 +4,7 @@
       ref="table"
       :data="dataList"
       border
+      highlight-current-row
       style="width: 100%"
       @selection-change="handleSelectionChange"
     >
@@ -80,7 +81,7 @@ export default Vue.extend({
     },
     // 获取table数据
     getTableList(param) {
-      let params = param
+      let pageParams = param
         ? Object.assign({}, param, {
             curPage: param.pageNum
           })
@@ -99,12 +100,12 @@ export default Vue.extend({
         method: this.query.method == "post" ? "post" : "get"
       };
       if (this.query.method == "post") {
-        options.data = Object.assign({}, params, this.query.data || {});
+        options.data = Object.assign({}, this.query.data, pageParams || {});
       } else {
         options.params = Object.assign(
           {},
-          params,
-          this.query.data || this.query.params || {}
+          this.query.data || this.query.params || {},
+          pageParams
         );
       }
       axios(options)
@@ -141,8 +142,8 @@ export default Vue.extend({
     this.getTableList();
   },
   watch: {
-    query() {
-      this.getTableList();
+    query(queryParam) {
+      this.getTableList(queryParam.data);
     }
   }
 });

@@ -83,6 +83,33 @@
                 ></el-option>
               </el-select>
             </el-form-item>
+            <!-- multipleSelect -->
+            <el-form-item
+              :label-width="item.labelWidth||labelWidth"
+              :label="item.title"
+              :prop="item.key"
+              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
+              v-else-if="item.type=='multipleSelect'"
+            >
+              <el-select
+                :disabled="disabled||item.disabled"
+                clearable
+                filterable
+                multiple
+                value-key="value"
+                @change="(val)=>selectChange(item, val)"
+                v-model="formData[item.key]"
+                :placeholder="`请选择${item.title}`"
+                style="width:100%;"
+              >
+                <el-option
+                  v-for="unit in item.dataList"
+                  :key="unit.key"
+                  :label="unit.label"
+                  :value="unit"
+                ></el-option>
+              </el-select>
+            </el-form-item>
             <!-- autocomplete -->
             <el-form-item
               :label-width="item.labelWidth||labelWidth"
@@ -143,7 +170,7 @@
               :label-width="item.labelWidth||labelWidth"
               :label="item.title"
               :prop="item.key"
-              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
+              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' },{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'},{ required: true, message: `请选择${item.title}`, trigger: 'blur' }]:[]"
               v-else-if="(item.type=='date')"
             >
               <el-date-picker
@@ -358,7 +385,8 @@ export default {
       if (
         item.type == "checkbox" ||
         item.type == "uploadFile" ||
-        item.type == "autoupload"
+        item.type == "autoupload" ||
+        item.type == "multipleSelect"
       ) {
         formData[item.key] = item.data ? item.data : [];
       } else if (item.type == "multipleDate") {
@@ -401,7 +429,7 @@ export default {
       }
     },
     validateNumber(rule, value, callback) {
-      let reg = /^\d+(\.\d{0,5})?$/;
+      let reg = /^(-?)\d+(\.\d{0,5})?$/;
       if (reg.test(value)) {
         callback();
       } else {
@@ -524,7 +552,7 @@ export default {
           if (boolean) {
             // 给tree单元，设置checked属性
             for (let i in this.formData) {
-              if (this.formData[i].type == "tree") {
+              if (this.formData[i] && this.formData[i].type == "tree") {
                 this.formData[i].checked = this.computedTreeData({
                   key: i,
                   data: this.formData[i].data

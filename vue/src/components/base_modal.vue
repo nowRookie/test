@@ -158,7 +158,7 @@
                 :label="item.title"
                 :prop="item.key"
                 :required="item.required"
-                :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
+                :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' },{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'},{ required: true, message: `请选择${item.title}`, trigger: 'blur' }]:[]"
                 v-else-if="(item.type=='date')"
               >
                 <el-date-picker
@@ -443,7 +443,7 @@ export default {
       }
     },
     validateNumber(rule, value, callback) {
-      let reg = /^\d+(\.\d{0,5})?$/;
+      let reg = /^(-?)\d+(\.\d{0,5})?$/;
       if (reg.test(value)) {
         callback();
       } else {
