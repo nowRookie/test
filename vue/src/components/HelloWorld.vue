@@ -610,48 +610,6 @@ export default {
         });
     }
   },
-  mounted() {
-    // setTimeout(() => {
-    //   let res = {
-    //     pageNum: 1,
-    //     pageSize: 10,
-    //     totalPageNum: 20,
-    //     total: 198
-    //   };
-    //   this.tableConfigs.pages = res;
-    // }, 3000);
-
-    // let objA = {
-    //   "name": "戈德斯文"
-    // };
-    // let objB = _.cloneDeep(objA);
-    // console.log(objA);
-    // console.log(objB);
-    // console.log(objA === objB);
-
-    // var ownerArr = [{
-    //   "owner": "Colin",
-    //   "pets": [{"name": "dog1"}, {"name": "dog2"}]
-    // }, {
-    //   "owner": "John",
-    //   "pets": [{"name": "dog3"}, {"name": "dog4"}]
-    // }];
-
-    // var jsMap = ownerArr.map(function (owner) {
-    //   return owner.pets[0].name;
-    // });
-    // console.log('------- jsMap -------');
-    // console.log(jsMap);
-    //
-    // var lodashMap = _.map(ownerArr, 'pets[0].name');
-    // console.log('------- lodashMap -------');
-    // console.log(lodashMap);
-    var objA = { name: "戈德斯文", car: "宝马" };
-    var objB = { name: "柴硕", loveEat: true };
-
-    console.log(objA);
-
-    console.log(_.assign(objA, objB));
-  }
+  mounted() {}
 };
 </script>
