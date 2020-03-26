@@ -7,43 +7,17 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
 </head>
-<style></style>
+<style>
+  html,
+  body {
+    height: 100%;
+  }
+</style>
 
 <body>
-  <input type="file" onchange="reader()" id="input">
+  <div id="main" style="width:100%;height:100%;"></div>
 </body>
 <script>
-  function reader() {
-    var input = document.getElementById("input")
-    var reader = new FileReader()
-    console.log(reader.readAsDataURL(input.files[0]))
-    reader.onload = function () {
-      console.log(reader.result);
-    }
-  }
-
-  function subtract(a, b) {
-    if (typeof a !== "number") {
-      throw new Error("被除数不是数字类型！")
-    } else if (typeof b !== "number") {
-      throw new Error("除数不是数字类型！")
-    }
-    // console.log(a, Number.MAX_VALUE, a > Number.MAX_VALUE)
-    if (a > Number.MAX_VALUE) {
-      throw new Error("被除数的数字大小超出计算范围！")
-    } else if (b > Number.MAX_VALUE) {
-      throw new Error("除数的数字大小超出计算范围！")
-    }
-    let aLen = a.toString().split(".")[1] ? a.toString().split(".")[1].length : 0//被除数的小数位数
-    let bLen = b.toString().split(".")[1] ? b.toString().split(".")[1].length : 0//除数的小数位数
-    let maxPointNum = Math.max.call(null, aLen, bLen)//小数位数最大值
-    const multiple = 1 * Math.pow(10, maxPointNum)
-    let result = (a * multiple) / (b * multiple)
-    return result
-  }
-  console.log("result=", subtract(1.1, 1.2))
-  let arr = [22, 15, 75, 64]
-  console.log(Math.max(...arr))
 </script>
 
 </html>

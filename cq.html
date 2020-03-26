@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/echarts@4.7.0/echarts.all.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@4.6.0/dist/echarts.min.js"></script>
+  <script src="./assets/js/chongqing.js"></script>
+</head>
+<style>
+  html,
+  body {
+    height: 100%;
+  }
+</style>
+
+<body>
+  <div id="main" style="width:100%;height:100%;"></div>
+</body>
+<script>
+  var myChart = echarts.init(document.getElementById('main'));
+  var option = {
+    series: [{
+      type: 'map',
+      roam: true,
+      zoom: 1.25,
+      // center: [106.2542, 29.541224],
+      mapType: '重庆', // 自定义扩展图表类型
+      label: {
+        show: true
+      },
+      data: []
+    }]
+  };
+  myChart.setOption(option);
+</script>
+
+</html>
