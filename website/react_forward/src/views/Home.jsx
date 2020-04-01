@@ -1,6 +1,7 @@
 import React from "react"
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
+import { Modal, Button } from 'antd';
 // import _ from "lodash"
 // import moment from "moment"
 
@@ -11,6 +12,10 @@ export default class Home extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
+      // modal
+      modalVisible: false,
+      modalTitle: "",
+
       // menu图标
       menu: [
         { icon: icon1, title: "学习笔记", name: "学习笔记", coordinate: [] },
@@ -53,14 +58,20 @@ export default class Home extends React.Component {
       e.preventDefault()
     })
   }
-  onDoubleClick(e) {
-    console.log(e)
+  onDoubleClick(unit) {
+    this.setState({ modalVisible: true, modalTitle: unit.title })
   }
   onContextMenu(e, unit) {
   }
   userHeaderOver() {
-    console.log(this)
   }
+  modalOk() { }
+  modalCancel() {
+    this.setState({
+      modalVisible: false
+    })
+  }
+  menuTo() { }
   render() {
     return (
       <div className="home">
@@ -69,13 +80,27 @@ export default class Home extends React.Component {
           {
             this.state.menu.map((unit, index) => {
               return (
-                <div className="tc icon" key={index} onContextMenu={e => this.onContextMenu(e, unit)} onDoubleClick={this.onDoubleClick} style={{ userSelect: "none", width: "100px", height: "100px", position: "absolute", left: `${(unit.coordinate[0] + 1) * 20 + unit.coordinate[0] * 100}px`, top: `${(unit.coordinate[1] + 1) * 20 + unit.coordinate[1] * 100}px` }} >
+                <div className="tc icon" key={index} onContextMenu={e => this.onContextMenu(e, unit)} onDoubleClick={e => this.onDoubleClick(unit)} style={{ userSelect: "none", width: "100px", height: "100px", position: "absolute", left: `${(unit.coordinate[0] + 1) * 20 + unit.coordinate[0] * 100}px`, top: `${(unit.coordinate[1] + 1) * 20 + unit.coordinate[1] * 100}px` }} >
                   <img src={unit.icon} alt="" style={{ userDrag: "none", width: "70px", height: "70px" }} />
                   <div>{unit.title}</div>
                 </div>
               )
             })
           }
+          <Modal
+            title={this.state.modalTitle}
+            visible={this.state.modalVisible}
+            onOk={this.modalOk}
+            onCancel={this.modalCancel.bind(this)}
+          >
+            <div>
+              <span className="blue a mt20 ml20" onClick={e => this.menuTo()}>canvas</span>
+              <span className="blue a mt20 ml20" onClick={e => this.menuTo()}>Typescript</span>
+              <span className="blue a mt20 ml20" onClick={e => this.menuTo()}>js</span>
+              <span className="blue a mt20 ml20" onClick={e => this.menuTo()}>node</span>
+              <span className="blue a mt20 ml20" onClick={e => this.menuTo()}>webpack</span>
+            </div>
+          </Modal>
           {/* 右上角日历 */}
           <div className="calendar">
             <Calendar

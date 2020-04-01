@@ -35,6 +35,12 @@ a {
   text-decoration: none;
 }
 
+.a {
+  &:hover {
+    cursor: pointer;
+  }
+}
+
 .w33 {
   width: 33.33%;
 }
