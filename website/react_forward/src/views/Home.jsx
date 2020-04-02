@@ -7,6 +7,7 @@ import { Modal, Button } from 'antd';
 
 import Layout from "@/layout/layout"
 import icon1 from "@/assets/img/logo.svg"
+import icon2 from "@/assets/img/dog.jpg"
 
 export default class Home extends React.Component {
   constructor(props) {
@@ -71,7 +72,11 @@ export default class Home extends React.Component {
       modalVisible: false
     })
   }
-  menuTo() { }
+  menuTo() {
+    this.props.history.push({
+      pathname: "/about"
+    })
+  }
   render() {
     return (
       <div className="home">
