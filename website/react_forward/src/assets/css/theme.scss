@@ -1,121 +1,185 @@
 // 以下代码根据项目自行调整
+
+// 右下角用户登录工具
+.userTool {
+  position: absolute;
+  right: 30px;
+  bottom: 30px;
+  width: 60px;
+  height: 60px;
+
+  // 后台按钮
+  .backward {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    overflow: hidden;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    opacity: 0.5;
+    background: purple;
+    transition: 1s;
+  }
+
+  // 登录按钮
+  .login {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    overflow: hidden;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    opacity: 0.5;
+    background: tan;
+    transition: 2s;
+  }
+
+  // 背景按钮
+  .background {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    overflow: hidden;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    opacity: 0.5;
+    background: oldlace;
+    transition: 2s;
+  }
+
+  // 用户头像
+  .userHeader {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 502;
+    background: pink;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+  }
+}
+
 .el-input.is-disabled {
-    .el-input__inner {
-        background-color: #e6e7e8;
-        color: #333 !important;
-    }
+  .el-input__inner {
+    background-color: #e6e7e8;
+    color: #333 !important;
+  }
 }
 
 .font {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 .theme {
-    color: #3a95f0;
+  color: #3a95f0;
 }
 
 .bgtheme {
-    background: #3e424b;
+  background: #3e424b;
 }
 
 .blue {
-    color: #3a95f0;
+  color: #3a95f0;
 }
 
 .blueclick {
-    border: 1px solid #3a95f0;
+  border: 1px solid #3a95f0;
 }
 
 .bluebtn {
-    color: #fff;
-    border: 1px solid #3a95f0;
-    background: #3a95f0;
+  color: #fff;
+  border: 1px solid #3a95f0;
+  background: #3a95f0;
 }
 
 .green {
-    color: #1ccfbf;
+  color: #1ccfbf;
 }
 
 .greenclick {
-    border: 1px solid #1ccfbf;
+  border: 1px solid #1ccfbf;
 }
 
 .greenbtn {
-    color: #fff;
-    border: 1px solid #1ccfbf;
-    background: #1ccfbf;
+  color: #fff;
+  border: 1px solid #1ccfbf;
+  background: #1ccfbf;
 }
 
 .greenbtn:hover,
 .greenbtn:active,
 .greenbtn:focus {
-    color: #fff;
-    border: 1px solid #1ccfbf;
-    background: #1ccfbf;
+  color: #fff;
+  border: 1px solid #1ccfbf;
+  background: #1ccfbf;
 }
 
 .orange {
-    color: #fdab3e;
+  color: #fdab3e;
 }
 
 .orangeclick {
-    border: 1px solid #fdab3e;
+  border: 1px solid #fdab3e;
 }
 
 .orangebtn {
-    color: #fff;
-    border: 1px solid #fdab3e;
-    background: #fdab3e;
+  color: #fff;
+  border: 1px solid #fdab3e;
+  background: #fdab3e;
 }
 
 .orangebtn:hover,
 .orangebtn:active,
 .orangebtn:focus {
-    color: #fff;
-    border: 1px solid #fdab3e;
-    background: #fdab3e;
+  color: #fff;
+  border: 1px solid #fdab3e;
+  background: #fdab3e;
 }
 
 .red {
-    color: #f37177;
+  color: #f37177;
 }
 
 .redclick {
-    border: 1px solid #f37177;
+  border: 1px solid #f37177;
 }
 
 .redbtn {
-    color: #fff;
-    border: 1px solid #f37177;
-    background: #f37177;
+  color: #fff;
+  border: 1px solid #f37177;
+  background: #f37177;
 }
 
 .redbtn:hover,
 .redbtn:active,
 .redbtn:focus {
-    color: #fff;
-    border: 1px solid #f37177;
-    background: #f37177;
+  color: #fff;
+  border: 1px solid #f37177;
+  background: #f37177;
 }
 
 .gray {
-    color: #999;
+  color: #999;
 }
 
 .grayclick {
-    border: 1px solid #999;
+  border: 1px solid #999;
 }
 
 .graybtn {
-    color: #fff;
-    border: 1px solid #999;
-    background: #999;
+  color: #fff;
+  border: 1px solid #999;
+  background: #999;
 }
 
 .graybtn:hover,
 .graybtn:active,
 .graybtn:focus {
-    color: #fff;
-    border: 1px solid #999;
-    background: #999;
+  color: #fff;
+  border: 1px solid #999;
+  background: #999;
 }

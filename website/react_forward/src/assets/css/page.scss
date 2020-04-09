@@ -19,79 +19,26 @@
     right: 20px;
     top: 20px;
   }
-
-  // 右下角用户登录工具
-  .userTool {
-    position: absolute;
-    right: 30px;
-    bottom: 30px;
-    width: 60px;
-    height: 60px;
-
-    // 后台按钮
-    .backward {
-      position: absolute;
-      left: 10px;
-      top: 10px;
-      overflow: hidden;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      opacity: 0.5;
-      background: purple;
-      transition: 1s;
-    }
-
-    // 登录按钮
-    .login {
-      position: absolute;
-      left: 10px;
-      top: 10px;
-      overflow: hidden;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      opacity: 0.5;
-      background: tan;
-      transition: 2s;
-    }
-
-    // 背景按钮
-    .background {
-      position: absolute;
-      left: 10px;
-      top: 10px;
-      overflow: hidden;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      opacity: 0.5;
-      background: oldlace;
-      transition: 2s;
-    }
-
-    // 用户头像
-    .userHeader {
-      position: absolute;
-      left: 0;
-      top: 0;
-      z-index: 502;
-      background: pink;
-      border-radius: 50%;
-      width: 60px;
-      height: 60px;
-    }
-  }
 }
 
-.about {
+.about,
+.admin {
   position: absolute;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  .collapse{
-    position: absolute;
-    bottom: 0;;
+
+  .collapsable {
+    opacity: 1;
+    transition: opacity 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), width 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  }
+
+  .ant-menu-inline-collapsed {
+    .collapsable {
+      max-width: 0;
+      opacity: 0;
+      display: inline-block;
+    }
   }
 }

@@ -9,10 +9,16 @@ import {
   ContainerOutlined,
   MailOutlined,
 } from '@ant-design/icons';
+import {
+  // BrowserRouter as Router,
+  // Switch,
+  // Route,
+  Link
+} from "react-router-dom";
 
 const { SubMenu } = Menu;
 
-export default class Home extends React.Component {
+export default class About extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -40,7 +46,7 @@ export default class Home extends React.Component {
               </Menu.Item>
               <Menu.Item key="2">
                 <DesktopOutlined />
-                <span>第2章</span>
+                <Link className="collapsable" to="/admin/news">新闻</Link>
               </Menu.Item>
               <Menu.Item key="3">
                 <ContainerOutlined />

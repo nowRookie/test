@@ -2,11 +2,12 @@ import React from 'react';
 import Home from "./views/Home"
 import About from "./views/forward/about"
 import Admin from "./views/backward/admin"
+import News from "./views/backward/news"
 import {
   BrowserRouter as Router,
-  Switch,
+  // Switch,
   Route,
-  Link
+  // Link
 } from "react-router-dom";
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <Route exact path="/about" component={About}></Route>
         <Route exact path="/about/canvas" component={About}></Route>
         <Route exact path="/admin" component={Admin}></Route>
+        <Route exact path="/admin/news" component={News}></Route>
       </Router>
     </div>
   );
