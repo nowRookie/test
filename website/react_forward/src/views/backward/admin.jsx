@@ -1,7 +1,7 @@
 import React from "react"
 import { Menu, Button } from 'antd';
 
-import UserInfo from "@/layout/userInfo"
+import UserInfo from "@/layout/UserInfo"
 
 import {
   AppstoreOutlined,
@@ -29,7 +29,6 @@ export default class Admin extends React.Component {
     }
   }
   componentDidMount() {
-    console.log("props===", this.props)
   }
   toggleCollapsed = () => {
     this.setState({

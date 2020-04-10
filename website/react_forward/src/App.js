@@ -1,8 +1,8 @@
 import React from 'react';
 import Home from "./views/Home"
-import About from "./views/forward/about"
-import Admin from "./views/backward/admin"
-import News from "./views/backward/news"
+import About from "./views/forward/About"
+import Admin from "./views/backward/Admin"
+import News from "./views/backward/News"
 import {
   BrowserRouter as Router,
   // Switch,

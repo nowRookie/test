@@ -5,8 +5,8 @@ import { Modal, } from 'antd';
 // import _ from "lodash"
 // import moment from "moment"
 
-import Layout from "@/layout/layout"
-import UserInfo from "@/layout/userInfo"
+import Layout from "@/layout/Layout"
+import UserInfo from "@/layout/UserInfo"
 import icon1 from "@/assets/img/logo.svg"
 
 export default class Home extends React.Component {

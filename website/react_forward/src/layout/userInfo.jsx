@@ -31,11 +31,11 @@ export default class Admin extends React.Component {
   // 右下角用户按钮，mouseover事件
   userHeaderOver() {
     this.closeTimer()
-    // backward按钮
-    document.getElementsByClassName("backward")[0].style.left = "-16px"
-    document.getElementsByClassName("backward")[0].style.top = "-56px"
-    document.getElementsByClassName("backward")[0].style.opacity = 1
-    document.getElementsByClassName("backward")[0].style.transform = "rotate(-360deg)"
+    // homePage按钮
+    document.getElementsByClassName("homePage")[0].style.left = "-16px"
+    document.getElementsByClassName("homePage")[0].style.top = "-56px"
+    document.getElementsByClassName("homePage")[0].style.opacity = 1
+    document.getElementsByClassName("homePage")[0].style.transform = "rotate(-360deg)"
     // login按钮
     document.getElementsByClassName("login")[0].style.left = "-56px"
     document.getElementsByClassName("login")[0].style.top = "-16px"
@@ -51,11 +51,11 @@ export default class Admin extends React.Component {
   userHeaderOut() {
     this.setState({
       timer: setTimeout(() => {
-        // backward按钮
-        document.getElementsByClassName("backward")[0].style.left = "10px"
-        document.getElementsByClassName("backward")[0].style.top = "10px"
-        document.getElementsByClassName("backward")[0].style.opacity = 0
-        document.getElementsByClassName("backward")[0].style.transform = "rotate(0deg)"
+        // homePage按钮
+        document.getElementsByClassName("homePage")[0].style.left = "10px"
+        document.getElementsByClassName("homePage")[0].style.top = "10px"
+        document.getElementsByClassName("homePage")[0].style.opacity = 0
+        document.getElementsByClassName("homePage")[0].style.transform = "rotate(0deg)"
         // login按钮
         document.getElementsByClassName("login")[0].style.left = "10px"
         document.getElementsByClassName("login")[0].style.top = "10px"
@@ -81,8 +81,8 @@ export default class Admin extends React.Component {
         <div className="userTool">
           {/* 用户头像 */}
           <div className="oh userHeader" onMouseOut={this.userHeaderOut.bind(this)} onMouseOver={this.userHeaderOver.bind(this)}>userHeader icon</div>
-          {/* backward */}
-          <div onMouseOut={this.userHeaderOut.bind(this)} onMouseOver={this.closeTimer.bind(this)} className="backward">backward</div>
+          {/* homePage */}
+          <div onMouseOut={this.userHeaderOut.bind(this)} onMouseOver={this.closeTimer.bind(this)} onClick={() => this.props.history.push({ pathname: "/" })} className="homePage">homePage</div>
           {/* login */}
           <div onClick={this.login.bind(this)} onMouseOut={this.userHeaderOut.bind(this)} onMouseOver={this.closeTimer.bind(this)} className="login">login</div>
           {/* background */}
