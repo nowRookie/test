@@ -15,7 +15,7 @@ export default class News extends React.Component {
     this.state = {
       // menu弹窗的modal
       modalVisible: false,
-      modalTitle: "",
+      modalTitle: "新增新闻",
 
       // table相关
       columns: [
@@ -67,12 +67,44 @@ export default class News extends React.Component {
         sketch: `London, Park Lane no. 1`,
         summarize: "概述",
         tags: ["综艺", "明星", "时尚"],
-      }]
+      }],
+
+      formItems: [
+        { title: "测试input", key: "input", type: "input", data: "110" },
+        { title: "测试select", key: "select", type: "select", dataList: [], data: "120" },
+        { title: "测试multipleSelect", key: "multipleSelect", type: "multipleSelect", data: "120" },
+        { title: "测试autoComplete", key: "autoComplete", type: "autoComplete", data: "120" },
+        { title: "测试textarea", key: "textarea", type: "textarea", data: "120" },
+        { title: "测试date", key: "date", type: "date", data: "120" },
+        { title: "测试cascader", key: "cascader", type: "cascader", data: "120" },
+        { title: "测试number", key: "number", type: "number", data: "120" },
+        { title: "测试switch", key: "switch", type: "switch", data: "120" },
+        { title: "测试slider", key: "slider", type: "slider", data: "120" },
+        { title: "测试radio", key: "radio", type: "radio", data: "120" },
+        { title: "测试radioButton", key: "radioButton", type: "radioButton", data: "120" },
+        { title: "测试radionButton", key: "radionButton", type: "radionButton", data: "120" },
+        { title: "测试checkbox", key: "checkbox", type: "checkbox", data: "120" },
+        { title: "测试rate", key: "rate", type: "rate", data: "120" },
+        { title: "测试upload", key: "upload", type: "upload", data: "130" },
+        { title: "测试dragger", key: "dragger", type: "dragger", data: "120" },
+      ]
     }
   }
-  componentDidMount() { }
+  componentDidMount() {
+    setTimeout(() => {
+      let item = this.state.formItems[1]
+      item.dataList = [{ label: "测试1", value: "测试1" }, { label: "测试2", value: "测试2" }]
+      this.setState({
+      })
+    }, 3000)
+  }
   modalOk() {
     console.log(this.BaseFormRef)
+    this.BaseFormRef.current.validateFields().then(value => {
+      console.log("value===", value)
+    }).catch(err => {
+      console.log("err===", err)
+    })
   }
   modalCancel() {
     this.setState({
@@ -102,7 +134,7 @@ export default class News extends React.Component {
                 width={800}
               >
                 <div>
-                  <BaseForm ref={this.BaseFormRef} name="luyi"></BaseForm>
+                  <BaseForm ref={this.BaseFormRef} name="luyi" items={this.state.formItems} initialValues={{ rate: 4.5 }}></BaseForm>
                 </div>
               </Modal>
             </div>
