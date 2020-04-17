@@ -90,10 +90,14 @@ export default React.forwardRef((props, ref) => {
                   name={unit.key} label={unit.title}
                   rules={unit.required ? [{ required: true, message: `请选择${unit.title}`, type: 'array' }] : unit.rules ? [].concat(unit.rules) : []}
                 >
-                  <Select mode="multiple" placeholder="Please select favourite colors">
-                    <Option value="red">Red</Option>
-                    <Option value="green">Green</Option>
-                    <Option value="blue">Blue</Option>
+                  <Select mode="multiple" placeholder={`请选择${unit.title}`} labelInValue allowClear>
+                    {
+                      (unit.dataList || []).map((item, num) => {
+                        return (
+                          <Option key={`multipleOption${num}`} value={item.value}>{item.label}</Option>
+                        )
+                      })
+                    }
                   </Select>
                 </Form.Item>
               )

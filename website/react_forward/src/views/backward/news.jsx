@@ -3,6 +3,10 @@ import {
   Table, Tag, Button, Modal
 } from 'antd';
 
+import _ from "lodash"
+import moment from "moment"
+import axios from "axios"
+
 import { PlusOutlined } from '@ant-design/icons';
 
 import Admin from "./Admin"
@@ -37,7 +41,7 @@ export default class News extends React.Component {
           render(tags) {
             return (
               <span>
-                {tags.map(tag => {
+                {(tags || []).map(tag => {
                   return (
                     <Tag color="green" key={tag}>
                       {tag}
@@ -60,48 +64,52 @@ export default class News extends React.Component {
           }
         }
       ],
-      dataSource: [{
-        key: 1,
-        title: "标题1",
-        time: "2020-04-09",
-        sketch: `London, Park Lane no. 1`,
-        summarize: "概述",
-        tags: ["综艺", "明星", "时尚"],
-      }],
+      tableData: [],
 
       formItems: [
-        { title: "测试input", key: "input", type: "input", data: "110" },
-        { title: "测试select", key: "select", type: "select", dataList: [], data: "120" },
-        { title: "测试multipleSelect", key: "multipleSelect", type: "multipleSelect", data: "120" },
-        { title: "测试autoComplete", key: "autoComplete", type: "autoComplete", data: "120" },
-        { title: "测试textarea", key: "textarea", type: "textarea", data: "120" },
-        { title: "测试date", key: "date", type: "date", data: "120" },
-        { title: "测试cascader", key: "cascader", type: "cascader", data: "120" },
-        { title: "测试number", key: "number", type: "number", data: "120" },
-        { title: "测试switch", key: "switch", type: "switch", data: "120" },
-        { title: "测试slider", key: "slider", type: "slider", data: "120" },
-        { title: "测试radio", key: "radio", type: "radio", data: "120" },
-        { title: "测试radioButton", key: "radioButton", type: "radioButton", data: "120" },
-        { title: "测试radionButton", key: "radionButton", type: "radionButton", data: "120" },
-        { title: "测试checkbox", key: "checkbox", type: "checkbox", data: "120" },
-        { title: "测试rate", key: "rate", type: "rate", data: "120" },
-        { title: "测试upload", key: "upload", type: "upload", data: "130" },
-        { title: "测试dragger", key: "dragger", type: "dragger", data: "120" },
+        { title: "标题", key: "title", type: "input", data: "110" },
+        { title: "简述", key: "summarize", type: "input", data: "110" },
+        { title: "时间", key: "time", type: "date", data: "120" },
+        { title: "tags", key: "tags", type: "multipleSelect", dataList: [{ label: "综艺", value: 1 }, { label: "明星", value: 2 }, { label: "时尚", value: 3 }], data: "120" },
+        { title: "图片", key: "upload", type: "upload", data: "130" },
       ]
     }
   }
   componentDidMount() {
-    setTimeout(() => {
-      let item = this.state.formItems[1]
-      item.dataList = [{ label: "测试1", value: "测试1" }, { label: "测试2", value: "测试2" }]
+    this.getList()
+  }
+  getList(params = {}) {
+    axios({ url: "http://192.168.1.129:8001/admin/news", method: "get", params }).then(res => {
+      console.log("axios res===", res)
+      let data = res.data
       this.setState({
+        tableData: data
       })
-    }, 3000)
+    }).catch(err => {
+      console.log("axios err===", err)
+    })
   }
   modalOk() {
     console.log(this.BaseFormRef)
     this.BaseFormRef.current.validateFields().then(value => {
-      console.log("value===", value)
+      const params = {
+        ...value,
+        time: moment(value.time).format("YYYY-MM-DD HH:mm:ss"),
+        tags: _.map(value.tags, unit => {
+          return unit.label
+        })
+      }
+      console.log("value===", params)
+      // return
+      axios({
+        url: "http://192.168.1.129:8001/admin/news",
+        method: "post",
+        data: params
+      }).then(res => {
+        console.log("axios res===", res)
+      }).catch(err => {
+        console.log("axios err===", err)
+      })
     }).catch(err => {
       console.log("err===", err)
     })
@@ -139,7 +147,7 @@ export default class News extends React.Component {
               </Modal>
             </div>
           </div>
-          <Table columns={this.state.columns} dataSource={this.state.dataSource} />
+          <Table rowKey="_id" columns={this.state.columns} dataSource={this.state.tableData} />
         </Admin>
       </div>
     )
