@@ -76,7 +76,7 @@ export default class Admin extends React.Component {
           </div>
         </div>
         {/* container */}
-        <div style={{ flex: "1", padding: "20px" }}>
+        <div style={{ flex: "1", padding: "20px", overflow: "hidden scroll" }}>
           {
             this.props.children ?
               <div>{this.props.children}</div>

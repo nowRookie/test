@@ -1,6 +1,6 @@
 import React from "react"
 import {
-  Table, Tag, Button, Modal
+  Table, Tag, Button, Modal, message
 } from 'antd';
 
 import _ from "lodash"
@@ -11,6 +11,8 @@ import { PlusOutlined } from '@ant-design/icons';
 
 import Admin from "./Admin"
 import BaseForm from "@/layout/BaseForm"
+
+const api = "http://192.168.1.129:8001"
 
 export default class News extends React.Component {
   BaseFormRef = React.createRef();
@@ -71,7 +73,16 @@ export default class News extends React.Component {
         { title: "简述", key: "summarize", type: "input", data: "110" },
         { title: "时间", key: "time", type: "date", data: "120" },
         { title: "tags", key: "tags", type: "multipleSelect", dataList: [{ label: "综艺", value: 1 }, { label: "明星", value: 2 }, { label: "时尚", value: 3 }], data: "120" },
-        { title: "图片", key: "upload", type: "upload", data: "130" },
+        {
+          title: "图片", key: "upload", type: "upload", data: "130",
+          config: {
+            listType: "picture-card",
+            action: `${api}/images/news/test`,
+            data: {
+              name: "luyi", age: 18
+            }
+          }
+        },
       ]
     }
   }
@@ -79,39 +90,43 @@ export default class News extends React.Component {
     this.getList()
   }
   getList(params = {}) {
-    axios({ url: "http://192.168.1.129:8001/admin/news", method: "get", params }).then(res => {
-      console.log("axios res===", res)
+    axios({ url: `${api}/admin/news`, method: "get", params }).then(res => {
       let data = res.data
       this.setState({
         tableData: data
       })
     }).catch(err => {
-      console.log("axios err===", err)
+      message.error(err.response.data)
     })
   }
   modalOk() {
-    console.log(this.BaseFormRef)
     this.BaseFormRef.current.validateFields().then(value => {
       const params = {
         ...value,
-        time: moment(value.time).format("YYYY-MM-DD HH:mm:ss"),
+        time: value.time ? moment(value.time).format("YYYY-MM-DD HH:mm:ss") : "",
         tags: _.map(value.tags, unit => {
           return unit.label
         })
       }
-      console.log("value===", params)
+      // console.log("value===", params)
       // return
       axios({
-        url: "http://192.168.1.129:8001/admin/news",
+        url: `${api}/admin/news`,
         method: "post",
         data: params
       }).then(res => {
-        console.log("axios res===", res)
+        this.setState({
+          modalVisible: false,
+        })
+        message.success(res.data)
+        this.getList()
       }).catch(err => {
-        console.log("axios err===", err)
+        this.setState({
+          modalVisible: false
+        })
+        message.error(err.response.data)
       })
     }).catch(err => {
-      console.log("err===", err)
     })
   }
   modalCancel() {
@@ -147,6 +162,7 @@ export default class News extends React.Component {
               </Modal>
             </div>
           </div>
+          <img src={`${api}/images/dogs.jpg`} alt="" width="400" />
           <Table rowKey="_id" columns={this.state.columns} dataSource={this.state.tableData} />
         </Admin>
       </div>

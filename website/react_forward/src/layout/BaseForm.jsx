@@ -1,28 +1,41 @@
 import React, { useState } from "react"
 import {
   Button, Form, Select, Input, InputNumber, Switch, Radio, Slider, Upload, Rate, Checkbox, Row, Col, AutoComplete,
-  DatePicker, Cascader
+  DatePicker, Cascader, Modal
 } from 'antd';
-import { UploadOutlined, InboxOutlined } from '@ant-design/icons';
+import { UploadOutlined, InboxOutlined, PlusOutlined } from '@ant-design/icons';
 
 const { TextArea } = Input;
 const { Option } = Select;
 
-
-const normFile = e => {
-  console.log('Upload event:', e);
-  if (Array.isArray(e)) {
-    return e;
-  }
-  return e && e.fileList;
-};
-
-const onSubmit = (value) => {
-  console.log(value)
-}
-
 export default React.forwardRef((props, ref) => {
-  const [options, setOptions] = useState(props.options || []);
+  const [options, setOptions] = useState(props.options || [])//select选项options
+  const [previewVisible, setPreviewVisible] = useState(false)//upload上传时--预览图片弹窗
+  const [previewImage, setPreviewImage] = useState([])//upload上传时--预览图片
+  const [uploadList, setUploadList] = useState([])//upload上传时--fileList
+
+  const onSubmit = (value) => {
+    console.log(value)
+  }
+  const normFile = e => {
+    console.log('Upload event:', e);
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e && e.fileList;
+  };
+  const uploadChange = ({ file, fileList, event }) => {
+    setUploadList(fileList)
+    console.log("file====", file, "fileList===", fileList)
+  }
+  const handlePreview = (file) => {
+    console.log("file===", file)
+    setPreviewImage(file.url)
+    setPreviewVisible(true)
+  }
+  const previewCancel = () => {
+    setPreviewVisible(false)
+  }
   return (
     <div>
       <Form
@@ -44,7 +57,7 @@ export default React.forwardRef((props, ref) => {
                 <Form.Item key={`col${index}`} style={{ marginBottom: "20px" }}
                   name={unit.key} label={unit.title}
                   rules={unit.required ? [{ required: true, message: `请选择${unit.title}` }] : unit.rules ? [].concat(unit.rules) : []}>
-                  <Input></Input>
+                  <Input autoComplete="off"></Input>
                 </Form.Item>
               )
             }
@@ -249,16 +262,47 @@ export default React.forwardRef((props, ref) => {
             }
             else if (unit.type === "upload") {
               return (
+                <Form.Item key={`col${index}`} style={{ marginBottom: "20px" }} extra="extra info"
+                  name={unit.key} label={unit.title}
+                  rules={unit.required ? [{ required: true, message: `请选择${unit.title}` }] : unit.rules ? [].concat(unit.rules) : []}
+                >
+                  <div>
+                    <Upload fileList={uploadList} onChange={uploadChange} onPreview={handlePreview} {...unit.config}>
+                      <div><PlusOutlined /><div>upload</div></div>
+                    </Upload>
+                    <Modal
+                      visible={previewVisible}
+                      title="图片预览"
+                      footer={null}
+                      onCancel={previewCancel}
+                    >
+                      <img alt="example" style={{ width: '100%' }} src={previewImage} />
+                    </Modal>
+                  </div>
+                </Form.Item>
+              )
+            }
+            else if (unit.type === "uploadFile") {
+              return (
                 <Form.Item key={`col${index}`} style={{ marginBottom: "20px" }} valuePropName="fileList" getValueFromEvent={normFile} extra="extra info"
                   name={unit.key} label={unit.title}
                   rules={unit.required ? [{ required: true, message: `请选择${unit.title}` }] : unit.rules ? [].concat(unit.rules) : []}
                 >
-                  <Upload name="logo" action="/upload.do" listType="picture">
-                    <Button><UploadOutlined /> Click to upload</Button>
+                  <Upload name="logo" action="/upload.do" listType="picture-card" {...unit.config}>
+                    <div><UploadOutlined /> Click to upload</div>
                   </Upload>
+                  <Modal
+                    visible={previewVisible}
+                    title="图片预览"
+                    footer={null}
+                    onCancel={previewCancel}
+                  >
+                    <img alt="example" style={{ width: '100%' }} src={previewImage} />
+                  </Modal>
                 </Form.Item>
               )
-            } else if (unit.type === "slot") {
+            }
+            else if (unit.type === "slot") {
               return (
                 <div key={`col${index}`} style={{ marginBottom: "20px" }}></div>
               )
