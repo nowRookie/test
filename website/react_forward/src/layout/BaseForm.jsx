@@ -4,33 +4,75 @@ import {
   DatePicker, Cascader, Modal
 } from 'antd';
 import { UploadOutlined, InboxOutlined, PlusOutlined } from '@ant-design/icons';
+import axios from "axios"
+import _ from "lodash"
 
 const { TextArea } = Input;
 const { Option } = Select;
+
+const api = "http://192.168.1.129:8001"
 
 export default React.forwardRef((props, ref) => {
   const [options, setOptions] = useState(props.options || [])//select选项options
   const [previewVisible, setPreviewVisible] = useState(false)//upload上传时--预览图片弹窗
   const [previewImage, setPreviewImage] = useState([])//upload上传时--预览图片
-  const [uploadList, setUploadList] = useState([])//upload上传时--fileList
+  // const [fileList_upload, setFileList_upload] = useState([])//upload上传时--fileList
 
   const onSubmit = (value) => {
     console.log(value)
   }
   const normFile = e => {
-    console.log('Upload event:', e);
     if (Array.isArray(e)) {
       return e;
     }
-    return e && e.fileList;
+    return e && _.filter(e.fileList, unit => {
+      return unit.status !== "error"
+    });
   };
-  const uploadChange = ({ file, fileList, event }) => {
-    setUploadList(fileList)
-    console.log("file====", file, "fileList===", fileList)
-  }
+  // const uploadChange = ({ file, fileList, event }) => {
+  //   const arr = fileList.filter(unit => {
+  //     return unit.status !== "error"
+  //   }).map(unit => {
+  //     return { ...unit, urlTip: unit.response && unit.response.url[0] }
+  //   })
+  //   setFileList_upload(arr)
+  // }
+  // const beforeUpload = (file, fileList) => {
+  //   setFileList_upload(fileList)
+  // }
+  // const customRequest = (config) => {
+  //   console.log("####", fileList_upload)
+  //   let formData = new FormData()
+  //   fileList_upload.forEach((unit) => {
+  //     formData.append(config.name || "file", unit)
+  //   })
+  //   _.each(config.data, (val, key) => {
+  //     formData.append(key, val)
+  //   })
+  //   axios({
+  //     url: api + config.action,
+  //     method: "post",
+  //     data: formData
+  //   }).then(res => {
+  //     setFileList_upload(_.map(res.data.url, unit => {
+  //       return {
+  //         status: "done",
+  //         url: unit
+  //       }
+  //     }))
+  //     console.log(fileList_upload, _.map(res.data.url, unit => {
+  //       return {
+  //         status: "done",
+  //         url: unit
+  //       }
+  //     }))
+  //   }).catch(err => {
+  //     console.log("err%%%%%%%%%%%%", err)
+  //   })
+  // }
   const handlePreview = (file) => {
-    console.log("file===", file)
-    setPreviewImage(file.url)
+    const url = file.url ? file.url : api + file.response.url[0]
+    setPreviewImage(url)
     setPreviewVisible(true)
   }
   const previewCancel = () => {
@@ -57,7 +99,7 @@ export default React.forwardRef((props, ref) => {
                 <Form.Item key={`col${index}`} style={{ marginBottom: "20px" }}
                   name={unit.key} label={unit.title}
                   rules={unit.required ? [{ required: true, message: `请选择${unit.title}` }] : unit.rules ? [].concat(unit.rules) : []}>
-                  <Input autoComplete="off"></Input>
+                  <Input autoComplete="off" disabled={unit.disabled || props.disabled || false}></Input>
                 </Form.Item>
               )
             }
@@ -66,7 +108,7 @@ export default React.forwardRef((props, ref) => {
                 <Form.Item key={`col${index}`} style={{ marginBottom: "20px" }}
                   name={unit.key} label={unit.title}
                   rules={unit.required ? [{ required: true, message: `请选择${unit.title}` }] : unit.rules ? [].concat(unit.rules) : []}>
-                  <InputNumber min={1} max={10} />
+                  <InputNumber min={1} max={10} disabled={unit.disabled || props.disabled || false} />
                 </Form.Item>
               )
             }
@@ -75,7 +117,7 @@ export default React.forwardRef((props, ref) => {
                 <Form.Item key={`col${index}`} style={{ marginBottom: "20px" }} valuePropName="checked"
                   name={unit.key} label={unit.title}
                   rules={unit.required ? [{ required: true, message: `请选择${unit.title}` }] : unit.rules ? [].concat(unit.rules) : []}>
-                  <Switch />
+                  <Switch disabled={unit.disabled || props.disabled || false} />
                 </Form.Item>
               )
             }
@@ -85,7 +127,8 @@ export default React.forwardRef((props, ref) => {
                   name={unit.key} label={unit.title}
                   rules={unit.required ? [{ required: true, message: `请选择${unit.title}` }] : unit.rules ? [].concat(unit.rules) : []}
                 >
-                  <Select placeholder={`请选择${unit.title}`} labelInValue allowClear>
+                  <Select placeholder={`请选择${unit.title}`} labelInValue allowClear
+                    disabled={unit.disabled || props.disabled || false}>
                     {
                       unit.dataList.map((item, num) => {
                         return (
@@ -103,7 +146,8 @@ export default React.forwardRef((props, ref) => {
                   name={unit.key} label={unit.title}
                   rules={unit.required ? [{ required: true, message: `请选择${unit.title}`, type: 'array' }] : unit.rules ? [].concat(unit.rules) : []}
                 >
-                  <Select mode="multiple" placeholder={`请选择${unit.title}`} labelInValue allowClear>
+                  <Select mode="multiple" placeholder={`请选择${unit.title}`} labelInValue allowClear
+                    disabled={unit.disabled || props.disabled || false}>
                     {
                       (unit.dataList || []).map((item, num) => {
                         return (
@@ -126,6 +170,7 @@ export default React.forwardRef((props, ref) => {
                     onSelect={(str) => { console.log("str===", str) }}
                     onSearch={(str) => { setOptions([{ value: "1" }, { value: "2" }, { value: "3" }, { value: "4" }]) }}
                     placeholder="input here"
+                    disabled={unit.disabled || props.disabled || false}
                   />
                 </Form.Item>
               )
@@ -136,7 +181,7 @@ export default React.forwardRef((props, ref) => {
                   name={unit.key} label={unit.title}
                   rules={unit.required ? [{ required: true, message: `请选择${unit.title}` }] : unit.rules ? [].concat(unit.rules) : []}
                 >
-                  <TextArea></TextArea>
+                  <TextArea disabled={unit.disabled || props.disabled || false}></TextArea>
                 </Form.Item>
               )
             }
@@ -146,7 +191,7 @@ export default React.forwardRef((props, ref) => {
                   name={unit.key} label={unit.title}
                   rules={unit.required ? [{ required: true, message: `请选择${unit.title}` }] : unit.rules ? [].concat(unit.rules) : []}
                 >
-                  <DatePicker></DatePicker>
+                  <DatePicker disabled={unit.disabled || props.disabled || false}></DatePicker>
                 </Form.Item>
               )
             }
@@ -156,7 +201,7 @@ export default React.forwardRef((props, ref) => {
                   name={unit.key} label={unit.title}
                   rules={unit.required ? [{ required: true, message: `请选择${unit.title}` }] : unit.rules ? [].concat(unit.rules) : []}
                 >
-                  <Cascader options={unit.dataList || []}></Cascader>
+                  <Cascader options={unit.dataList || []} disabled={unit.disabled || props.disabled || false}></Cascader>
                 </Form.Item>
               )
             }
@@ -174,6 +219,7 @@ export default React.forwardRef((props, ref) => {
                       80: 'E',
                       100: 'F',
                     }}
+                    disabled={unit.disabled || props.disabled || false}
                   />
                 </Form.Item>
               )
@@ -183,7 +229,7 @@ export default React.forwardRef((props, ref) => {
                 <Form.Item key={`col${index}`} style={{ marginBottom: "20px" }}
                   name={unit.key} label={unit.title}
                   rules={unit.required ? [{ required: true, message: `请选择${unit.title}` }] : unit.rules ? [].concat(unit.rules) : []}>
-                  <Radio.Group>
+                  <Radio.Group disabled={unit.disabled || props.disabled || false}>
                     <Radio value="a">item 1</Radio>
                     <Radio value="b">item 2</Radio>
                     <Radio value="c">item 3</Radio>
@@ -196,7 +242,7 @@ export default React.forwardRef((props, ref) => {
                 <Form.Item key={`col${index}`} style={{ marginBottom: "20px" }}
                   name={unit.key} label={unit.title}
                   rules={unit.required ? [{ required: true, message: `请选择${unit.title}` }] : unit.rules ? [].concat(unit.rules) : []}>
-                  <Radio.Group>
+                  <Radio.Group disabled={unit.disabled || props.disabled || false}>
                     <Radio.Button value="a">item 1</Radio.Button>
                     <Radio.Button value="b">item 2</Radio.Button>
                     <Radio.Button value="c">item 3</Radio.Button>
@@ -209,7 +255,7 @@ export default React.forwardRef((props, ref) => {
                 <Form.Item key={`col${index}`} style={{ marginBottom: "20px" }}
                   name={unit.key} label={unit.title}
                   rules={unit.required ? [{ required: true, message: `请选择${unit.title}` }] : unit.rules ? [].concat(unit.rules) : []}>
-                  <Checkbox.Group>
+                  <Checkbox.Group disabled={unit.disabled || props.disabled || false}>
                     <Row>
                       <Col span={8}>
                         <Checkbox value="A" style={{ lineHeight: '32px' }}>A</Checkbox>
@@ -239,7 +285,7 @@ export default React.forwardRef((props, ref) => {
                 <Form.Item key={`col${index}`} style={{ marginBottom: "20px" }}
                   name={unit.key} label={unit.title}
                   rules={unit.required ? [{ required: true, message: `请选择${unit.title}` }] : unit.rules ? [].concat(unit.rules) : []}>
-                  <Rate allowHalf />
+                  <Rate allowHalf disabled={unit.disabled || props.disabled || false} />
                 </Form.Item>
               )
             }
@@ -249,7 +295,7 @@ export default React.forwardRef((props, ref) => {
                   <Form.Item key={`col${index}`} style={{ marginBottom: "20px" }} valuePropName="fileList" getValueFromEvent={normFile} noStyle
                     name={unit.key}
                     rules={unit.required ? [{ required: true, message: `请选择${unit.title}` }] : unit.rules ? [].concat(unit.rules) : []}>
-                    <Upload.Dragger name="files" action="/upload.do">
+                    <Upload.Dragger name="files" action="/upload.do" disabled={unit.disabled || props.disabled || false}>
                       <p className="ant-upload-drag-icon">
                         <InboxOutlined />
                       </p>
@@ -262,23 +308,13 @@ export default React.forwardRef((props, ref) => {
             }
             else if (unit.type === "upload") {
               return (
-                <Form.Item key={`col${index}`} style={{ marginBottom: "20px" }} extra="extra info"
+                <Form.Item key={`col${index}`} style={{ marginBottom: "20px" }} valuePropName="fileList" getValueFromEvent={normFile} extra={unit.config.extra}
                   name={unit.key} label={unit.title}
                   rules={unit.required ? [{ required: true, message: `请选择${unit.title}` }] : unit.rules ? [].concat(unit.rules) : []}
                 >
-                  <div>
-                    <Upload fileList={uploadList} onChange={uploadChange} onPreview={handlePreview} {...unit.config}>
-                      <div><PlusOutlined /><div>upload</div></div>
-                    </Upload>
-                    <Modal
-                      visible={previewVisible}
-                      title="图片预览"
-                      footer={null}
-                      onCancel={previewCancel}
-                    >
-                      <img alt="example" style={{ width: '100%' }} src={previewImage} />
-                    </Modal>
-                  </div>
+                  <Upload onPreview={handlePreview} disabled={unit.disabled || props.disabled || false} {...unit.config}>
+                    <div><PlusOutlined /><div>upload</div></div>
+                  </Upload>
                 </Form.Item>
               )
             }
@@ -291,14 +327,6 @@ export default React.forwardRef((props, ref) => {
                   <Upload name="logo" action="/upload.do" listType="picture-card" {...unit.config}>
                     <div><UploadOutlined /> Click to upload</div>
                   </Upload>
-                  <Modal
-                    visible={previewVisible}
-                    title="图片预览"
-                    footer={null}
-                    onCancel={previewCancel}
-                  >
-                    <img alt="example" style={{ width: '100%' }} src={previewImage} />
-                  </Modal>
                 </Form.Item>
               )
             }
@@ -313,11 +341,14 @@ export default React.forwardRef((props, ref) => {
             }
           })
         }
-        <Col style={{ marginBottom: "20px" }}>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">Submit</Button>
-          </Form.Item>
-        </Col>
+        <Modal
+          visible={previewVisible}
+          title="图片预览"
+          footer={null}
+          onCancel={previewCancel}
+        >
+          <img alt="example" style={{ width: '100%' }} src={previewImage} />
+        </Modal>
       </Form>
     </div >
   )

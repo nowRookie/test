@@ -7,13 +7,8 @@ const cors = require("cors")
 app.use(cors())
 
 // body-parser中间件
-// const bodyParser = require('body-parser')
-// app.use(bodyParser.json())
-
-// multer中间件(主要用来处理form上传文件)
-const multer = require('multer')
-const upload = multer()
-app.use(upload.any())
+const bodyParser = require('body-parser')
+app.use(bodyParser.json())
 
 // 路由
 const forwardRouter = require("./router/forward/home")
