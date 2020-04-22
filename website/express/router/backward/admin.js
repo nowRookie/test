@@ -12,7 +12,7 @@ let Schema = mongoose.Schema({
 	summarize: { type: String, required: true },
 	time: { type: Date, required: [true, "time 必填"] },
 	tags: {
-		type: [String],
+		type: [mongoose.Schema.Types.Mixed],
 		validate: {
 			validator: (value) => { return value.length },
 			msg: "tags 必填"
@@ -42,9 +42,6 @@ router.route("/news")
 			if (validateErr) {
 				res.status(500).send(validateErr.errors[Object.keys(validateErr.errors)[0]].message)
 				return
-			}
-			if (req.body.upload) {
-				fs.writeFile(`${imgFolder}/news`)
 			}
 			model.save((dbErr) => {
 				if (dbErr) {

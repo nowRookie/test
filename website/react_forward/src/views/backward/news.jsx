@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import {
   Table, Tag, Button, Modal, message
 } from 'antd';
@@ -18,53 +18,10 @@ export default function News(props) {
   const baseFormRef = React.createRef();
   const [modalVisible, set_modalVisible] = useState(false)//menu弹窗的modal
   const [modalTitle, set_modalTitle] = useState("新增新闻")
-  const [columns, set_columns] = useState([
-    {
-      title: '标题',
-      dataIndex: 'title',
-    },
-    {
-      title: '简述',
-      dataIndex: 'summarize',
-    },
-    {
-      title: '时间',
-      dataIndex: 'time',
-    },
-    {
-      title: 'tags',
-      dataIndex: 'tags',
-      render(tags) {
-        return (
-          <span>
-            {(tags || []).map(tag => {
-              return (
-                <Tag color="green" key={tag}>
-                  {tag}
-                </Tag>
-              );
-            })}
-          </span>
-        )
-      },
-    },
-    {
-      title: "操作",
-      dataIndex: 'operate',
-      render(val) {
-        return (
-          <div>
-            <span className="a blue">修改</span>
-          </div>
-        )
-      }
-    }
-  ])
-  const [tableData, set_tableData] = useState([])
 
   const [initialValues, set_initialValues] = useState({})
-  const [formItems, set_formItems] = useState([
-    { title: "标题", key: "title", type: "input", data: "110", disabled: true, required: true },
+  const [formItems,] = useState([
+    { title: "标题", key: "title", type: "input", data: "110", required: true },
     { title: "简述", key: "summarize", type: "input", data: "110" },
     { title: "时间", key: "time", type: "date", data: "120" },
     { title: "tags", key: "tags", type: "multipleSelect", dataList: [{ label: "综艺", value: 1 }, { label: "明星", value: 2 }, { label: "时尚", value: 3 }], data: "120" },
@@ -88,29 +45,31 @@ export default function News(props) {
       message.error(err.response.data)
     })
   }
-  getList()
-  const modalOk = () => {
+  const submit = () => {
     baseFormRef.current.validateFields().then(value => {
       const params = {
         ...value,
         time: value.time ? moment(value.time).format("YYYY-MM-DD HH:mm:ss") : "",
-        tags: _.map(value.tags, unit => {
-          return unit.label
-        })
+        upload: JSON.stringify(
+          _.map(value.upload, unit => {
+            return unit.urlTip ? unit.urlTip : unit.response ? unit.response.url[0] : ""
+          })
+        )
       }
-      console.log("value===", params)
-      return
+      console.log("value===", value, "params===", params)
+      // return
       axios({
         url: `${api}/admin/news`,
         method: "post",
         data: params
       }).then(res => {
-        set_modalVisible(false)
         message.success(res.data)
         getList()
       }).catch(err => {
         set_modalVisible(false)
         message.error(err.response.data)
+      }).then(() => {
+        set_modalVisible(false)
       })
     }).catch(err => {
     })
@@ -120,20 +79,87 @@ export default function News(props) {
   }
   const addOne = () => {
     set_initialValues({
-      title: 33,
-      time: moment("2020-09-11"),
-      tags: [{ value: 2 }, { value: 3 }],
-      upload: [{
-        uid: '-1',
-        name: 'dog.jpg',
-        status: 'done',
-        url: `${api}/images/dog.jpg`,
-        thumbUrl: `${api}/images/dog.jpg`
-      }]
+      // title: 33,
+      // time: moment("2020-09-11"),
+      // tags: [{ label: "明星", value: 2 }, { value: 3 }],
+      // upload: [{
+      //   uid: '-1',
+      //   name: 'dog.jpg',
+      //   status: 'done',
+      //   urlTip: `/images/dog.jpg`,
+      //   url: `${api}/images/dog.jpg`,
+      //   thumbUrl: `${api}/images/dog.jpg`
+      // }]
     })
     set_modalVisible(true)
   }
-  const onSubmit = () => { }
+  const doFix = ({ row }) => {
+    set_modalTitle("修改新闻")
+    set_modalVisible(true)
+    set_initialValues({
+      ...row,
+      time: moment(row.time),
+      tags: _.map(row.tags, unit => { return { label: unit.label, value: unit.value } }),
+      upload: _.map(JSON.parse(row.upload), (unit, index) => {
+        return {
+          uid: index,
+          name: 'dog.jpg',
+          status: 'done',
+          urlTip: unit,
+          url: api + unit,
+          thumbUrl: api + unit
+        }
+      })
+    })
+  }
+  const [columns,] = useState([
+    {
+      title: '标题',
+      dataIndex: 'title',
+    },
+    {
+      title: '简述',
+      dataIndex: 'summarize',
+    },
+    {
+      title: '时间',
+      dataIndex: 'time',
+    },
+    {
+      title: 'tags',
+      dataIndex: 'tags',
+      render(tags) {
+        return (
+          <span>
+            {(tags || []).map(tag => {
+              return (
+                <Tag color="green" key={tag.label}>
+                  {tag.label}
+                </Tag>
+              );
+            })}
+          </span>
+        )
+      },
+    },
+    {
+      title: "操作",
+      dataIndex: 'operate',
+      render(value, row, index) {
+        return (
+          <div>
+            <span className="a blue" onClick={() => doFix({ value, row, index })}>修改</span>
+          </div>
+        )
+      }
+    }
+  ])
+  const [tableData, set_tableData] = useState([])
+
+  useEffect(() => {
+    getList()
+    return () => { }
+  }, [])
 
   return (
     <div className="news">
@@ -147,7 +173,7 @@ export default function News(props) {
               destroyOnClose
               title={modalTitle}
               visible={modalVisible}
-              onOk={modalOk}
+              onOk={submit}
               onCancel={modalCancel}
               width={800}
             >

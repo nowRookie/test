@@ -1,10 +1,10 @@
 import React, { useState } from "react"
 import {
-  Button, Form, Select, Input, InputNumber, Switch, Radio, Slider, Upload, Rate, Checkbox, Row, Col, AutoComplete,
+  Form, Select, Input, InputNumber, Switch, Radio, Slider, Upload, Rate, Checkbox, Row, Col, AutoComplete,
   DatePicker, Cascader, Modal
 } from 'antd';
 import { UploadOutlined, InboxOutlined, PlusOutlined } from '@ant-design/icons';
-import axios from "axios"
+// import axios from "axios"
 import _ from "lodash"
 
 const { TextArea } = Input;
@@ -71,6 +71,7 @@ export default React.forwardRef((props, ref) => {
   //   })
   // }
   const handlePreview = (file) => {
+    console.log("preview file===", file)
     const url = file.url ? file.url : api + file.response.url[0]
     setPreviewImage(url)
     setPreviewVisible(true)
@@ -142,8 +143,7 @@ export default React.forwardRef((props, ref) => {
             }
             else if (unit.type === "multipleSelect") {
               return (
-                <Form.Item key={`col${index}`} style={{ marginBottom: "20px" }}
-                  name={unit.key} label={unit.title}
+                <Form.Item key={`col${index}`} style={{ marginBottom: "20px" }} name={unit.key} label={unit.title}
                   rules={unit.required ? [{ required: true, message: `请选择${unit.title}`, type: 'array' }] : unit.rules ? [].concat(unit.rules) : []}
                 >
                   <Select mode="multiple" placeholder={`请选择${unit.title}`} labelInValue allowClear
