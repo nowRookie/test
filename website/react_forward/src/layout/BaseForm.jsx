@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import {
   Form, Select, Input, InputNumber, Switch, Radio, Slider, Upload, Rate, Checkbox, Row, Col, AutoComplete,
-  DatePicker, Cascader, Modal
+  DatePicker, Cascader, Modal, Button
 } from 'antd';
 import { UploadOutlined, InboxOutlined, PlusOutlined } from '@ant-design/icons';
 // import axios from "axios"
@@ -320,12 +320,12 @@ export default React.forwardRef((props, ref) => {
             }
             else if (unit.type === "uploadFile") {
               return (
-                <Form.Item key={`col${index}`} style={{ marginBottom: "20px" }} valuePropName="fileList" getValueFromEvent={normFile} extra="extra info"
+                <Form.Item key={`col${index}`} style={{ marginBottom: "20px" }} valuePropName="fileList" getValueFromEvent={normFile} extra={unit.config.extra}
                   name={unit.key} label={unit.title}
                   rules={unit.required ? [{ required: true, message: `请选择${unit.title}` }] : unit.rules ? [].concat(unit.rules) : []}
                 >
-                  <Upload name="logo" action="/upload.do" listType="picture-card" {...unit.config}>
-                    <div><UploadOutlined /> Click to upload</div>
+                  <Upload disabled={unit.disabled || props.disabled || false} {...unit.config}>
+                    <Button><UploadOutlined /> Click to upload</Button>
                   </Upload>
                 </Form.Item>
               )

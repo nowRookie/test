@@ -13,11 +13,13 @@ app.use(bodyParser.json())
 // 路由
 const forwardRouter = require("./router/forward/home")
 const backwardRouter = require("./router/backward/admin")
-app.use("/", forwardRouter)
+const filesRouter = require("./middleware/filesRouter")
+app.use("/", [filesRouter, forwardRouter])
 app.use("/admin", backwardRouter)
 
 // mongoose连接
 const mongoose = require('mongoose');
+mongoose.set('useFindAndModify', false)
 mongoose.connect('mongodb://localhost/myDB', {
   useNewUrlParser: true,
   useUnifiedTopology: true

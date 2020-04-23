@@ -2,7 +2,8 @@ import React from 'react';
 import Home from "./views/Home"
 import About from "./views/forward/About"
 import Admin from "./views/backward/Admin"
-import News from "./views/backward/News"
+import News from "./views/backward/News/News"
+import NewsDetail from "./views/backward/News/NewsDetail"
 import {
   BrowserRouter as Router,
   // Switch,
@@ -19,6 +20,7 @@ function App() {
         <Route exact path="/about/canvas" component={About}></Route>
         <Route exact path="/admin" component={Admin}></Route>
         <Route exact path="/admin/news" component={News}></Route>
+        <Route exact path="/admin/news_detail" component={NewsDetail}></Route>
       </Router>
     </div>
   );
