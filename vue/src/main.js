@@ -9,7 +9,7 @@ import { Message } from 'element-ui';
 import Element from "element-ui"
 import "element-ui/lib/theme-chalk/index.css";
 
-import "@/assets/css/index.scss";
+import "@/assets/css/index.less";
 
 Vue.use(Element)
 Vue.config.productionTip = false

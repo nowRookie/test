@@ -166,10 +166,10 @@
 </template>
 
 <script>
-import baseModal from "./base_modal";
-import containerInput from "./container_input";
-import baseTable from "./base_table";
-import queryTable from "./query_table";
+import baseModal from "@/components/base_modal";
+import containerInput from "@/components/container_input";
+import baseTable from "@/components/base_table";
+import queryTable from "@/components/query_table";
 import addTable from "@/components/add_table";
 
 import axios from "axios";
