@@ -18,13 +18,56 @@
   <div id="main" style="width:100%;height:100%;"></div>
 </body>
 <script>
-  fetch("http://192.168.1.129:8001", {
-    method: "get"
-  }).then(res => {
-    return res.text()
-  }).then(data => {
-    console.log(data)
-  })
+  const handle = () => {
+    console.log("handle !!!")
+  }
+  const millisecond = 3000
+  // 缺陷：必须等待wai时间才能首次点击，因为throttle()初始化了prev时间，若此时点击，则now-prev<wait不会执行callback
+  //      并且，停止点击后，不一定会触发之前的callback
+  const throttle = (callback, wait) => {
+    let prev = Date.now()
+    return function () {
+      const context = this
+      var args = arguments
+      let now = Date.now()
+      if (now - prev >= wait) {
+        callback.apply(context, args)
+        prev = Date.now()
+      }
+    }
+  }
+  // 缺陷：首次点击必然会执行，但要等待wai时间，因为是setTimeout定时器
+  // const throttle = (callback, wait) => {
+  //   let timer = null
+  //   return function () {
+  //     const context = this
+  //     if (!timer) {
+  //       timer = setTimeout(() => {
+  //         callback.apply(context, arguments)
+  //         timer = null
+  //       }, wait)
+  //     }
+  //   }
+  // }
+  // 优化？？？？
+  // const throttle = function (func, delay) {
+  //   var timer = null;
+  //   var startTime = Date.now(); //设置开始时间
+  //   return function () {
+  //     var curTime = Date.now();
+  //     var remaining = delay - (curTime - startTime); //剩余时间
+  //     var context = this;
+  //     var args = arguments;
+  //     clearTimeout(timer);
+  //     if (remaining <= 0) { // 第一次触发立即执行
+  //       func.apply(context, args);
+  //       startTime = Date.now();
+  //     } else {
+  //       timer = setTimeout(func, remaining); //取消当前计数器并计算新的remaining
+  //     }
+  //   }
+  // }
+  window.addEventListener("click", throttle(handle, millisecond))
 </script>
 
 </html>
