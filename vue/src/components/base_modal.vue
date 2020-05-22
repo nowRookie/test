@@ -31,6 +31,8 @@
               >
                 <el-input
                   v-model="formData[item.key]"
+                  :placeholder="item.placeholder||''"
+                  @change="(val)=>inputChange(item, val)"
                   autocomplete="off"
                   :disabled="type=='detail'||item.disabled"
                   clearable
@@ -47,6 +49,8 @@
               >
                 <el-input
                   v-model="formData[item.key]"
+                  :placeholder="item.placeholder||''"
+                  @change="(val)=>inputChange(item, val)"
                   autocomplete="off"
                   :disabled="type=='detail'||item.disabled"
                   clearable
@@ -64,6 +68,8 @@
                 <el-input
                   type="textarea"
                   v-model="formData[item.key]"
+                  :placeholder="item.placeholder||''"
+                  @change="(val)=>inputChange(item, val)"
                   autocomplete="off"
                   :disabled="type=='detail'||item.disabled"
                 ></el-input>
@@ -128,8 +134,9 @@
               <el-form-item
                 :label-width="item.labelWidth||labelWidth"
                 :label="item.title"
+                :prop="item.key"
                 :required="item.required"
-                :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
+                :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' },{validator:validateMultipleDateRequire}].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'},{validator:validateMultipleDateRequire}]:[]"
                 v-else-if="(item.type=='multipleDate')"
               >
                 <el-col :span="11">
@@ -204,6 +211,7 @@
                 <el-radio-group
                   v-model="formData[item.key]"
                   :disabled="type=='detail'||item.disabled"
+                  @change="val=>switchChange(item, val)"
                 >
                   <el-radio
                     v-for="(unit,index) in item.dataList"
@@ -239,9 +247,10 @@
               >
                 <el-upload
                   class="upload-demo"
-                  :multiple="true"
+                  :multiple="item.limit==1?false:true"
                   :ref="item.key"
                   :disabled="type=='detail'||item.disabled"
+                  :limit="item.limit||5"
                   :accept="item.accept"
                   :action="item.action?item.action:''"
                   :name="item.name||'file'"
@@ -263,13 +272,6 @@
                     v-else
                   >选取文件</el-button>
                   <div slot="tip" class="el-upload__tip">{{item.options?item.options.tip:""}}</div>
-                  <el-dialog
-                    :visible.sync="dialogVisible"
-                    append-to-body
-                    v-if="item.listType=='picture-card'"
-                  >
-                    <img width="100%" :src="dialogImageUrl" alt />
-                  </el-dialog>
                 </el-upload>
               </el-form-item>
               <!-- autoupload -->
@@ -282,11 +284,13 @@
                 v-else-if="(item.type=='autoupload')"
               >
                 <el-upload
-                  class="upload-demo"
-                  :multiple="true"
+                  :class="['upload-demo',(type=='detail'||item.disabled)?'disabled':'']"
+                  :multiple="item.limit==1?false:true"
                   :ref="item.key"
                   :disabled="type=='detail'||item.disabled"
+                  :limit="item.limit||5"
                   :accept="item.accept"
+                  :headers="item.headers"
                   :action="item.action?(api+item.action):''"
                   :name="item.name||'file'"
                   :list-type="item.listType?item.listType:'text'"
@@ -307,13 +311,6 @@
                     v-else
                   >选取文件</el-button>
                   <div slot="tip" class="el-upload__tip">{{item.options?item.options.tip:""}}</div>
-                  <el-dialog
-                    :visible.sync="dialogVisible"
-                    append-to-body
-                    v-if="item.listType=='picture-card'"
-                  >
-                    <img width="100%" :src="dialogImageUrl" alt />
-                  </el-dialog>
                 </el-upload>
               </el-form-item>
               <!-- area省/市/区 -->
@@ -326,12 +323,14 @@
                 v-else-if="(item.type=='area')"
               >
                 <el-cascader
+                  ref="cascaderAddr"
                   :size="item.size"
                   :options="regionData"
                   clearable
                   :disabled="type=='detail'||item.disabled"
                   placeholder="请选择:省 / 市 / 区"
                   v-model="formData[item.key].area"
+                  @change="(arr)=>{handleAddressFun(item,arr)}"
                 ></el-cascader>
                 <el-input
                   v-model="formData[item.key].detail"
@@ -371,6 +370,10 @@
         <el-button @click="cancel">取消</el-button>
         <slot name="operate" v-bind="{data:formData,params:params}"></slot>
       </footer>
+    </el-dialog>
+    <!-- 预览图片弹窗 -->
+    <el-dialog :visible.sync="dialogVisible" append-to-body>
+      <img width="100%" :src="dialogImageUrl" alt />
     </el-dialog>
   </div>
 </template>
@@ -442,13 +445,32 @@ export default {
         callback();
       }
     },
+    validateMultipleDateRequire(rule, value, callback) {
+      if (value.start == "") {
+        callback(new Error("开始日期不能为空"));
+      } else if (value.end == "") {
+        callback(new Error("结束日期不能为空"));
+      } else {
+        callback();
+      }
+    },
     validateNumber(rule, value, callback) {
-      let reg = /^(-?)\d+(\.\d{0,5})?$/;
+      let reg = /(^-?(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d{1,2})?$)/;
       if (reg.test(value)) {
         callback();
       } else {
         callback(new Error("请输入数字,不超过5位小数！"));
       }
+    },
+
+    handleAddressFun: function(item, arr) {
+      setTimeout(() => {
+        this.formData[item.key].label = (
+          this.$refs["cascaderAddr"][0].presentText || ""
+        )
+          .replace(/\s/g, "")
+          .split("/");
+      }, 0);
     },
     datePickerChange(item, val) {
       item.method && item.method(this.formData, val);
@@ -539,6 +561,8 @@ export default {
           } else if (this.type == "edit") {
             this.$emit("edit", this.formData, this.params);
           }
+        } else {
+          this.$emit("error", object);
         }
       });
     },
@@ -547,6 +571,9 @@ export default {
     },
     reset() {
       this.$refs.formRef.resetFields();
+    },
+    inputChange(item, val) {
+      item.method && item.method(this.formData, val);
     },
     selectChange(item, val) {
       item.method && item.method(this.formData, val);

@@ -21,6 +21,8 @@
             >
               <el-input
                 v-model="formData[item.key]"
+                :placeholder="item.placeholder||''"
+                @change="(val)=>inputChange(item, val)"
                 autocomplete="off"
                 :disabled="disabled||item.disabled"
                 clearable
@@ -37,6 +39,8 @@
             >
               <el-input
                 v-model="formData[item.key]"
+                :placeholder="item.placeholder||''"
+                @change="(val)=>inputChange(item, val)"
                 autocomplete="off"
                 :disabled="disabled||item.disabled"
                 clearable
@@ -53,6 +57,8 @@
               <el-input
                 type="textarea"
                 v-model="formData[item.key]"
+                :placeholder="item.placeholder||''"
+                @change="(val)=>inputChange(item, val)"
                 autocomplete="off"
                 :disabled="disabled||item.disabled"
               ></el-input>
@@ -142,7 +148,9 @@
             <el-form-item
               :label-width="item.labelWidth||labelWidth"
               :label="item.title"
-              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
+              :prop="item.key"
+              :required="item.required"
+              :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' },{validator:validateMultipleDateRequire}].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'},{validator:validateMultipleDateRequire}]:[]"
               v-else-if="(item.type=='multipleDate')"
             >
               <el-col :span="11">
@@ -197,6 +205,7 @@
                   :key="index"
                   :label="unit.value"
                   :name="item.key"
+                  @change="(val)=>{checkboxChange(item,val)}"
                 >{{unit.label}}</el-checkbox>
               </el-checkbox-group>
             </el-form-item>
@@ -214,6 +223,7 @@
                   :disabled="unit.disabled"
                   :key="index"
                   :label="unit.value"
+                  @change="(val)=>{radioChange(item,val)}"
                 >{{unit.label}}</el-radio>
               </el-radio-group>
             </el-form-item>
@@ -241,9 +251,10 @@
             >
               <el-upload
                 class="upload-demo"
-                :multiple="true"
+                :multiple="item.limit==1?false:true"
                 :ref="item.key"
                 :disabled="disabled||item.disabled"
+                :limit="item.limit||5"
                 :accept="item.accept"
                 :action="item.action?item.action:''"
                 :name="item.name||'file'"
@@ -265,17 +276,11 @@
                   v-else
                 >选取文件</el-button>
                 <div slot="tip" class="el-upload__tip">{{item.options?item.options.tip:""}}</div>
-                <el-dialog
-                  :visible.sync="dialogVisible"
-                  append-to-body
-                  v-if="item.listType=='picture-card'"
-                >
-                  <img width="100%" :src="dialogImageUrl" alt />
-                </el-dialog>
               </el-upload>
             </el-form-item>
             <!-- autoupload -->
             <el-form-item
+              style="margin-bottom:0;"
               :label-width="item.labelWidth||labelWidth"
               :label="item.title"
               :prop="item.key"
@@ -283,11 +288,13 @@
               v-else-if="(item.type=='autoupload')"
             >
               <el-upload
-                class="upload-demo"
-                :multiple="true"
+                :class="['upload-demo',(disabled||item.disabled)?'disabled':'']"
+                :multiple="item.limit==1?false:true"
                 :ref="item.key"
                 :disabled="disabled||item.disabled"
+                :limit="item.limit||5"
                 :accept="item.accept"
+                :headers="item.headers"
                 :action="item.action?(api+item.action):''"
                 :name="item.name||'file'"
                 :list-type="item.listType?item.listType:'text'"
@@ -308,13 +315,6 @@
                   v-else
                 >选取文件</el-button>
                 <div slot="tip" class="el-upload__tip">{{item.options?item.options.tip:""}}</div>
-                <el-dialog
-                  :visible.sync="dialogVisible"
-                  append-to-body
-                  v-if="item.listType=='picture-card'"
-                >
-                  <img width="100%" :src="dialogImageUrl" alt />
-                </el-dialog>
               </el-upload>
             </el-form-item>
             <!-- area省/市/区 -->
@@ -368,6 +368,10 @@
         </el-col>
       </el-row>
     </el-form>
+    <!-- 预览图片弹窗 -->
+    <el-dialog :visible.sync="dialogVisible" append-to-body>
+      <img width="100%" :src="dialogImageUrl" alt />
+    </el-dialog>
   </div>
 </template>
 
@@ -428,8 +432,17 @@ export default {
         callback();
       }
     },
+    validateMultipleDateRequire(rule, value, callback) {
+      if (value.start == "") {
+        callback(new Error("开始日期不能为空"));
+      } else if (value.end == "") {
+        callback(new Error("结束日期不能为空"));
+      } else {
+        callback();
+      }
+    },
     validateNumber(rule, value, callback) {
-      let reg = /^(-?)\d+(\.\d{0,5})?$/;
+      let reg = /(^-?(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d{1,2})?$)/;
       if (reg.test(value)) {
         callback();
       } else {
@@ -437,6 +450,12 @@ export default {
       }
     },
     datePickerChange(item, val) {
+      item.method && item.method(this.formData, val);
+    },
+    radioChange(item, val) {
+      item.method && item.method(this.formData, val);
+    },
+    checkboxChange(item, val) {
       item.method && item.method(this.formData, val);
     },
     handleChange(item, file, fileList) {
@@ -532,6 +551,9 @@ export default {
         getCurrentNode: tree.getCurrentNode(),
         getNode: tree.getNode()
       };
+    },
+    inputChange(item, val) {
+      item.method && item.method(this.formData, val);
     },
     selectChange(item, val) {
       item.method && item.method(this.formData, val);

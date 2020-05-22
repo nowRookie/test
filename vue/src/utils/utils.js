@@ -1,5 +1,7 @@
 import axios from "axios"
 import _ from "lodash"
+import { Notification } from 'element-ui';
+
 import moment from "moment"
 
 const api = process.env.VUE_APP_API_URL;
@@ -7,8 +9,8 @@ const api = process.env.VUE_APP_API_URL;
 export default {}
 
 // 下载二进制文件
-export function downloadBlob({ name, ieName, url, method, data, params } = {}) {
-  const options = method == "get" ? getOptions({
+export function downloadBlob({ name, ieName, url, method, data, params, type } = {}) {
+  const options = method === "get" ? getOptions({
     method: "get",
     url,
     responseType: "blob",
@@ -19,25 +21,30 @@ export function downloadBlob({ name, ieName, url, method, data, params } = {}) {
     responseType: "blob",
     data
   });
-  axios(options).then(res => {
-    //这里res.data是返回的blob对象,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet这里表示xlsx类型
-    var blob = new Blob([res.data], {
-      type:
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+  return new Promise((resolve, reject) => {
+    axios(options).then(res => {
+      //这里res.data是返回的blob对象,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet这里表示xlsx类型
+      var blob = new Blob([res.data], {
+        type: type ||
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+      });
+      var downloadElement = document.createElement("a");
+      var href = window.URL.createObjectURL(blob); //创建下载的链接
+      downloadElement.href = href;
+      if (navigator.msSaveBlob) {
+        navigator.msSaveBlob(blob, name || ieName);
+      } else {
+        downloadElement.download = ieName || name; //下载后文件名
+      }
+      document.body.appendChild(downloadElement);
+      downloadElement.click(); //点击下载
+      document.body.removeChild(downloadElement); //下载完成移除元素
+      window.URL.revokeObjectURL(href); //释放掉blob对象
+      resolve()
+    }).catch(err => {
+      reject(err)
     });
-    var downloadElement = document.createElement("a");
-    var href = window.URL.createObjectURL(blob); //创建下载的链接
-    downloadElement.href = href;
-    if (navigator.msSaveBlob) {
-      navigator.msSaveBlob(blob, name);
-    } else {
-      downloadElement.download = ieName; //下载后文件名
-    }
-    document.body.appendChild(downloadElement);
-    downloadElement.click(); //点击下载
-    document.body.removeChild(downloadElement); //下载完成移除元素
-    window.URL.revokeObjectURL(href); //释放掉blob对象
-  });
+  })
 }
 
 // 手动上传文件，data必须为[File]数组
@@ -100,66 +107,46 @@ export function dealDate({ value, format } = {}) {
   return format ? moment(str).format(format) : str
 }
 
-export function calculate(val) {
-  return moment(val * 1000).format("YYYY-MM-DD HH:mm:ss");
+export function calculate({ value, format }) {
+  let formater = format || "YYYY-MM-DD";
+  return moment(value).format(formater);
 }
-// 监测浏览器
-export function checkBrowser() {
-  const browser = {
-    versions: (function () {
-      var u = navigator.userAgent,
-        app = navigator.appVersion;
-      return {
-        //移动终端浏览器版本信息
-        trident: u.indexOf("Trident") > -1, //IE内核
-        presto: u.indexOf("Presto") > -1, //opera内核
-        webKit: u.indexOf("AppleWebKit") > -1, //苹果、谷歌内核
-        gecko: u.indexOf("Gecko") > -1 && u.indexOf("KHTML") == -1, //火狐内核
-        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
-        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
-        android: u.indexOf("Android") > -1 || u.indexOf("Linux") > -1, //android终端或uc浏览器
-        iPhone: u.indexOf("iPhone") > -1, //是否为iPhone或者QQHD浏览器
-        iPad: u.indexOf("iPad") > -1, //是否iPad
-        webApp: u.indexOf("Safari") == -1 //是否web应该程序，没有头部与底部
-      };
-    })(),
-    language: (
-      navigator.browserLanguage || navigator.language
-    ).toLowerCase()
-  };
+// 导出excel
+export function exportExcel(value) {
+  let opt = getOptions({
+    url: value,
+    method: "get",
+    responseType: 'blob'
+  });
+  axios(opt).then(res => {
+    // console.log(res);
+    let blob = new Blob([res.data], {
+      type: 'application/vnd.ms-excel'
+    });
+    // console.log(blob);
+    let fileName = Date.parse(new Date()) + '.xlsx';
+    Notification({
+      title: '成功',
+      message: '成功导出！',
+      duration: 1000,
+      type: 'success'
+    });
+    if (window.navigator.msSaveOrOpenBlob) {
+      // console.log(2)
+      navigator.msSaveBlob(blob, fileName)
+    } else {
+      // console.log(3)
+      let link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = fileName;
+      link.click();
+      //释放内存
+      window.URL.revokeObjectURL(link.href)
+    }
 
-  if (browser.versions.mobile) {
-    //判断是否是移动设备打开。browser代码在下面
-    let ua = navigator.userAgent.toLowerCase(); //获取判断用的对象
-    console.log("navigator===", ua, "browser===", browser);
-    if (ua.match(/MicroMessenger/i) == "micromessenger") {
-      console.log("在微信中打开");
-      if (!localStorage.getItem("gOpenId")) {
-        this.getCode();
-      }
-    }
-    if (ua.match(/WeiBo/i) == "weibo") {
-      console.log("在新浪微博客户端打开");
-    }
-    if (ua.match(/QQ/i) == "qq") {
-      console.log("在QQ空间打开");
-    }
-    if (browser.versions.ios) {
-      console.log("在IOS浏览器打开");
-    }
-    if (browser.versions.android) {
-      console.log("在安卓浏览器打开");
-    }
-  } else {
-    console.log("PC浏览器打开");
-  }
-}
-// 读取input文件数据
-function reader() {
-  var input = document.getElementById("input")
-  var reader = new FileReader()
-  console.log(reader.readAsDataURL(input.files[0]))
-  reader.onload = function () {
-    console.log(reader.result);
-  }
+
+
+
+  })
+
 }

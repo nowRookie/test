@@ -1,8 +1,14 @@
 <template>
   <div class="custom-tree-container">
-    <el-tree :data="treeData" node-key="id" default-expand-all :expand-on-click-node="true">
+    <el-tree
+      :data="treeData"
+      node-key="id"
+      default-expand-all
+      :expand-on-click-node="true"
+      :highlight-current="true"
+    >
       <span class="custom-tree-node" slot-scope="{ node, data }">
-        <span>{{ node.label }}</span>
+        <span :style="data.menu?'color:#333':'color:#bbb'">{{ node.label }}</span>
         <span :style="setStyle(data)">
           <el-button type="text" @click.stop="() => addBtn(node, data)" v-if="data.level<3">add</el-button>
           <el-button
@@ -29,8 +35,8 @@
     >
       <div slot="title">新增</div>
       <el-form ref="form" :model="form" :disabled="formDisabled" label-width="200px">
-        <el-form-item label="是否菜单" prop="isMenu">
-          <el-switch v-model="form.isMenu"></el-switch>
+        <el-form-item label="是否菜单" prop="menu">
+          <el-switch v-model="form.menu"></el-switch>
         </el-form-item>
         <el-form-item
           label="菜单层级"
@@ -99,7 +105,7 @@ export default {
       formDisabled: false,
       formType: "add",
       form: {
-        isMenu: true, //是否菜单
+        menu: true, //是否菜单
         level: "", //菜单层级
         levelList: [
           {
@@ -126,7 +132,7 @@ export default {
         // 自定义
         id: "", //当前项id
         parentId: "",
-        sortCradle: [] //0-20用于过滤已有菜单的sort
+        sortCradle: [] //0-50用于过滤已有菜单的sort
       },
       treeData: [
         {
@@ -152,13 +158,43 @@ export default {
         parentId: ""
       });
     },
+    // renderContent(h, { node, data, store }) {
+    //   return (
+    //     <span class="custom-tree-node">
+    //       <span>{node.label}</span>
+    //       <span style={this.setStyle(data)}>
+    //         <el-button
+    //           type="text"
+    //           on-click={() => this.addBtn(node, data)}
+    //           v-if={data.level < 3}
+    //         >
+    //           add
+    //         </el-button>
+    //         <el-button
+    //           type="text"
+    //           on-click={() => this.editBtn(node, data)}
+    //           v-if={data.id != "100100100"}
+    //         >
+    //           edit
+    //         </el-button>
+    //         <el-button
+    //           type="text"
+    //           on-click={() => remove(node, data)}
+    //           v-if={data.id != "100100100"}
+    //         >
+    //           Delete
+    //         </el-button>
+    //       </span>
+    //     </span>
+    //   );
+    // },
     setStyle(data) {
       return "margin-right:" + (3 - data.level) * 30 + "px;";
     },
     getTree() {
       axios({
         method: "get",
-        url: api + "/pc/resource/getResourceList",
+        url: api + "/system/resource/getResourceList",
         headers: {
           "X-Requested-With": "XMLHttpRequest",
           "Content-Type": "application/Json; charset=UTF-8",
@@ -239,7 +275,7 @@ export default {
     remove(node, data) {
       axios({
         method: "get",
-        url: api + "/pc/resource/delResource",
+        url: api + "/system/resource/delResource",
         headers: {
           "X-Requested-With": "XMLHttpRequest",
           "Content-Type": "application/Json; charset=UTF-8",
@@ -264,7 +300,7 @@ export default {
         });
     },
     editBtn(node, data) {
-      console.log("addBtn:::", node, data);
+      console.log("editBtn:::", node, data);
       let id = data.id; //当前点击项的id
       let tongue; //[]已有的sort
       let nodeDot; //用于找到对应的父级项
@@ -277,6 +313,7 @@ export default {
         level: data.level,
         resName: data.resName,
         resUrl: data.resUrl,
+        menu: data.menu ? true : false,
         sort: data.sort
       });
       if (data.parentId) {
@@ -314,7 +351,7 @@ export default {
           }
           axios({
             method: "post",
-            url: api + "/pc/resource/addResource",
+            url: api + "/system/resource/addResource",
             headers: {
               "X-Requested-With": "XMLHttpRequest",
               "Content-Type": "application/Json; charset=UTF-8",
@@ -344,7 +381,7 @@ export default {
     handleEdit() {
       axios({
         method: "post",
-        url: api + "/pc/resource/updateResource ",
+        url: api + "/system/resource/updateResource ",
         headers: {
           "X-Requested-With": "XMLHttpRequest",
           "Content-Type": "application/Json; charset=UTF-8",
@@ -386,7 +423,7 @@ export default {
   },
   mounted() {
     this.getTree();
-    for (let i = 1; i <= 20; i++) {
+    for (let i = 1; i <= 50; i++) {
       this.form.sortCradle.push(i);
     }
   }

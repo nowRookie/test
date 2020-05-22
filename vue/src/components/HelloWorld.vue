@@ -1,6 +1,19 @@
 <template>
   <div class="hello" style="padding:50px;">
-    <!-- container-input -->
+    <!-- 自定义上传 -->
+    <div class="mb20">
+      <span>
+        <label class="inline-block bluebtn uploadBtn" for="fileInput1">自定义上传</label>
+        <input
+          type="file"
+          id="fileInput1"
+          accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+          style="display:none;"
+          @change="uploadTempFile"
+        />
+      </span>
+    </div>
+    <!-- containeInput -->
     <el-button
       @click="test('taobao://fulushuka.tmall.com/shop/view_shop.htm?spm=a230r.7195193.1997079397.2.5yhUYD')"
     >测试</el-button>
@@ -32,7 +45,7 @@
       </container-input>
     </div>
 
-    <!-- base-modal -->
+    <!-- baseModal -->
     <div class="mt20">
       <h2 style="color:purple">modal:</h2>
       <el-button type="primary" @click="modalVisible=true">modal</el-button>
@@ -60,8 +73,8 @@
         :params="modalParams"
         :title="modalTitle"
         labelWidth="120px"
-        width="800px"
-        :span="24"
+        width="1000px"
+        :span="12"
         @add="modalAdd"
         @edit="modalEdit"
         @cancel="modalCancel"
@@ -73,7 +86,7 @@
       </base-modal>
     </div>
 
-    <!-- base-table -->
+    <!-- baseTable -->
     <div class="mt20">
       <h2 style="color:purple">base-table:</h2>
       <!-- 
@@ -105,7 +118,7 @@
       </div>
     </div>
 
-    <!-- query-table -->
+    <!-- queryTtable -->
     <div class="mt20">
       <h2 style="color:purple">query-table:</h2>
       <!-- 
@@ -124,6 +137,7 @@
         :query="queryParams"
         type="selection"
         :afterQuery="afterQuery"
+        :hidePage="true"
       >
         <template v-slot:customer="scope">
           <el-button @click="cradle(scope)">按钮</el-button>
@@ -131,7 +145,7 @@
       </query-table>
     </div>
 
-    <!-- add-table -->
+    <!-- addTable -->
     <div class="mt20">
       <h2 style="color:purple">add-table:</h2>
       <!-- 
@@ -172,8 +186,12 @@ import baseTable from "@/components/base_table";
 import queryTable from "@/components/query_table";
 import addTable from "@/components/add_table";
 
+import _ from "lodash";
+import moment from "moment";
 import axios from "axios";
-import { type } from "../utils/utils";
+import { getOptions, dealDate } from "@/utils/utils";
+
+const api = process.env.VUE_APP_API_URL;
 
 export default {
   name: "HelloWorld",
@@ -429,6 +447,7 @@ export default {
           listType: "picture-card",
           accept: "image/*",
           action: "/fileUpload/protocol",
+          headers: {},
           name: "files",
           labelWidth: "120px",
           span: 24,
@@ -553,6 +572,83 @@ export default {
     };
   },
   methods: {
+    consoles(val) {
+      console.log(val);
+    },
+    post() {
+      const postParams = {};
+      const options = getOptions({
+        url: "#",
+        method: "post",
+        data: postParams
+      });
+      axios(options)
+        .then(res => {
+          if (res.data.code != 0) {
+            this.$message.error(res.data.message || "网络错误!");
+            return;
+          }
+          let data = (res.data && res.data.data) || {};
+        })
+        .catch(err => {
+          this.$message({
+            type: "error",
+            message: err || "请求错误"
+          });
+        });
+    },
+    calculate(time) {
+      return moment(time).format("YYYY-MM-DD HH:mm:ss");
+    },
+    dealDate(time) {
+      return dealDate({ value: time });
+    },
+    beforeUpload(file) {
+      const limit_2M = file.size / 1024 / 1024 < 2;
+      if (!limit_2M) {
+        this.$message.error("请上传2M以下的文件");
+        return false;
+      }
+    },
+    uploadTempFile() {
+      const file = document.getElementById("fileInput1").files[0];
+      if (!file) return;
+      this.beforeUpload(file);
+      upload({
+        url: "/Mch/importItem",
+        data: [file],
+        name: "file",
+        headers: {
+          "X-Requested-With": "XMLHttpRequest",
+          // "Content-Type": "application/Json; charset=UTF-8",
+          "X-Authorization": "Bearer" + sessionStorage.getItem("token")
+        },
+        params: {}
+      })
+        .then(({ res, data }) => {
+          if (res.data.code !== 0) {
+            this.$message({
+              type: "error",
+              message: res.data.message || "网络错误!"
+            });
+            return;
+          }
+          this.$message({
+            type: "success",
+            message: res.data.message || "导入成功"
+          });
+          this.queryParams = Object.assign({}, this.queryParams);
+        })
+        .catch(err => {
+          this.$message({
+            type: "error",
+            message: err.message || "请求错误!"
+          });
+        })
+        .then(() => {
+          document.getElementById("fileInput1").value = null;
+        });
+    },
     getChecked() {
       let checkedData = this.$refs.baseTableRef.getChecked();
       console.log(checkedData);
@@ -613,3 +709,18 @@ export default {
   mounted() {}
 };
 </script>
+<style lang="less" scoped>
+.uploadBtn {
+  padding: 9px 20px;
+  font-size: 14px;
+  border-radius: 4px;
+
+  &:hover {
+    cursor: pointer;
+    // color: rgba(28, 207, 191, 1);
+    // background: rgba(28, 207, 191, 0.1);
+    color: #409eff;
+    background: #ecf5ff;
+  }
+}
+</style>
