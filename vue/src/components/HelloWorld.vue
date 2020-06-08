@@ -62,6 +62,7 @@
           @add:方法,跟type绑定,当type=add时触发@add方法
           @edit:方法,触发@edit方法
           @cancel:方法,设置visible=false,用来关闭modal
+          @error:方法，验证表单不通过时触发
         备注:
           template里可以为自定义内容,v-slot:operate为操作处(默认会有确定取消按钮),v-slot:customer为items中的某一项({key:customer,type:slot})
       -->
@@ -78,6 +79,7 @@
         @add="modalAdd"
         @edit="modalEdit"
         @cancel="modalCancel"
+        @error="modalError"
       >
         <template v-slot:customer="scope">
           这是一段自定义内容
@@ -156,6 +158,16 @@
           deletable:boolean,非必须,是否展示删除按钮
           select-*:array,非必须,若table中有select时,用来渲染select的options项(select-age:"age"对应addTableItems中的{key:age})
           @change-*:方法,对应select-*的chang事件
+          doAdd和@addFn配合使用，用来控制新增按钮的方法(有的时候想要在父组件直接控制新增)
+        data数据中根据每项参数分别渲染：
+          [
+            {
+              disabled:true,//整行disabled
+              mulDisabled:[ key值 ],//根据key值disabled
+              hasDefault:[ key值 ],主要用来渲染select(hasDefault-key值)
+              selectDefault:[ key值 ],主要用来渲染select，默认有那些值(select-key值-default)
+            }
+          ]
         备注:
           template里可以为自定义内容,v-slot:customer为items中的某一项({key:customer,type:slot})
       -->
@@ -686,6 +698,9 @@ export default {
       console.log(data);
     },
     modalEdit(data, params) {},
+    modalError(err) {
+      console.log(err);
+    },
     modalCancel() {
       this.modalVisible = false;
     },

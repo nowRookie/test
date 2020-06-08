@@ -74,10 +74,13 @@
                   style="width:100%;"
                   value-key="value"
                   v-model="scope.row[item.key]"
-                  @change="(val)=>selectChange(item.key,val,scope.row)"
+                  @change="(val)=>selectChange(item.key,val,scope.row,scope.$index)"
                 >
+                  <!-- 如果row数据中hasDefault里有当前项的key，就用hasDefault-key的值(当前row内)
+                  否则，根据selectDefault中是否有key，来判断使用select-key-default的值(父组件上)
+                  最后，使用select-key的值(父组件上)-->
                   <el-option
-                    v-for="unit in (scope.row.selectDefault||[]).indexOf(item.key)!=-1?$attrs['select-'+[item.key]+'-default']:$attrs['select-'+[item.key]]"
+                    v-for="unit in (scope.row.hasDefault||[]).indexOf(item.key)!=-1?scope.row['hasDefault-'+[item.key]]:(scope.row.selectDefault||[]).indexOf(item.key)!=-1?$attrs['select-'+[item.key]+'-default']:$attrs['select-'+[item.key]]"
                     :key="unit.key"
                     :label="unit.label"
                     :value="unit"
@@ -138,7 +141,7 @@ import _ from "lodash";
 import moment from "moment";
 export default {
   name: "add_table",
-  props: ["title", "items", "data", "disabled", "deletable"],
+  props: ["title", "items", "data", "disabled", "deletable", "doAdd"],
   data() {
     return {
       tableData: [],
@@ -169,7 +172,11 @@ export default {
       this.multipleSelection = val;
     },
     handleAdd() {
-      this.tableData.push({});
+      if (this.doAdd) {
+        this.$emit("addFn");
+      } else {
+        this.tableData.push({});
+      }
     },
     handleDel() {
       let _this = this;
