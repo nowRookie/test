@@ -26,6 +26,7 @@
           disabled:boolean,非必须,控制整个form为disabled
           span:number,非必须,用来控制整个form的span
           labelWidth:string,非必须,控制整个form的label宽度
+          layout:array,[12,12]左右所占span宽度
           @ok:方法,非必须,触发form验证和查询
         备注:
           template里可以为自定义内容,v-slot:operate为操作处(默认会有一个查询按钮),v-slot:customer为items中的某一项({key:customer,type:slot})
@@ -35,6 +36,7 @@
         ref="containerInput"
         :items="inputItems"
         content
+        :layout="[12,12]"
         labelWidth="120px"
         @ok="inputSearch"
       >

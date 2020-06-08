@@ -8,7 +8,7 @@
       label-position="right"
     >
       <el-row>
-        <el-col :span="(content==''||content===true)?24:18">
+        <el-col :span="(content==''||content===true)?24:layout?layout[0]:18">
           <el-col :span="item.span||span||6" class="unit" v-for="item in items" :key="item.key">
             <!-- text -->
             <el-form-item
@@ -362,8 +362,12 @@
             <slot v-else-if="(item.type=='slot')" :name="item.key"></slot>
           </el-col>
         </el-col>
-        <el-col v-if="!(content==''||content===true)" :span="4" :offset="1">
-          <el-button type="primary" @click="ok">搜索</el-button>
+        <el-col
+          v-if="!(content==''||content===true)"
+          :span="layout?layout[1]:4"
+          :offset="layout?0:1"
+        >
+          <el-button type="primary" @click="ok" :class="layout?'ml10':''">搜索</el-button>
           <slot name="operate" :data="formData"></slot>
         </el-col>
       </el-row>
@@ -382,7 +386,7 @@ import _ from "lodash";
 import { upload } from "../utils/utils";
 const api = process.env.VUE_APP_API_URL;
 export default {
-  props: ["span", "labelWidth", "items", "content", "disabled"],
+  props: ["span", "labelWidth", "items", "content", "disabled", "layout"],
   data() {
     let formData = {};
     _.each(this.$props.items, item => {
