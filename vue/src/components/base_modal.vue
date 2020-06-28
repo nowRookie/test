@@ -38,6 +38,26 @@
                   clearable
                 ></el-input>
               </el-form-item>
+              <!-- inputNumber -->
+              <el-form-item
+                :label-width="item.labelWidth||labelWidth"
+                :label="item.title"
+                :prop="item.key"
+                :required="item.required"
+                :rules="item.rules?[{ required: true, message: `请输入${item.title}`, trigger: 'change' },{ required: true, message: `请输入${item.title}`, trigger: 'blur' },{ validator: validateTrim, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请输入${item.title}`,trigger:'change'},{ required: true, message: `请输入${item.title}`, trigger: 'blur' },{ validator: validateTrim, trigger: 'blur' }]:[]"
+                v-if="item.type=='inputNumber'"
+              >
+                <el-input-number
+                  v-model="formData[item.key]"
+                  @change="(val)=>inputChange(item, val)"
+                  autocomplete="off"
+                  :min="item.min||1"
+                  :max="item.max"
+                  :step="item.step||1"
+                  :disabled="type=='detail'||item.disabled"
+                  clearable
+                ></el-input-number>
+              </el-form-item>
               <!-- number -->
               <el-form-item
                 :label-width="item.labelWidth||labelWidth"
@@ -87,6 +107,33 @@
                   :disabled="type=='detail'||item.disabled"
                   clearable
                   filterable
+                  value-key="value"
+                  @change="(val)=>selectChange(item, val)"
+                  v-model="formData[item.key]"
+                  :placeholder="`请选择${item.title}`"
+                  style="width:100%;"
+                >
+                  <el-option
+                    v-for="unit in item.dataList"
+                    :key="unit.key"
+                    :label="unit.label"
+                    :value="unit"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+              <!-- multipleSelect -->
+              <el-form-item
+                :label-width="item.labelWidth||labelWidth"
+                :label="item.title"
+                :prop="item.key"
+                :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
+                v-else-if="item.type=='multipleSelect'"
+              >
+                <el-select
+                  :disabled="disabled||item.disabled"
+                  clearable
+                  filterable
+                  multiple
                   value-key="value"
                   @change="(val)=>selectChange(item, val)"
                   v-model="formData[item.key]"

@@ -38,12 +38,13 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="page.pageNum"
+      :hide-on-single-page="true"
       background
       :page-sizes="[10,20,30,40]"
       :page-size="page.pageSize"
       layout="total, sizes, prev, pager, next, jumper"
       :total="page.total"
-      style="margin-top:15px;"
+      style="margin-top:15px;text-align:right;"
     ></el-pagination>
   </div>
 </template>

@@ -39,6 +39,7 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="pages.pageNum"
+      :hide-on-single-page="true"
       background
       :page-sizes="[10, 20, 30, 40]"
       :page-size="pages.pageSize"

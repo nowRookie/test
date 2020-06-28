@@ -28,6 +28,26 @@
                 clearable
               ></el-input>
             </el-form-item>
+              <!-- inputNumber -->
+              <el-form-item
+                :label-width="item.labelWidth||labelWidth"
+                :label="item.title"
+                :prop="item.key"
+                :required="item.required"
+                :rules="item.rules?[{ required: true, message: `请输入${item.title}`, trigger: 'change' },{ required: true, message: `请输入${item.title}`, trigger: 'blur' },{ validator: validateTrim, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请输入${item.title}`,trigger:'change'},{ required: true, message: `请输入${item.title}`, trigger: 'blur' },{ validator: validateTrim, trigger: 'blur' }]:[]"
+                v-if="item.type=='inputNumber'"
+              >
+                <el-input-number
+                  v-model="formData[item.key]"
+                  @change="(val)=>inputChange(item, val)"
+                  autocomplete="off"
+                  :min="item.min||1"
+                  :max="item.max"
+                  :step="item.step||1"
+                  :disabled="type=='detail'||item.disabled"
+                  clearable
+                ></el-input-number>
+              </el-form-item>
             <!-- number -->
             <el-form-item
               :label-width="item.labelWidth||labelWidth"
