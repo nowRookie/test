@@ -657,7 +657,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .head_title {
   font-size: 18px;
 }
