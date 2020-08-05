@@ -33,6 +33,7 @@
         ref="containerInput"
         :items="inputItems"
         content
+        :disabled="true"
         :layout="[12,12]"
         labelWidth="120px"
         @ok="inputSearch"
@@ -443,7 +444,7 @@ export default {
           title: "uploadFile",
           key: "uploadFile",
           type: "uploadFile",
-          // listType: "picture-card",
+          listType: "picture-card",
           // accept: "image/*",
           // name: "file",
           labelWidth: "120px",

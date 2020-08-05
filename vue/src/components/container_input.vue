@@ -270,7 +270,7 @@
               v-else-if="(item.type=='uploadFile')"
             >
               <el-upload
-                class="upload-demo"
+                :class="['upload-demo',(disabled||item.disabled)?'disabled':'']"
                 :multiple="item.limit==1?false:true"
                 :ref="item.key"
                 :disabled="disabled||item.disabled"
