@@ -14,9 +14,6 @@
       </span>
     </div>
     <!-- containeInput -->
-    <el-button
-      @click="test('taobao://fulushuka.tmall.com/shop/view_shop.htm?spm=a230r.7195193.1997079397.2.5yhUYD')"
-    >测试</el-button>
     <div class="mt20">
       <h2 style="color:purple">containerInput:</h2>
       <!-- 
@@ -222,7 +219,7 @@ export default {
     let self = this;
     return {
       modalVisible: false,
-      modalType: "detail",
+      modalType: "add",
       modalTitle: "",
       modalParams: {},
       baseTablePages: {},
@@ -364,7 +361,7 @@ export default {
           required: true,
           data: "2019-10-15",
           method: function(childData, val) {
-            self.modalItems[1].dataList = [{ label: 11111, value: 11 }]; //改其他项的dataList
+            self.modalItems[2].dataList = [{ label: 11111, value: 11 }]; //改其他项的dataList
             childData["text"] = "YYYY-MM-DD"; //改其他项的data
           }
         },

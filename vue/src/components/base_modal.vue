@@ -130,7 +130,7 @@
                 v-else-if="item.type=='multipleSelect'"
               >
                 <el-select
-                  :disabled="disabled||item.disabled"
+                  :disabled="type=='detail'||item.disabled"
                   clearable
                   filterable
                   multiple
@@ -442,11 +442,11 @@ export default {
     "labelWidth",
     "span",
     "params",
-    "type"
+    "type",
   ],
   data() {
     let formData = {};
-    _.each(this.$props.items, item => {
+    _.each(this.$props.items, (item) => {
       if (
         item.type == "checkbox" ||
         item.type == "uploadFile" ||
@@ -479,8 +479,8 @@ export default {
       regionData: regionData,
       defaultProps: {
         children: "children",
-        label: "label"
-      }
+        label: "label",
+      },
     };
   },
   methods: {
@@ -510,7 +510,7 @@ export default {
       }
     },
 
-    handleAddressFun: function(item, arr) {
+    handleAddressFun: function (item, arr) {
       setTimeout(() => {
         this.formData[item.key].label = (
           this.$refs["cascaderAddr"][0].presentText || ""
@@ -526,7 +526,7 @@ export default {
       this.formData[item.key] = fileList;
     },
     handleSuccess(item, file, fileList) {
-      this.formData[item.key] = fileList.map(unit => {
+      this.formData[item.key] = fileList.map((unit) => {
         return {
           ...unit,
           url: unit.response
@@ -534,7 +534,7 @@ export default {
             : unit.url,
           urlTip: unit.response
             ? unit.response && unit.response.data[0]
-            : unit.url
+            : unit.url,
         };
       });
     },
@@ -562,7 +562,7 @@ export default {
     httpRequest(item, request) {
       upload({
         url: request.action,
-        data: [request.file]
+        data: [request.file],
       })
         .then(({ res, data }) => {
           if (res.status !== 200 || res.data.code != 0) {
@@ -576,12 +576,12 @@ export default {
             urlTip: data[0],
             url: api + data[0],
             uid: request.file.uid,
-            name: request.file["name"]
+            name: request.file["name"],
           };
           this.autouploadList.push(curFile);
           request.onSuccess();
         })
-        .catch(err => {
+        .catch((err) => {
           request.onError({ uid: request.file.uid });
           this.$message.error(err || "请求错误!");
         });
@@ -598,7 +598,7 @@ export default {
             if (this.formData[i].type == "tree") {
               this.formData[i].checked = this.computedTreeData({
                 key: i,
-                data: this.formData[i].data
+                data: this.formData[i].data,
               });
             }
           }
@@ -646,19 +646,24 @@ export default {
         getHalfCheckedKeys: tree.getHalfCheckedKeys(),
         getCurrentKey: tree.getCurrentKey(),
         getCurrentNode: tree.getCurrentNode(),
-        getNode: tree.getNode()
+        getNode: tree.getNode(),
       };
-    }
+    },
   },
   watch: {
-    items() {}
+    items() {},
   },
-  mounted() {}
+  mounted() {},
 };
 </script>
 
 <style lang="less" scoped>
 .head_title {
   font-size: 18px;
+}
+/deep/.disabled {
+  .el-upload--picture-card {
+    display: none;
+  }
 }
 </style>

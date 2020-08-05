@@ -430,7 +430,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="less" scope>
 .custom-tree-node {
   flex: 1;
   display: flex;

@@ -28,26 +28,26 @@
                 clearable
               ></el-input>
             </el-form-item>
-              <!-- inputNumber -->
-              <el-form-item
-                :label-width="item.labelWidth||labelWidth"
-                :label="item.title"
-                :prop="item.key"
-                :required="item.required"
-                :rules="item.rules?[{ required: true, message: `请输入${item.title}`, trigger: 'change' },{ required: true, message: `请输入${item.title}`, trigger: 'blur' },{ validator: validateTrim, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请输入${item.title}`,trigger:'change'},{ required: true, message: `请输入${item.title}`, trigger: 'blur' },{ validator: validateTrim, trigger: 'blur' }]:[]"
-                v-if="item.type=='inputNumber'"
-              >
-                <el-input-number
-                  v-model="formData[item.key]"
-                  @change="(val)=>inputChange(item, val)"
-                  autocomplete="off"
-                  :min="item.min||1"
-                  :max="item.max"
-                  :step="item.step||1"
-                  :disabled="type=='detail'||item.disabled"
-                  clearable
-                ></el-input-number>
-              </el-form-item>
+            <!-- inputNumber -->
+            <el-form-item
+              :label-width="item.labelWidth||labelWidth"
+              :label="item.title"
+              :prop="item.key"
+              :required="item.required"
+              :rules="item.rules?[{ required: true, message: `请输入${item.title}`, trigger: 'change' },{ required: true, message: `请输入${item.title}`, trigger: 'blur' },{ validator: validateTrim, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请输入${item.title}`,trigger:'change'},{ required: true, message: `请输入${item.title}`, trigger: 'blur' },{ validator: validateTrim, trigger: 'blur' }]:[]"
+              v-if="item.type=='inputNumber'"
+            >
+              <el-input-number
+                v-model="formData[item.key]"
+                @change="(val)=>inputChange(item, val)"
+                autocomplete="off"
+                :min="item.min||1"
+                :max="item.max"
+                :step="item.step||1"
+                :disabled="type=='detail'||item.disabled"
+                clearable
+              ></el-input-number>
+            </el-form-item>
             <!-- number -->
             <el-form-item
               :label-width="item.labelWidth||labelWidth"
@@ -409,7 +409,7 @@ export default {
   props: ["span", "labelWidth", "items", "content", "disabled", "layout"],
   data() {
     let formData = {};
-    _.each(this.$props.items, item => {
+    _.each(this.$props.items, (item) => {
       if (
         item.type == "checkbox" ||
         item.type == "uploadFile" ||
@@ -443,8 +443,8 @@ export default {
       regionData: regionData,
       defaultProps: {
         children: "children",
-        label: "label"
-      }
+        label: "label",
+      },
     };
   },
   methods: {
@@ -486,7 +486,7 @@ export default {
       this.formData[item.key] = fileList;
     },
     handleSuccess(item, file, fileList) {
-      this.formData[item.key] = fileList.map(unit => {
+      this.formData[item.key] = fileList.map((unit) => {
         return {
           ...unit,
           url: unit.response
@@ -494,7 +494,7 @@ export default {
             : unit.url,
           urlTip: unit.response
             ? unit.response && unit.response.data[0]
-            : unit.url
+            : unit.url,
         };
       });
     },
@@ -522,7 +522,7 @@ export default {
     httpRequest(item, request) {
       upload({
         url: request.action,
-        data: [request.file]
+        data: [request.file],
       })
         .then(({ res, data }) => {
           if (res.status !== 200 || res.data.code != 0) {
@@ -531,7 +531,7 @@ export default {
             );
             request.onError({
               status: "error",
-              uid: request.file.uid
+              uid: request.file.uid,
             });
             return;
           }
@@ -540,15 +540,15 @@ export default {
             urlTip: data[0],
             url: api + data[0],
             uid: request.file.uid,
-            name: request.file["name"]
+            name: request.file["name"],
           };
           this.autouploadList.push(curFile);
           request.onSuccess();
         })
-        .catch(err => {
+        .catch((err) => {
           request.onError({
             status: "error",
-            uid: request.file.uid
+            uid: request.file.uid,
           });
           this.$message.error(err || "请求错误!");
         });
@@ -573,7 +573,7 @@ export default {
         getHalfCheckedKeys: tree.getHalfCheckedKeys(),
         getCurrentKey: tree.getCurrentKey(),
         getCurrentNode: tree.getCurrentNode(),
-        getNode: tree.getNode()
+        getNode: tree.getNode(),
       };
     },
     inputChange(item, val) {
@@ -594,14 +594,14 @@ export default {
     // 父组件通过ref调用此方法-获取form数据
     getData() {
       return new Promise((resolve, reject) => {
-        this.$refs.formRef.validate(boolean => {
+        this.$refs.formRef.validate((boolean) => {
           if (boolean) {
             // 给tree单元，设置checked属性
             for (let i in this.formData) {
               if (this.formData[i] && this.formData[i].type == "tree") {
                 this.formData[i].checked = this.computedTreeData({
                   key: i,
-                  data: this.formData[i].data
+                  data: this.formData[i].data,
                 });
               }
             }
@@ -611,10 +611,16 @@ export default {
           }
         });
       });
-    }
+    },
   },
-  mounted() {}
+  mounted() {},
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="less" scoped>
+/deep/.disabled {
+  .el-upload--picture-card {
+    display: none;
+  }
+}
+</style>
