@@ -403,7 +403,7 @@
 // import { regionData, CodeToText, TextToCode } from "element-china-area-data";
 import regionData from "@/assets/js/province";
 import _ from "lodash";
-import { upload } from "../utils/utils";
+import { upload } from "@/utils/utils";
 const api = process.env.VUE_APP_API_URL;
 export default {
   props: ["span", "labelWidth", "items", "content", "disabled", "layout"],
