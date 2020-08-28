@@ -4,8 +4,8 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 
 import 'antd/dist/antd.css';
-import "./assets/css/index.scss"
-import "./assets/css/page.scss"
+import "./assets/css/index.less"
+import "./assets/css/page.less"
 
 ReactDOM.render(
   // <React.StrictMode>
