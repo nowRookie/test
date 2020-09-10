@@ -30,7 +30,7 @@ let Model = mongoose.model("Model", Schema)
 // 新闻
 router.route("/news")
 	.get((req, res, next) => {
-		Model.find({ ...req.query }, (dbErr, dbRes) => {
+		Model.find(req.query, (dbErr, dbRes) => {
 			if (dbErr) return res.status(500).send("数据库错误")
 			res.send(dbRes)
 		})
@@ -45,7 +45,7 @@ router.route("/news")
 				res.status(500).send("数据库已经存在该数据")
 				return
 			}
-			let model = new Model({ ...req.body })
+			let model = new Model(req.body)
 			// 错误验证
 			let validateErr = model.validateSync()
 			if (validateErr) {
@@ -62,14 +62,14 @@ router.route("/news")
 		})
 	})
 	.put((req, res, next) => {
-		let model = new Model({ ...req.body })
+		let model = new Model(req.body)
 		// 错误验证
 		let validateErr = model.validateSync()
 		if (validateErr) {
 			res.status(500).send(validateErr.errors[Object.keys(validateErr.errors)[0]].message)
 			return
 		}
-		Model.findByIdAndUpdate(req.body._id, { ...req.body }, (dbErr, dbRes) => {
+		Model.findByIdAndUpdate(req.body._id, req.body, (dbErr, dbRes) => {
 			if (dbErr) {
 				res.status(500).send("数据库查询错误")
 				return

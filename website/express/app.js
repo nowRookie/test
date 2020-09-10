@@ -1,24 +1,31 @@
-const express = require('express')
+import express from "express"
 const app = express()
-const port = 8001
+
+import { port } from "./config"
 
 // cors跨域处理
-const cors = require("cors")
+import cors from "cors"
 app.use(cors())
 
 // body-parser中间件
-const bodyParser = require('body-parser')
+import bodyParser from 'body-parser'
 app.use(bodyParser.json())
 
+// multer处理上传图片
+var multer = require('multer')
+var upload = multer({ dest: 'uploads/images/' })
+
+// 静态资源
+app.use(express.static("static"))
+app.use(express.static("uploads"))
+
 // 路由
-const forwardRouter = require("./router/forward/home")
-const backwardRouter = require("./router/backward/admin")
-const filesRouter = require("./middleware/filesRouter")
-app.use("/", [filesRouter, forwardRouter])
-app.use("/admin", backwardRouter)
+
+// ueditor百度文本编辑框
+import "./plugins/ueditor.js"
 
 // mongoose连接
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 mongoose.set('useFindAndModify', false)
 mongoose.connect('mongodb://localhost/myDB', {
   useNewUrlParser: true,
