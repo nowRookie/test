@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="/css/index.css">
+  <script src="/js/jquery.js"></script>
+</head>
+
+<style>
+</style>
+
+<body>
+  <div>欢迎来到静态资源static首页</div>
+  <button onclick="doAdd()">增加新闻</button>
+  <a href="/template/index" target="_blank">下载</a>
+</body>
+
+<script>
+  function doAdd() {
+    let params = {
+      time: "2020-09-30",
+      summarize: "概述",
+      title: "特大新闻",
+      tags: ["news"]
+    }
+    fetch("http://localhost:8000/template/index?time=2020-09-30&download=render", {
+      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: 'same-origin', // include, same-origin, *omit
+      headers: {
+        'user-agent': 'Mozilla/4.0 MDN Example',
+        'content-type': 'application/json'
+      },
+      method: 'get', // *GET, POST, PUT, DELETE, etc.
+      mode: 'cors', // no-cors, cors, *same-origin
+      // redirect: 'follow', // manual, *follow, error
+      referrer: 'no-referrer', // *client, no-referrer
+      // body: JSON.stringify(params)
+    }).then(res => {
+      return res.blob()
+    }).then(res => {
+      let url = URL.createObjectURL(res)
+      let link = document.createElement("a")
+      link.href = url
+      link.download = "a.json"
+      link.innerHTML = "a.json下载"
+      document.body.appendChild(link)
+      link.click()
+    })
+  }
+</script>
+
+</html>

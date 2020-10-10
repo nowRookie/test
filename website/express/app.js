@@ -1,5 +1,6 @@
 import express from "express"
 const app = express()
+import path from "path"
 
 import { port } from "./config"
 
@@ -11,23 +12,29 @@ app.use(cors())
 import bodyParser from 'body-parser'
 app.use(bodyParser.json())
 
-// multer处理上传图片
-var multer = require('multer')
-var upload = multer({ dest: 'uploads/images/' })
+// middleware打印log信息
+import log from "./middleware/log"
+app.use(log())
 
 // 静态资源
+app.set('view engine', 'hbs')
+app.set("views", process.cwd() + "/template")
 app.use(express.static("static"))
 app.use(express.static("uploads"))
+app.use("/virtual", express.static(path.join(__dirname, "static")))
 
 // 路由
+import router from "./router/index"
+router(app)
 
 // ueditor百度文本编辑框
-import "./plugins/ueditor.js"
+import ueditor from "./plugins/ueditor.js"
+ueditor(app)
 
 // mongoose连接
 import mongoose from 'mongoose';
 mongoose.set('useFindAndModify', false)
-mongoose.connect('mongodb://localhost/myDB', {
+mongoose.connect('mongodb://localhost/websiteDB', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });

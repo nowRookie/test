@@ -1,7 +1,8 @@
-const express = require("express")
-const router = express.Router()
+import express from "express"
+const eRouter = express.Router()
 const mongoose = require("mongoose")
 
+// schema(定义数据表)
 let Schema = mongoose.Schema({
 	title: { type: String, required: [true, "title 必填"] },
 	summarize: { type: String, required: [true, "summarize 必填"] },
@@ -25,10 +26,21 @@ let Schema = mongoose.Schema({
 		}
 	}
 }, { collection: "news" })
+
+// 数据表定义方法
+Schema.methods.test = () => {
+	console.log("testing!!!")
+}
+
+// mongoose规定的一个类
 let Model = mongoose.model("Model", Schema)
 
+// 调用数据表方法
+let testModel = new Model()
+testModel.test()
+
 // 新闻
-router.route("/news")
+eRouter.route("/news")
 	.get((req, res, next) => {
 		Model.find(req.query, (dbErr, dbRes) => {
 			if (dbErr) return res.status(500).send("数据库错误")
@@ -87,4 +99,4 @@ router.route("/news")
 		})
 	})
 
-module.exports = router
+export default eRouter

@@ -46,6 +46,42 @@ export function downloadBlob({ name, ieName, url, method, data, params, type } =
   })
 }
 
+// xhr下载blob文件：url请求路径、params参数、name文件名、type文件类型(.xlsx等)
+function downloadBlobXhr({ url, params, name, type }) {
+  return new Promise((resolve, reject) => {
+    var requstUrl = url + "?"
+    for (var key in params) {
+      requstUrl += `${key}=${params[key]}&`
+    }
+    var xhr = new XMLHttpRequest();
+    xhr.open('post', requstUrl, true);
+    xhr.setRequestHeader("token", window.sessionStorage.getItem('token'))
+    xhr.responseType = 'blob';
+    xhr.onload = function () {
+      try {
+        var blob = this.response;
+        if (window.navigator.msSaveOrOpenBlob) {
+          window.navigator.msSaveBlob(blob, name);
+        } else {
+          var downloadElement = document.createElement('a');
+          downloadElement.href = window.URL.createObjectURL(blob);
+          document.body.appendChild(downloadElement);
+          downloadElement.download = name + type;
+          downloadElement.click();
+          document.body.removeChild(downloadElement);
+          window.URL.revokeObjectURL(downloadElement.href);
+          resolve()
+        }
+        callback && callback()
+      } catch (err) {
+        console.log("下载文件错误:", err)
+        reject(err)
+      }
+    }
+    xhr.send(null);
+  })
+}
+
 // 手动上传文件，data必须为[File]数组
 export function upload({ url, data, params, name, headers }) {
   return new Promise((resolve, reject) => {
