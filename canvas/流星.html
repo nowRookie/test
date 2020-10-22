@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>index</title>
+</head>
+<style>
+	html,
+	body {
+		width: 100%;
+		height: 100%;
+		margin: 0;
+	}
+</style>
+
+<body>
+	<canvas id="canvas"></canvas>
+</body>
+
+</html>
+<script>
+	function typeOf(val) {
+		var typeString = Object.prototype.toString.call(val)
+		return typeString.match(/\[object\s(.*)\]/)[1].toLowerCase()
+	}
+	function randomScope(start, end) {
+		if (end - start <= 0) {
+			throw new Error("初始值不能大于结束值")
+		}
+		return start + Math.random() * (end - start)
+	}
+	function randomColor() {
+		return '#' + Math.random().toString(16).substr(2, 6).toUpperCase();
+	}
+	function getStyle(element, attr) {
+		if (getComputedStyle) {
+			return getComputedStyle(element, null)[attr]
+		}
+		return element.currentStyle[attr] || element.style[attr]
+	}
+
+	var body = document.getElementsByTagName("body")[0]
+	var width = getStyle(body, "width").replace("px", "")
+	var height = getStyle(body, "height").replace("px", "")
+
+	var canvas = document.getElementById("canvas")
+	canvas.setAttribute("width", width)
+	canvas.setAttribute("height", height)
+
+	var ctx = canvas.getContext("2d");
+	ctx.width = Number(width)
+	ctx.height = Number(height)
+
+	class Meteor {
+		constructor({ x, y, dx, dy, radius, tail, ctx }) {
+			this.x = x
+			this.y = y
+			this.dx = dx
+			this.dy = dy
+			this.θ = Math.atan(dy / dx)
+			this.tail = tail
+			this.ctx = ctx
+			this.radius = radius
+		}
+		move() {
+			var ctx = this.ctx
+			if (this.x + this.radius >= ctx.width || this.y + this.radius >= ctx.height) {
+				this.x = 0
+				this.y = 0
+			}
+			this.x += this.dx
+			this.y += this.dy
+		}
+		draw() {
+			var ctx = this.ctx
+			let x = this.x
+			let y = this.y
+			let radius = this.radius
+			let θ = this.θ
+			ctx.save()
+			ctx.beginPath()
+			// ctx.moveTo(x + radius * Math.cos(θ + Math.PI / 2), y + radius * Math.sin(θ + Math.PI / 2))
+			// ctx.lineTo(x + radius * Math.cos(θ - Math.PI / 2), y + radius * Math.sin(θ - Math.PI / 2))
+			// var endX = x - this.tail
+			// var endY = y - this.tail * Math.tan(θ)
+			// ctx.lineTo(endX, endY)
+			// ctx.closePath()
+			// var gradient = ctx.createLinearGradient(x, y, endX, endY)
+			// gradient.addColorStop(0, "rgba(128,0,128,.3)")
+			// gradient.addColorStop(0.2, "rgba(244,164,96,.3)")
+			// gradient.addColorStop(0.7, "rgba(155,247,240,.3)")
+			// ctx.fillStyle = gradient
+			// ctx.fill()
+			// // ctx.beginPath()
+			// ctx.globalCompositeOperation = "source-out"
+			// ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false)
+			// ctx.fillStyle = "rgba(128,0,128,.3)"
+			// ctx.fill()
+
+			ctx.lineWidth = 3
+			ctx.moveTo(x, y)
+			var endX = x - this.tail * Math.cos(θ)
+			var endY = y - this.tail * Math.sin(θ)
+			ctx.lineTo(endX, endY)
+			var gradient = ctx.createLinearGradient(x, y, endX, endY)
+			gradient.addColorStop(0, "rgba(0,0,0,1)")
+			gradient.addColorStop(1, "rgba(255,255,255,0)")
+			ctx.strokeStyle = gradient
+			ctx.stroke()
+			ctx.restore()
+		}
+	}
+
+	var meteor = new Meteor({ x: width / 2, y: height / 2, dx: 10, dy: 5, tail: 200, radius: 10, ctx });
+
+	(function animation() {
+		requestAnimationFrame(animation)
+		ctx.clearRect(0, 0, width, height)
+		meteor.move()
+		meteor.draw()
+	})()
+</script>

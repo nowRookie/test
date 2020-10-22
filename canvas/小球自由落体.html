@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>小球自由落体</title>
+</head>
+<style>
+	html,
+	body {
+		width: 100%;
+		height: 100%;
+		margin: 0;
+	}
+</style>
+
+<body>
+	<canvas id="canvas"></canvas>
+</body>
+
+</html>
+<script>
+	function typeOf(val) {
+		var typeString = Object.prototype.toString.call(val)
+		return typeString.match(/\[object\s(.*)\]/)[1].toLowerCase()
+	}
+	function randomScope(start, end) {
+		if (end - start <= 0) {
+			throw new Error("初始值不能大于结束值")
+		}
+		return start + Math.random() * (end - start)
+	}
+	function randomColor() {
+		return '#' + Math.random().toString(16).substr(2, 6).toUpperCase();
+	}
+	function getStyle(element, attr) {
+		if (getComputedStyle) {
+			return getComputedStyle(element, null)[attr]
+		}
+		return element.currentStyle[attr] || element.style[attr]
+	}
+
+	var body = document.getElementsByTagName("body")[0]
+	var width = getStyle(body, "width").replace("px", "")
+	var height = getStyle(body, "height").replace("px", "")
+
+	var canvas = document.getElementById("canvas")
+	canvas.setAttribute("width", width)
+	canvas.setAttribute("height", height)
+
+	var ctx = canvas.getContext("2d");
+	ctx.width = Number(width)
+	ctx.height = Number(height)
+
+	function Ball() { }
+	Ball.prototype.draw = function (ctx) {
+		ctx.clearRect(0, 0, ctx.width, ctx.height)
+		ctx.beginPath()
+		ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false)
+		ctx.stroke()
+	}
+	var ball = new Ball()
+	ball.x = width / 3
+	ball.y = height / 3
+	ball.radius = 50
+
+	var step = 1;
+	var gravity = 1.2;//自由落体系数
+	var bounce = -0.8;//反弹系数
+	(function animation() {
+		requestAnimationFrame(animation)
+		ball.y += step
+		step += gravity
+		if (ball.y + ball.radius >= height) {
+			ball.y = height - ball.radius
+			step *= bounce
+			if (Math.abs(step) < 10) {
+				step *= 0.7
+			}
+			if (Math.abs(step) < 5) {
+				step *= 0.5
+			}
+			if (Math.abs(step) < 2) {
+				step *= 0
+			}
+		}
+		ball.draw(ctx)
+	})()
+</script>

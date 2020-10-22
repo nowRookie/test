@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>写轮眼(椭圆)</title>
+</head>
+<style>
+	html,
+	body {
+		width: 100%;
+		height: 100%;
+		margin: 0;
+	}
+</style>
+
+<body>
+	<canvas id="canvas"></canvas>
+</body>
+
+</html>
+<script>
+	function typeOf(val) {
+		var typeString = Object.prototype.toString.call(val)
+		return typeString.match(/\[object\s(.*)\]/)[1].toLowerCase()
+	}
+	function randomScope(start, end) {
+		if (end - start <= 0) {
+			throw new Error("初始值不能大于结束值")
+		}
+		return start + Math.random() * (end - start)
+	}
+	function randomColor() {
+		return '#' + Math.random().toString(16).substr(2, 6).toUpperCase();
+	}
+	function getStyle(element, attr) {
+		if (getComputedStyle) {
+			return getComputedStyle(element, null)[attr]
+		}
+		return element.currentStyle[attr] || element.style[attr]
+	}
+
+	var body = document.getElementsByTagName("body")[0]
+	var width = getStyle(body, "width").replace("px", "")
+	var height = getStyle(body, "height").replace("px", "")
+
+	var canvas = document.getElementById("canvas")
+	canvas.setAttribute("width", width)
+	canvas.setAttribute("height", height)
+
+	var ctx = canvas.getContext("2d");
+	ctx.width = Number(width)
+	ctx.height = Number(height)
+
+	function Ellipse(ctx) { }
+	Ellipse.prototype.draw = function () {
+		ctx.save()
+		var ratio = this.xAxis > this.yAxis ? this.xAxis : this.yAxis
+		var ratioX = this.xAxis * this.scale / ratio
+		var ratioY = this.yAxis * this.scale / ratio
+		ctx.beginPath()
+		ctx.scale(ratioX, ratioY)
+		ctx.arc(this.circle[0] / ratioX, this.circle[1] / ratioY, this.radius, 0, 2 * Math.PI, false)
+		ctx.restore()
+		ctx.stroke()
+	}
+
+	var ellipseArr = []
+	for (var i = 0; i < 5; i++) {
+		var ellipse = new Ellipse()
+		ellipse.circle = [width / 2, height / 2]
+		ellipse.xAxis = 150
+		ellipse.yAxis = 80
+		ellipse.radius = 50
+		ellipse.scale = i//缩放比例
+		ellipseArr.push(ellipse)
+	}
+
+	(function animation() {
+		requestAnimationFrame(animation)
+		ctx.clearRect(0, 0, width, height)
+		ellipseArr.forEach(ellipse => {
+			ellipse.draw()
+		})
+	})()
+
+</script>

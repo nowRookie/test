@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>九大行星</title>
+</head>
+<style>
+	html,
+	body {
+		width: 100%;
+		height: 100%;
+		margin: 0;
+	}
+</style>
+
+<body>
+	<canvas id="canvas"></canvas>
+</body>
+
+</html>
+<script>
+	function typeOf(val) {
+		var typeString = Object.prototype.toString.call(val)
+		return typeString.match(/\[object\s(.*)\]/)[1].toLowerCase()
+	}
+	function randomScope(start, end) {
+		if (end - start <= 0) {
+			throw new Error("初始值不能大于结束值")
+		}
+		return start + Math.random() * (end - start)
+	}
+	function randomColor() {
+		return '#' + Math.random().toString(16).substr(2, 6).toUpperCase();
+	}
+	function getStyle(element, attr) {
+		if (getComputedStyle) {
+			return getComputedStyle(element, null)[attr]
+		}
+		return element.currentStyle[attr] || element.style[attr]
+	}
+
+	var body = document.getElementsByTagName("body")[0]
+	var width = getStyle(body, "width").replace("px", "")
+	var height = getStyle(body, "height").replace("px", "")
+
+	var canvas = document.getElementById("canvas")
+	canvas.setAttribute("width", width)
+	canvas.setAttribute("height", height)
+
+	var ctx = canvas.getContext("2d");
+	ctx.width = Number(width)
+	ctx.height = Number(height)
+
+	function Ball() { }
+	Ball.prototype.draw = function (ctx) {
+		// 绘制小球
+		ctx.beginPath()
+		ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false)
+		ctx.fillStyle = this.color
+		ctx.fill()
+		ctx.save()
+		// 绘制轨迹
+		ctx.beginPath()
+		var ratioX = this.xAxis / this.radius//这里是用的ball的半径来作为的轨迹半径
+		var ratioY = this.yAxis / this.radius
+		ctx.scale(ratioX, ratioY)
+		ctx.arc(this.circle[0] / ratioX, this.circle[1] / ratioY, this.radius, 0, 2 * Math.PI, false)
+		ctx.restore()
+		ctx.stroke()
+	}
+	var circle = [width / 2, height / 2];
+
+	var ballArr = []
+	for (let i = 0; i < 10; i++) {
+		var ball = new Ball()
+		ball.circle = circle//围绕运动的(轨迹)圆心
+		ball.radius = i == 0 ? 15 : 3 + randomScope(1, 4)
+		ball.scale = i * 2 / 10//轨迹缩放比例
+		ball.color = i == 0 ? "red" : randomColor()
+		ball.step = randomScope(8, 9) / 1000
+		ball.angle = 0 + Math.random() * 20
+		ball.xAxis = 350 * ball.scale//椭圆x半径
+		ball.yAxis = 80 * ball.scale//椭圆y半径
+		ballArr.push(ball)
+	}
+
+	/* 
+		椭圆极坐标公式：
+		x=a*cos(θ)
+		y=b*cos(θ)
+	*/
+	(function animation() {
+		requestAnimationFrame(animation)
+		ctx.clearRect(0, 0, ctx.width, ctx.height)
+		ballArr.forEach(ball => {
+			ball.x = circle[0] + ball.xAxis * Math.cos(ball.angle)
+			ball.y = circle[1] + ball.yAxis * Math.sin(ball.angle)
+			ball.angle += ball.step
+			ball.draw(ctx)
+		})
+	})()
+</script>

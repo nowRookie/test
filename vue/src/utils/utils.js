@@ -47,7 +47,7 @@ export function downloadBlob({ name, ieName, url, method, data, params, type } =
 }
 
 // xhr下载blob文件：url请求路径、params参数、name文件名、type文件类型(.xlsx等)
-function downloadBlobXhr({ url, params, name, type }) {
+export function downloadBlobXhr({ url, params, name, type }) {
   return new Promise((resolve, reject) => {
     var requstUrl = url + "?"
     for (var key in params) {
@@ -145,4 +145,22 @@ export function dealDate({ value, format } = {}) {
 export function calculate({ value, format }) {
   let formater = format || "YYYY-MM-DD";
   return moment(value).format(formater);
+}
+
+// 获取样式
+export function getStyle(element, attr) {
+  if (getComputedStyle) {
+    return getComputedStyle(element, null)[attr]
+  }
+  return element.currentStyle[attr] || element.style[attr]
+}
+
+// 随机数范围
+export function randomScope(start, end) {
+  return start + Math.random() * (end - start)
+}
+
+// 随机颜色
+export function randomColor() {
+  return '#' + Math.random().toString(16).substr(2, 6).toUpperCase();
 }

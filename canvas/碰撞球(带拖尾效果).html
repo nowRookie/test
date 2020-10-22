@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>碰撞球(带拖尾效果)</title>
+</head>
+<style>
+  html,
+  body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+  }
+</style>
+
+<body>
+  <canvas id="canvas"></canvas>
+</body>
+
+</html>
+<script>
+  function typeOf(val) {
+    var typeString = Object.prototype.toString.call(val)
+    return typeString.match(/\[object\s(.*)\]/)[1].toLowerCase()
+  }
+  function randomScope(start, end) {
+    if (end - start <= 0) {
+      throw new Error("初始值不能大于结束值")
+    }
+    return start + Math.random() * (end - start)
+  }
+  function randomColor() {
+    return '#' + Math.random().toString(16).substr(2, 6).toUpperCase();
+  }
+  function getStyle(element, attr) {
+    if (getComputedStyle) {
+      return getComputedStyle(element, null)[attr]
+    }
+    return element.currentStyle[attr] || element.style[attr]
+  }
+
+  var body = document.getElementsByTagName("body")[0]
+  var width = getStyle(body, "width").replace("px", "")
+  var height = getStyle(body, "height").replace("px", "")
+
+  var canvas = document.getElementById("canvas")
+  canvas.setAttribute("width", width)
+  canvas.setAttribute("height", height)
+
+  var ctx = canvas.getContext("2d");
+	ctx.width = Number(width)
+	ctx.height = Number(height)
+
+  function Ball() { }
+  Ball.prototype.draw = function (ctx) {
+    // 关键点，每一帧的时候设置一个半透明层(这样能模拟出拖尾效果)
+    ctx.fillStyle = "rgba(0,0,0,.1)"
+    ctx.rect(0, 0, ctx.width, ctx.height)
+    ctx.fill()
+
+    ctx.beginPath()
+    ctx.fillStyle = this.color
+    ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false)
+    ctx.fill()
+  }
+
+  var ballArr = []
+  for (var i = 0; i < 10; i++) {
+    var ball = new Ball();
+    ball.x = randomScope(0, ctx.width);
+    ball.y = randomScope(0, ctx.height);
+    ball.radius = randomScope(20, 40);
+    ball.color = randomColor()
+    ball.step = randomScope(5, 10);
+    ball.dirX = Math.random() > 0.5 ? 1 : -1;//x轴运动方向
+    ball.dirY = Math.random() > 0.5 ? 1 : -1;
+    ballArr.push(ball)
+  }
+
+  function direction(ball) {
+    if (ball.y + ball.radius >= ctx.height) {
+      ball.dirY = -1
+    }
+    if (ball.y <= ball.radius) {
+      ball.dirY = 1
+    }
+    if (ball.x + ball.radius >= ctx.width) {
+      ball.dirX = -1
+    }
+    if (ball.x <= ball.radius) {
+      ball.dirX = 1
+    }
+    ball.y += ball.dirY * ball.step
+    ball.x += ball.dirX * ball.step
+  }
+
+  (function animation() {
+    requestAnimationFrame(animation)
+    // ctx.clearRect(0, 0, width, height)
+    ballArr.forEach(ball => {
+      direction(ball)
+      ball.draw(ctx)
+    })
+  })()
+</script>
