@@ -1,11 +1,27 @@
 import axios from "axios"
 import _ from "lodash"
+import { Loading } from "element-ui"
 
 import moment from "moment"
 
 const api = process.env.VUE_APP_API_URL;
 
 export default {}
+
+let load
+export const loading = {
+  open() {
+    load = Loading.service({
+      lock: true,
+      text: 'Loading',
+      spinner: 'el-icon-loading',
+      background: 'rgba(0, 0, 0, 0.7)'
+    })
+  },
+  close() {
+    load ? load.close() : null
+  }
+}
 
 // 下载二进制文件
 export function downloadBlob({ name, ieName, url, method, data, params, type } = {}) {
@@ -158,6 +174,14 @@ export function getStyle(element, attr) {
 // 随机数范围
 export function randomScope(start, end) {
   return start + Math.random() * (end - start)
+}
+
+// 范围以外随机数：boundary边界距离
+export function outerScope(start, end, boundary) {
+  boundary = boundary || 100;
+  return Math.random() < 0.5
+    ? Math.random() * randomScope(start - boundary, start)
+    : randomScope(end, end + boundary);
 }
 
 // 随机颜色

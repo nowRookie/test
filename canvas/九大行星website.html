@@ -5,6 +5,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>九大行星</title>
+	<script src="../assets/js/jquery.js"></script>
 </head>
 <style>
 	html,
@@ -13,15 +14,61 @@
 		height: 100%;
 		margin: 0;
 	}
+
+	.dialog {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		z-index: 2;
+		margin-top: -100px;
+		margin-left: -200px;
+		width: 400px;
+		height: 200px;
+		background: white;
+	}
+
+	.hide {
+		display: none;
+	}
+
+	.block {
+		display: block;
+	}
 </style>
 
 <body>
 	<!-- <img src="../assets//images/starSky.png" alt="" id="img" style="display:none;"> -->
-	<canvas id="canvas"></canvas>
+	<div id="canvas"></div>
+	<div class="dialog hide">4444</div>
 </body>
 
 </html>
 <script>
+	function calCursor(event) {
+		let x = event.offsetX
+		let y = event.offsetY
+		$(".dialog").removeClass("hide").addClass("block")
+	}
+	window.onmousemove = debounce(calCursor, 1000)
+	// 防抖
+	function debounce(fn, delay) {
+		let timer = null
+		return function () {
+			if (timer) clearTimeout(timer)
+			timer = setTimeout(() => { fn.apply(this, arguments) }, delay)
+		}
+	}
+	// 节流
+	function throttle(fn, delay) {
+		let prev = Date.now()
+		return function () {
+			let now = Date.now()
+			if (now - prev > delay) {
+				fn && fn.apply(this, arguments)
+				prev = Date.now()
+			}
+		}
+	}
 	function typeOf(val) {
 		var typeString = Object.prototype.toString.call(val)
 		return typeString.match(/\[object\s(.*)\]/)[1].toLowerCase()
@@ -44,16 +91,21 @@
 	}
 
 	var body = document.getElementsByTagName("body")[0]
-	var width = getStyle(body, "width").replace("px", "")
-	var height = getStyle(body, "height").replace("px", "")
+	var width = parseInt(getStyle(body, "width"))
+	var height = parseInt(getStyle(body, "height"))
 
-	var canvas = document.getElementById("canvas")
+	var canvas = document.createElement("canvas")
 	canvas.setAttribute("width", width)
 	canvas.setAttribute("height", height)
 
+	var container = document.getElementById("canvas")
+	container.style.width = width + "px"
+	container.style.height = height + "px"
+	container.appendChild(canvas)
+
 	var ctx = canvas.getContext("2d");
-	ctx.width = Number(width)
-	ctx.height = Number(height)
+	ctx.width = width
+	ctx.height = height
 
 	function Ball() { }
 	Ball.prototype.draw = function () {
@@ -100,7 +152,7 @@
 		ball.radius = i == 0 ? 15 : 3 + randomScope(1, 4)
 		ball.scale = i * 2 / 10//轨迹缩放比例
 		ball.color = i == 0 ? "red" : randomColor()
-		ball.step = randomScope(4,6) / 1000//小球旋转角度步长
+		ball.step = randomScope(4, 6) / 1000//小球旋转角度步长
 		ball.angle = 0 + Math.random() * 20//围绕轨迹的角度
 		ball.xAxis = 450 * ball.scale//椭圆x半径
 		ball.yAxis = 100 * ball.scale//椭圆y半径

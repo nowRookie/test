@@ -9,8 +9,9 @@ import { Message } from 'element-ui';
 import Element from "element-ui"
 import "element-ui/lib/theme-chalk/index.css";
 
-import "@/assets/css/index.less";
-import "@/assets/css/theme.less";
+import "@/assets/css/elementUI.css";
+import "@/assets/css/theme.css";
+import "@/assets/css/index.css";
 
 Vue.use(Element)
 Vue.config.productionTip = false
