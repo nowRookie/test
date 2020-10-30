@@ -112,7 +112,7 @@ export default Vue.extend({
           pageParams
         );
       }
-      loading.open();
+      // loading.open();
       axios(options)
         .then((res) => {
           if (res.code !== 200) {
@@ -139,7 +139,7 @@ export default Vue.extend({
           });
         })
         .then(() => {
-          loading.close();
+          // loading.close();
         });
     },
     handleSelectionChange(val) {

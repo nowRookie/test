@@ -7,15 +7,18 @@
           >查询</el-button
         >
       </template>
-      <template v-slot:customer>这是一段自定义内容</template>
     </container-input>
+    <!-- 功能按钮 -->
+    <div>
+      <el-button class="orangebtn" @click="$router.push({path:'/backend/newNote',query:{}})">新增</el-button>
+    </div>
     <!-- table list -->
     <query-table
       :items="querytableItems"
       :query="queryParams"
       type="selection"
       :afterQuery="afterQuery"
-      class="w100"
+      class="w100 mt20"
     >
       <template v-slot:customer="scope">
         <el-button @click="cradle(scope)">按钮</el-button>

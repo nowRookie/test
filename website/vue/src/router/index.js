@@ -34,10 +34,18 @@ const routes = [
         path: "wholeStackList",
         name: "wholeStackList",
         meta: {
-          title: "走向全栈list"
+          title: "走向全栈=>list"
         },
         component: () => import("@/views/backend/wholeStack/list.vue")
-      }
+      },
+      {
+        path: "newNote",
+        name: "newNote",
+        meta: {
+          title: "走向全栈=>新建笔记"
+        },
+        component: () => import("@/views/backend/wholeStack/newNote.vue")
+      },
     ]
   },
 ]
