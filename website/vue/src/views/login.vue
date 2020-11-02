@@ -55,7 +55,7 @@ export default {
             method: "post",
             data: { ...this.ruleForm },
           });
-          this.$router.push({ path: "/backend", query: {} });
+          this.$router.push({ path: "/backend/wholeStackList", query: {} });
           // axios(options)
           //   .then((res) => {
           //     console.log("res===", res);

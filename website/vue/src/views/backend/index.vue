@@ -7,7 +7,11 @@
           class="tc cf pointer iconfont icon-menu"
           @click="isCollapse = !isCollapse"
         ></i>
-        <el-menu class="el-menu-vertical-demo" :collapse="isCollapse">
+        <el-menu
+          class="el-menu-vertical-demo"
+          :default-active="$route.path"
+          :collapse="isCollapse"
+        >
           <BaseMenu :data="memuList"></BaseMenu>
         </el-menu>
       </div>
@@ -84,19 +88,44 @@ export default {
           id: "2",
           name: "新闻",
           icon: "icon-image-text",
-          childrend: [],
+          url: "/backend/wholeStackList",
+          children: [],
         },
         {
           id: "3",
           name: "跟着时代走",
           icon: "icon-assessed-badge",
-          childrend: [],
+          url: "/backend/wholeStackList",
+          children: [],
         },
         {
           id: "4",
           name: "设置",
           icon: "icon-set",
-          childrend: [],
+          url: "/backend/setting",
+          children: [
+            {
+              id: "4-1",
+              name: "主题",
+              icon: "icon-set",
+              url: "/backend/setting/theme",
+              children: [],
+            },
+            {
+              id: "4-2",
+              name: "修改密码",
+              icon: "icon-set",
+              url: "/backend/setting/password",
+              children: [],
+            },
+            {
+              id: "4-3",
+              name: "首页canvas",
+              icon: "icon-set",
+              url: "/backend/setting/homeCanvas",
+              children: [],
+            },
+          ],
         },
       ],
     };
