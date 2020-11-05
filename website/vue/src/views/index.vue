@@ -1,24 +1,7 @@
 <template>
   <div class="index">
     <div id="canvas"></div>
-    <div
-      :class="['dialog', dialogVisible ? '' : 'transparent']"
-      @mouseover="cancelCloseDialog"
-      @mouseout="closeDialogDelay"
-    >
-      <div
-        class="icon icon1"
-        @click="$router.push({ path: '/login', query: {} })"
-      ></div>
-      <div
-        class="icon icon2"
-        @click="$router.push({ path: '/login', query: {} })"
-      ></div>
-      <div
-        class="icon icon3"
-        @click="$router.push({ path: '/login', query: {} })"
-      ></div>
-    </div>
+    <catClaw></catClaw>
   </div>
 </template>
 
@@ -26,6 +9,8 @@
 import axios from "axios";
 import _ from "lodash";
 import moment from "moment";
+
+import catClaw from "@/components/page/catClaw.vue";
 
 import {
   getOptions,
@@ -38,41 +23,14 @@ import {
 } from "@/utils/utils";
 
 var starSkyPng = require("@/assets/img/starSky.png");
+
 export default {
   name: "index",
-  components: {},
+  components: { catClaw },
   data() {
-    return {
-      dialogTimer: null,
-      dialogVisible: false,
-    };
+    return {};
   },
   methods: {
-    // 取消关闭弹窗
-    cancelCloseDialog() {
-      this.dialogVisible = true;
-      clearTimeout(this.dialogTimer);
-    },
-    // 过2秒关闭弹窗
-    closeDialogDelay() {
-      this.dialogTimer = setTimeout(() => {
-        this.dialogVisible = false;
-      }, 2000);
-    },
-    cursorAction() {
-      let self = this;
-      function calCursor(event) {
-        if (self.dialogVisible) return;
-
-        // 过2秒关闭弹窗
-        self.closeDialogDelay();
-
-        let x = event.offsetX;
-        let y = event.offsetY;
-        self.dialogVisible = true;
-      }
-      window.onmousemove = debounce(calCursor, 1000);
-    },
     initCanvas() {
       var body = document.getElementsByTagName("body")[0];
       // var width = parseInt(getStyle(body, "width"));
@@ -292,52 +250,10 @@ export default {
     },
   },
   mounted() {
-    this.cursorAction();
     this.initCanvas();
   },
 };
 </script>
 
 <style lang="less" scoped>
-.dialog {
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  z-index: 2;
-  width: 200px;
-  height: 220px;
-  margin-left: -100px;
-  margin-top: -100px;
-  border-radius: 50%;
-  background: pink;
-  transition: 1s;
-  .icon {
-    cursor: pointer;
-    position: absolute;
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    background: pink;
-    transition: 1s cubic-bezier(0.52, -0.52, 0.43, 1.47);
-  }
-  .icon1 {
-    left: -150px;
-    top: -50px;
-  }
-  .icon2 {
-    left: 50px;
-    top: -180px;
-  }
-  .icon3 {
-    left: 250px;
-    top: -50px;
-  }
-}
-.transparent {
-  opacity: 0;
-  .icon {
-    left: 50px;
-    top: 50px;
-  }
-}
 </style>

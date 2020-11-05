@@ -11,14 +11,14 @@
       <el-table-column
         type="selection"
         width="55"
-        v-if="type=='selection'"
+        v-if="type == 'selection'"
         :selectable="selectableFun"
       ></el-table-column>
       <el-table-column
         :prop="item.key"
         :label="item.title"
-        :width="item.width||''"
-        v-for="(item,index) in items"
+        :width="item.width || ''"
+        v-for="(item, index) in items"
         :key="index"
       >
         <template slot-scope="scope">
@@ -27,24 +27,24 @@
             :index="scope.$index"
             :row="scope.row"
             :column="scope.column"
-            v-if="item.type=='slot'"
+            v-if="item.type == 'slot'"
           ></slot>
-          <span v-else>{{scope.row[item.key]}}</span>
+          <span v-else>{{ scope.row[item.key] }}</span>
         </template>
       </el-table-column>
     </el-table>
     <el-pagination
-      v-if="!(hidePage===true)"
+      v-if="!(hidePage === true)"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="page.pageNum"
-      :hide-on-single-page="hideSingle?true:false"
+      :hide-on-single-page="hideSingle ? true : false"
       background
-      :page-sizes="[10,20,30,40]"
+      :page-sizes="[10, 20, 30, 40]"
       :page-size="page.pageSize"
       layout="total, sizes, prev, pager, next, jumper"
       :total="page.total"
-      style="margin-top:15px;text-align:right;"
+      style="margin-top: 15px; text-align: right"
     ></el-pagination>
   </div>
 </template>
@@ -112,17 +112,17 @@ export default Vue.extend({
           pageParams
         );
       }
-      // loading.open();
+      loading(true);
       axios(options)
         .then((res) => {
-          if (res.code !== 200) {
+          if (res.data.code !== 200) {
             this.$message.error(
               res.statusText || res.data.message || "请求错误!"
             );
             return;
           }
-          let wrapper = (res.data && res.data.data) || {};
-          let data = wrapper.list || [];
+          let wrapper = res.data || {};
+          let data = wrapper.data || [];
           this.dataList = this.$attrs.afterQuery
             ? this.$attrs.afterQuery({ res, data: data })
             : data;
@@ -139,7 +139,7 @@ export default Vue.extend({
           });
         })
         .then(() => {
-          // loading.close();
+          loading(false);
         });
     },
     handleSelectionChange(val) {

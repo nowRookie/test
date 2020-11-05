@@ -1,5 +1,5 @@
 <template>
-  <div class="index"></div>
+  <div class="layout"></div>
 </template>
 
 <script>
@@ -10,7 +10,7 @@ import moment from "moment";
 import { getOptions } from "@/utils/utils";
 
 export default {
-  name: "index",
+  name: "layout",
   components: {},
   data() {
     return {};

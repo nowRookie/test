@@ -8,10 +8,20 @@
         label-width="100px"
       >
         <el-form-item label="用户名" prop="username">
-          <el-input v-model="ruleForm.username"></el-input>
+          <el-input
+            v-model="ruleForm.username"
+            :autofocus="true"
+            v-focus.native="true"
+            ref="username"
+            @keyup.enter.native="submitForm('ruleForm')"
+          ></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
-          <el-input type="password" v-model="ruleForm.password"></el-input>
+          <el-input
+            type="password"
+            v-model="ruleForm.password"
+            @keyup.enter.native="submitForm('ruleForm')"
+          ></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitForm('ruleForm')"
@@ -21,6 +31,8 @@
         </el-form-item>
       </el-form>
     </div>
+    <!-- 右下角猫爪链接 -->
+    <catClaw></catClaw>
   </div>
 </template>
 
@@ -31,9 +43,19 @@ import moment from "moment";
 
 import { getOptions } from "@/utils/utils";
 
+import catClaw from "@/components/page/catClaw.vue";
+
 export default {
   name: "login",
-  components: {},
+  components: { catClaw },
+  directives: {
+    focus: {
+      inserted(el, binding, vnode) {
+        console.log("el====", el, binding, vnode);
+        // el.focus();
+      },
+    },
+  },
   data() {
     return {
       ruleForm: {
@@ -48,24 +70,26 @@ export default {
   },
   methods: {
     submitForm(formName) {
+      console.log(api);
       this.$refs[formName].validate((valid) => {
         if (valid) {
           const options = getOptions({
-            url: "/login",
+            url: "/backend/login",
             method: "post",
             data: { ...this.ruleForm },
           });
-          this.$router.push({ path: "/backend/wholeStackList", query: {} });
-          // axios(options)
-          //   .then((res) => {
-          //     console.log("res===", res);
-          //   })
-          //   .catch((err) => {
-          //     this.$message({
-          //       type: "error",
-          //       message: err,
-          //     });
-          //   })
+          axios(options)
+            .then((res) => {
+              let user = res.data.data || {};
+              sessionStorage.setItem("user", JSON.stringify(user));
+              this.$router.push({ path: "/backend" });
+            })
+            .catch((err) => {
+              this.$message({
+                type: "error",
+                message: err,
+              });
+            });
         }
       });
     },
@@ -73,7 +97,9 @@ export default {
       this.$refs[formName].resetFields();
     },
   },
-  mounted() {},
+  mounted() {
+    this.$refs.username.focus();
+  },
 };
 </script>
 

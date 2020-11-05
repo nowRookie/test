@@ -72,24 +72,34 @@ const routes = [
     },
     component: () => import("@/views/backend/index.vue"),
     children: [
-      // 后台=>走向全栈=>list
+      // 后台=>笔记列表
       {
-        path: "wholeStackList",
-        name: "wholeStackList",
+        path: "noteList",
+        name: "noteList",
         meta: {
-          title: "后台=>走向全栈=>list"
+          title: "后台=>笔记列表"
         },
-        component: () => import("@/views/backend/wholeStack/list.vue"),
+        component: () => import("@/views/backend/note/list.vue"),
         children: [],
       },
-      // 后台=>走向全栈=>新建笔记
+      // 后台=>新建笔记
       {
         path: "newNote",
         name: "newNote",
         meta: {
-          title: "走向全栈=>新建笔记"
+          title: "新建笔记"
         },
-        component: () => import("@/views/backend/wholeStack/newNote.vue"),
+        component: () => import("@/views/backend/note/newNote.vue"),
+        children: [],
+      },
+      // 后台=>笔记详情
+      {
+        path: "noteDetail",
+        name: "noteDetail",
+        meta: {
+          title: "笔记详情"
+        },
+        component: () => import("@/views/backend/note/noteDetail.vue"),
         children: [],
       },
       // 后台=>设置
@@ -101,12 +111,22 @@ const routes = [
         },
         component: () => import("@/views/backend/setting/index.vue"),
         children: [
+          // 后台=>设置=>笔记分类
+          {
+            path: "classify",
+            name: "classify",
+            meta: {
+              title: "笔记分类"
+            },
+            component: () => import("@/views/backend/setting/classify.vue"),
+            children: [],
+          },
           // 后台=>设置=>主题
           {
             path: "theme",
             name: "theme",
             meta: {
-              title: "设置"
+              title: "主题"
             },
             component: () => import("@/views/backend/setting/theme.vue"),
             children: [],

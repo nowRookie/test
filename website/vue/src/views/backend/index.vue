@@ -20,6 +20,8 @@
         <router-view></router-view>
       </div>
     </div>
+    <!-- 右下角猫爪链接 -->
+    <catClaw></catClaw>
   </div>
 </template>
 
@@ -31,10 +33,11 @@ import moment from "moment";
 import { getOptions } from "@/utils/utils";
 
 import BaseMenu from "@/components/base_menu";
+import catClaw from "@/components/page/catClaw.vue";
 
 export default {
   name: "backend",
-  components: { BaseMenu },
+  components: { BaseMenu, catClaw },
   data() {
     return {
       isCollapse: false,
@@ -52,7 +55,7 @@ export default {
                 {
                   id: "1-1-1",
                   name: "html",
-                  url: "/backend/wholeStackList",
+                  url: "/backend/noteList",
                   children: [
                     {
                       id: "1-1-1-1",
@@ -63,22 +66,22 @@ export default {
                 {
                   id: "1-1-2",
                   name: "css",
-                  url: "/backend/wholeStackList",
+                  url: "/backend/noteList",
                 },
                 {
                   id: "1-1-3",
                   name: "js",
-                  url: "/backend/wholeStackList",
+                  url: "/backend/noteList",
                 },
                 {
                   id: "1-1-4",
                   name: "node",
-                  url: "/backend/wholeStackList",
+                  url: "/backend/noteList",
                 },
                 {
                   id: "1-1-5",
                   name: "canvas",
-                  url: "/backend/wholeStackList",
+                  url: "/backend/noteList",
                 },
               ],
             },
@@ -88,14 +91,14 @@ export default {
           id: "2",
           name: "新闻",
           icon: "icon-image-text",
-          url: "/backend/wholeStackList",
+          url: "/backend/noteList",
           children: [],
         },
         {
           id: "3",
           name: "跟着时代走",
           icon: "icon-assessed-badge",
-          url: "/backend/wholeStackList",
+          url: "/backend/noteList",
           children: [],
         },
         {
@@ -125,6 +128,13 @@ export default {
               url: "/backend/setting/homeCanvas",
               children: [],
             },
+            {
+              id: "4-4",
+              name: "笔记分类",
+              icon: "icon-set",
+              url: "/backend/setting/classify",
+              children: [],
+            },
           ],
         },
       ],
@@ -139,6 +149,7 @@ export default {
 .icon-menu {
   position: absolute;
   right: -40px;
+  z-index: 2;
   width: 40px;
   line-height: 40px;
   background: rgba(64, 158, 255, 0.6);

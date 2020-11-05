@@ -1,9 +1,7 @@
 <template>
   <div class="detail">
-    <div class="bb font24 title">大前端</div>
-    <div class="content">
-      多少个防晒霜多少个防晒霜多少个防晒霜多少个防晒霜多少个防晒霜
-    </div>
+    <div class="bb font24 title">{{ detail.title }}</div>
+    <div class="content markdown-body" v-html="detail.html"></div>
   </div>
 </template>
 
@@ -12,16 +10,45 @@ import axios from "axios";
 import _ from "lodash";
 import moment from "moment";
 
-import { getOptions } from "@/utils/utils";
+import { getOptions, loading } from "@/utils/utils";
 
 export default {
   name: "detail",
   components: {},
   data() {
-    return {};
+    return {
+      detail: {
+        title: "",
+        html: "",
+      },
+    };
   },
-  methods: {},
-  mounted() {},
+  methods: {
+    getDetail() {
+      const options = getOptions({
+        url: "/backend/note",
+        method: "get",
+        params: {
+          _id: this.$route.query.id,
+        },
+      });
+      loading(true);
+      axios(options)
+        .then((res) => {
+          let data = res.data.data || {};
+          this.detail = data;
+        })
+        .catch((err) => {
+          this.$message({ type: "error", message: err || "请求错误" });
+        })
+        .then(() => {
+          loading(false);
+        });
+    },
+  },
+  mounted() {
+    this.getDetail();
+  },
 };
 </script>
 

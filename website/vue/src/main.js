@@ -10,8 +10,10 @@ import Element from "element-ui"
 import "element-ui/lib/theme-chalk/index.css";
 
 import "@/assets/css/elementUI.css";
+import "github-markdown-css";
 import "@/assets/css/theme.css";
 import "@/assets/css/index.css";
+import "@/assets/css/other.css";
 
 Vue.use(Element)
 Vue.config.productionTip = false

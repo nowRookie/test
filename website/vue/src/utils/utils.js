@@ -8,19 +8,16 @@ const api = process.env.VUE_APP_API_URL;
 
 export default {}
 
-let load
-export const loading = {
-  open() {
-    load = Loading.service({
+let isLoading
+export function loading(boolean) {
+  boolean ?
+    isLoading = Loading.service({
       lock: true,
       text: 'Loading',
       spinner: 'el-icon-loading',
       // background: 'rgba(0, 0, 0, 0.7)'
-    })
-  },
-  close() {
-    load ? load.close() : null
-  }
+    }) :
+    isLoading ? isLoading.close() : null
 }
 
 // 下载二进制文件

@@ -39,6 +39,8 @@
         </div>
       </div>
     </div>
+    <!-- 右下角猫爪链接 -->
+    <catClaw></catClaw>
   </div>
 </template>
 
@@ -49,9 +51,11 @@ import moment from "moment";
 
 import { getOptions } from "@/utils/utils";
 
+import catClaw from "@/components/page/catClaw.vue";
+
 export default {
   name: "frontend",
-  components: {},
+  components: { catClaw },
   data() {
     return {};
   },

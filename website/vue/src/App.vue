@@ -3,7 +3,7 @@
     <router-view />
     <el-backtop
       target="#app"
-      :right="40"
+      :right="400"
       :bottom="40"
       :visibility-height="100"
     ></el-backtop>
@@ -13,6 +13,9 @@
 <script>
 export default {
   name: "app",
+  mounted() {
+    window.api = process.env.VUE_APP_API_URL;
+  },
 };
 </script>
 

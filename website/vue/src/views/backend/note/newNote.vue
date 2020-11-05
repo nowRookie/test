@@ -6,13 +6,16 @@
       content
       :span="24"
       label-width="80px"
-      @ok="inputSearch"
     >
       <template v-slot:tips>
         <div class="el-form-item">
           <div class="el-form-item__label" style="width: 80px">标签</div>
           <div class="el-form-item__content">
-            <div v-for="(unit, index) in tipsList" :key="index" class="tips">
+            <div
+              v-for="(unit, index) in cacheTipsList"
+              :key="index"
+              class="tips"
+            >
               {{ unit.name }}
             </div>
           </div>
@@ -29,12 +32,16 @@
                 @input="renderMarkdown"
                 class="w50 mr10"
               ></el-input>
-              <div v-html="markdownHTML" class="p10 w50 border markdown-body"></div>
+              <div
+                v-html="markdownHTML"
+                class="p10 w50 border markdown-body"
+              ></div>
             </div>
           </div>
         </div>
       </template>
     </container-input>
+    <div><el-button @click="submitForm">提交</el-button></div>
   </div>
 </template>
 
@@ -56,7 +63,8 @@ export default {
     return {
       markdown: "",
       markdownHTML: "",
-      tipsList: [
+      curtips: [],
+      cacheTipsList: [
         {
           key: "1",
           name: "细嫩",
@@ -91,7 +99,35 @@ export default {
       let html = marked(val);
       this.markdownHTML = html;
     },
-    inputSearch() {},
+    submitForm() {
+      this.$refs.containerInputRef
+        .getData()
+        .then((data) => {
+          const options = getOptions({
+            url: "/backend/note",
+            method: "post",
+            data: {
+              ...data,
+              tips: this.curtips,
+              content: this.markdown,
+              html: this.markdownHTML,
+            },
+          });
+          axios(options)
+            .then((res) => {
+              this.$router.push({ path: "/backend/noteList", query: {} });
+            })
+            .catch((err) => {
+              this.$message({
+                type: "error",
+                message: err,
+              });
+            });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
   },
   mounted() {},
 };
@@ -99,6 +135,10 @@ export default {
 
 <style lang="less" scoped>
 .textarea /deep/textarea {
-  min-height: 400px !important;
+  height: 500px !important;
+}
+.markdown-body {
+  height: 500px;
+  overflow-y: auto;
 }
 </style>
