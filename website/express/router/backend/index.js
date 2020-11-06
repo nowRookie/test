@@ -6,8 +6,8 @@ import users from "./users.js"
 users(eRouter)
 
 // 菜单
-// import menus from "./menus.js"
-// menus(eRouter)
+import menus from "./menus.js"
+menus(eRouter)
 
 // 笔记
 import notes from "./notes.js"

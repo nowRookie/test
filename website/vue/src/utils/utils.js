@@ -186,7 +186,7 @@ export function randomColor() {
   return '#' + Math.random().toString(16).substr(2, 6).toUpperCase();
 }
 
-// 防抖，dom.addEventListenter("click",debounce(handle,delay))
+// 防抖 dom.addEventListenter("click",debounce(handle,delay))
 export function debounce(fn, delay) {
   let timer = null
   return function () {
@@ -195,7 +195,7 @@ export function debounce(fn, delay) {
   }
 }
 
-// 节流
+// 节流 dom.addEventListenter("click",throttle(handle,delay))
 export function throttle(fn, delay) {
   let prev = Date.now();
   return function () {
@@ -205,4 +205,40 @@ export function throttle(fn, delay) {
       prev = Date.now();
     }
   };
+}
+
+// 一维数组转树形结构[{id:1},{parentId:1,id:2},{parentId:1,id:3}]
+export function linearArrayToTree(list, topId) {
+  let arr = []
+  _.forEach(list, unit => {
+    unit.children = []
+  })
+  _.forEach(list, unit => {
+    if (!unit.parentId || unit.parentId == topId) {
+      arr.push(unit)
+    } else {
+      let index = _.findIndex(list, item => {
+        return item.id == unit.parentId
+      })
+      list[index].children.push(unit)
+    }
+  })
+  return arr
+}
+
+// 树形结构转一维数组{id:1,children:[{id:2,parentId:1}]}
+export function treeToLinearArray(obj) {
+  let result = [];
+  result.push(obj);
+  if (obj.children && obj.children.length) {
+    (function deep(arr) {
+      _.forEach(arr, unit => {
+        result.push(unit)
+        if (unit.children && unit.children.length) {
+          deep(unit.children)
+        }
+      })
+    })(obj.children)
+  }
+  return result
 }

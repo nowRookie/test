@@ -8,19 +8,25 @@
       :highlight-current="true"
     >
       <span class="custom-tree-node" slot-scope="{ node, data }">
-        <span :style="data.menu?'color:#333':'color:#bbb'">{{ node.label }}</span>
-        <span :style="setStyle(data)">
-          <el-button type="text" @click.stop="() => addBtn(node, data)" v-if="data.level<3">add</el-button>
+        <span :style="data.menu ? 'color:#333' : 'color:#bbb'">{{
+          node.label
+        }}</span>
+        <span>
+          <el-button type="text" @click.stop="() => addSubMenu(node, data)"
+            >add</el-button
+          >
           <el-button
             type="text"
-            @click.stop="() => editBtn(node, data)"
-            v-if="data.id!='100100100'"
-          >edit</el-button>
+            @click.stop="() => editMenu(node, data)"
+            v-if="data.id != '100100100'"
+            >edit</el-button
+          >
           <el-button
             type="text"
-            @click.stop="() => remove(node, data)"
-            v-if="data.id!='100100100'"
-          >Delete</el-button>
+            @click.stop="() => removeMenu(node, data)"
+            v-if="data.id != '100100100'"
+            >Delete</el-button
+          >
         </span>
       </span>
     </el-tree>
@@ -34,54 +40,38 @@
       :destroy-on-close="true"
     >
       <div slot="title">新增</div>
-      <el-form ref="form" :model="form" :disabled="formDisabled" label-width="200px">
-        <el-form-item label="是否菜单" prop="menu">
-          <el-switch v-model="form.menu"></el-switch>
-        </el-form-item>
-        <el-form-item
-          label="菜单层级"
-          prop="level"
-          :rules="[{required: true, message: '必填项!', trigger: 'change'}]"
-        >
-          <el-select v-model="form.level" placeholder="请选择" :disabled="true">
-            <el-option
-              v-for="(item,index) in form.levelList"
-              :key="index"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
+      <el-form
+        ref="form"
+        :model="form"
+        :disabled="formDisabled"
+        label-width="200px"
+      >
+        <!-- <el-form-item label="所属分类" prop="menu">
+          <treeSelect></treeSelect>
+        </el-form-item> -->
         <el-form-item
           label="菜单名称"
-          prop="resName"
-          :rules="[{required: true, message: '必填项!', trigger: 'change'}]"
+          prop="menuName"
+          :rules="[{ required: true, message: '必填项!', trigger: 'change' }]"
         >
-          <el-input v-model="form.resName" placeholder="请输入"></el-input>
+          <el-input v-model="form.menuName" placeholder="请输入"></el-input>
         </el-form-item>
-        <el-form-item label="动态生成菜单路径" prop="autoCreate">
-          <el-switch v-model="form.autoCreate" @change="changeSwitch"></el-switch>
+        <el-form-item label="是否有子菜单" prop="hasChildMenu">
+          <el-switch
+            v-model="form.hasChildMenu"
+            @change="changeSwitch"
+          ></el-switch>
         </el-form-item>
         <el-form-item
           label="菜单路径"
-          prop="resUrl"
-          :rules="[{required: true, message: '必填项!', trigger: 'change'}]"
+          prop="menuUrl"
+          :rules="[{ required: true, message: '必填项!', trigger: 'change' }]"
         >
-          <el-input v-model="form.resUrl" placeholder="请输入" :disabled="form.autoCreate"></el-input>
-        </el-form-item>
-        <el-form-item
-          label="排序"
-          prop="sort"
-          :rules="[{required: true, message: '必填项!', trigger: 'change'}]"
-        >
-          <el-select v-model="form.sort" placeholder="请选择">
-            <el-option
-              v-for="(item,index) in form.sortList"
-              :key="index"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>
+          <el-input
+            v-model="form.menuUrl"
+            placeholder="请输入"
+            :disabled="form.hasChildMenu"
+          ></el-input>
         </el-form-item>
       </el-form>
       <footer slot="footer">
@@ -95,198 +85,105 @@
 <script>
 import axios from "axios";
 import _ from "lodash";
-const api = process.env.VUE_APP_API_URL;
+
+import {
+  getOptions,
+  loading,
+  linearArrayToTree, //一维数组转树结构
+  treeToLinearArray, //树结构转一维数组
+} from "@/utils/utils";
+
+import treeSelect from "@/components/treeSelect";
 
 export default {
-  components: {},
+  components: { treeSelect },
   data() {
     return {
       visible: false,
       formDisabled: false,
       formType: "add",
       form: {
-        menu: true, //是否菜单
-        level: "", //菜单层级
-        levelList: [
-          {
-            key: 1,
-            label: "一级",
-            value: 1
-          },
-          {
-            key: 2,
-            label: "二级",
-            value: 2
-          },
-          {
-            key: 3,
-            label: "三级",
-            value: 3
-          }
-        ],
-        resName: "", //菜单名称
-        autoCreate: false, //动态生成菜单路径
-        resUrl: "", //菜单路径
-        sort: "", //排序
-        sortList: [],
-        // 自定义
+        menuName: "", //菜单名称
+        hasChildMenu: false, //是否有子菜单
+        menuUrl: "", //菜单路径
         id: "", //当前项id
         parentId: "",
-        sortCradle: [] //0-50用于过滤已有菜单的sort
       },
       treeData: [
         {
           id: "100100100",
-          level: 0,
           label: "页面路由配置",
-          children: []
-        }
-      ]
+          children: [],
+        },
+      ],
     };
   },
 
   methods: {
     clear() {
       this.form = Object.assign({}, this.form, {
-        level: "", //菜单层级
-        resName: "", //菜单名称
-        autoCreate: false, //动态生成菜单路径
-        resUrl: "", //路径
-        sort: "", //排序
+        menuName: "", //菜单名称
+        hasChildMenu: false, //是否有子菜单
+        menuUrl: "", //路径
         // 自定义
         id: "",
-        parentId: ""
+        parentId: "",
       });
     },
-    // renderContent(h, { node, data, store }) {
-    //   return (
-    //     <span class="custom-tree-node">
-    //       <span>{node.label}</span>
-    //       <span style={this.setStyle(data)}>
-    //         <el-button
-    //           type="text"
-    //           on-click={() => this.addBtn(node, data)}
-    //           v-if={data.level < 3}
-    //         >
-    //           add
-    //         </el-button>
-    //         <el-button
-    //           type="text"
-    //           on-click={() => this.editBtn(node, data)}
-    //           v-if={data.id != "100100100"}
-    //         >
-    //           edit
-    //         </el-button>
-    //         <el-button
-    //           type="text"
-    //           on-click={() => remove(node, data)}
-    //           v-if={data.id != "100100100"}
-    //         >
-    //           Delete
-    //         </el-button>
-    //       </span>
-    //     </span>
-    //   );
-    // },
-    setStyle(data) {
-      return "margin-right:" + (3 - data.level) * 30 + "px;";
-    },
     getTree() {
-      axios({
+      const options = getOptions({
+        url: "/backend/menuList",
         method: "get",
-        url: api + "/system/resource/getResourceList",
-        headers: {
-          "X-Requested-With": "XMLHttpRequest",
-          "Content-Type": "application/Json; charset=UTF-8",
-          "X-Authorization": "Bearer" + sessionStorage.getItem("token")
-        }
-      })
-        .then(res => {
-          if (res.status !== 200 || res.data.code != 0) {
+      });
+      loading(true);
+      axios(options)
+        .then((res) => {
+          console.log(res);
+          if (res.status !== 200 || res.data.code != 200) {
             this.$message.error(
               res.statusText || res.data.message || "请求错误!"
             );
             return;
           }
-          let data = res.data.data;
-          this.treeData[0].children = (function deep(data) {
-            return _.map(data, unit => {
-              return {
-                ...unit,
-                // label: unit.resName + "(" + unit.resUrl + ")",
-                label: unit.resName,
-                children: unit.childs.length ? deep(unit.childs) : []
-              };
-            });
-          })(data);
+          let data = res.data.data || [];
+          data = data.map((unit) => {
+            return {
+              ...unit,
+              label: unit.menuName,
+              id: unit._id,
+            };
+          });
+          this.treeData[0].children = linearArrayToTree(data, "100100100");
         })
-        .catch(err => {
+        .catch((err) => {
           this.$message.error(err || "请求错误！");
+        })
+        .then(() => {
+          loading(false);
         });
     },
-    addBtn(node, data) {
-      console.log("addBtn:::", node, data);
-      let level = data.level + 1;
-      let id = data.id; //当前点击项的id
-      let tongue; //[]已有的sort
+    addSubMenu(node, data) {
+      console.log("addSubMenu:::", node, data);
+      let parentId = data.id; //当前点击项的id
+      this.form = { parentId: parentId };
 
       this.visible = true;
       this.formType = "add";
-      this.form.level = level;
-      if (level == 1) {
-        tongue = _.map(this.treeData[0].children, unit => {
-          return unit.sort;
-        });
-        this.form.sortList = _.filter(this.form.sortCradle, unit => {
-          return tongue.indexOf(unit) == -1;
-        }).map(unit => {
-          return {
-            label: unit,
-            value: unit
-          };
-        });
-      } else if (level > 1) {
-        let nodeDot; //用于找到对应的项
-
-        this.form.parentId = id;
-        (function deepFind(curriculum) {
-          _.map(curriculum, unit => {
-            if (unit.id == id) {
-              nodeDot = unit;
-            }
-            if (unit.children.length) {
-              deepFind(unit.children);
-            }
-          });
-        })(this.treeData[0].children);
-        tongue = _.map(nodeDot.children, unit => {
-          return unit.sort;
-        });
-        this.form.sortList = _.filter(this.form.sortCradle, unit => {
-          return tongue.indexOf(unit) == -1;
-        }).map(unit => {
-          return {
-            label: unit,
-            value: unit
-          };
-        });
-      }
     },
-    remove(node, data) {
-      axios({
-        method: "get",
-        url: api + "/system/resource/delResource",
-        headers: {
-          "X-Requested-With": "XMLHttpRequest",
-          "Content-Type": "application/Json; charset=UTF-8",
-          "X-Authorization": "Bearer" + sessionStorage.getItem("token")
+    removeMenu(node, data) {
+      let idList = treeToLinearArray(data).map((unit) => unit.id);
+      console.log(idList);
+      return;
+      const options = getOptions({
+        method: "delete",
+        url: "/backend/menu",
+        data: {
+          id: idList,
         },
-        params: {
-          id: data.id
-        }
-      })
-        .then(res => {
-          if (res.status !== 200 || res.data.code != 0) {
+      });
+      axios(options)
+        .then((res) => {
+          if (res.status !== 200 || res.data.code != 200) {
             this.$message.error(
               res.statusText || res.data.message || "请求错误!"
             );
@@ -295,117 +192,58 @@ export default {
           this.$message.success("删除成功！");
           this.getTree();
         })
-        .catch(err => {
+        .catch((err) => {
           this.$message.error(err || "请求错误！");
         });
     },
-    editBtn(node, data) {
-      console.log("editBtn:::", node, data);
+    editMenu(node, data) {
+      console.log("editMenu:::", node, data);
       let id = data.id; //当前点击项的id
-      let tongue; //[]已有的sort
       let nodeDot; //用于找到对应的父级项
 
       this.formType = "edit";
       this.visible = true;
-      this.form = Object.assign({}, this.form, {
-        parentId: data.parentId || "",
-        id,
-        level: data.level,
-        resName: data.resName,
-        resUrl: data.resUrl,
-        menu: data.menu ? true : false,
-        sort: data.sort
-      });
-      if (data.parentId) {
-        (function deepFind(curriculum) {
-          _.map(curriculum, unit => {
-            if (unit.id == data.parentId) {
-              nodeDot = unit;
-            }
-            if (unit.children.length) {
-              deepFind(unit.children);
-            }
-          });
-        })(this.treeData[0].children);
-      } else {
-        nodeDot = this.treeData[0];
-      }
-      tongue = _.map(nodeDot.children, unit => {
-        return unit.sort;
-      });
-      this.form.sortList = _.filter(this.form.sortCradle, unit => {
-        return tongue.indexOf(unit) == -1;
-      }).map(unit => {
-        return {
-          label: unit,
-          value: unit
-        };
-      });
+      this.form = Object.assign({}, this.form, data);
     },
     handleAdd() {
-      this.$refs.form.validate(boolean => {
+      this.$refs.form.validate((boolean) => {
         if (boolean) {
-          if (this.formType == "edit") {
-            this.handleEdit();
-            return;
-          }
-          axios({
-            method: "post",
-            url: api + "/system/resource/addResource",
-            headers: {
-              "X-Requested-With": "XMLHttpRequest",
-              "Content-Type": "application/Json; charset=UTF-8",
-              "X-Authorization": "Bearer" + sessionStorage.getItem("token")
-            },
-            data: Object.assign({}, this.form, {
-              parentId: this.form.level > 1 ? this.form.parentId : ""
-            })
-          })
-            .then(res => {
-              if (res.status !== 200 || res.data.code != 0) {
+          const options = getOptions({
+            method: this.formType == "edit" ? "put" : "post",
+            url: "/backend/menu",
+            data:
+              this.formType == "edit"
+                ? Object.assign({}, this.form, {
+                    parentId: this.form.parentId,
+                  })
+                : {
+                    parentId: this.form.parentId,
+                    menuName: this.form.menuName,
+                    menuUrl: this.form.menuUrl,
+                  },
+          });
+          axios(options)
+            .then((res) => {
+              if (res.status !== 200 || res.data.code != 200) {
                 this.$message.error(
                   res.statusText || res.data.message || "请求错误!"
                 );
                 return;
               }
-              this.$message.success("新增成功！");
+              this.$message({
+                type: "success",
+                message: res.data.message || "处理成功",
+              });
               this.cancel();
               this.getTree();
             })
-            .catch(err => {
+            .catch((err) => {
               this.$message.error(err || "请求错误！");
             });
         }
       });
     },
-    handleEdit() {
-      axios({
-        method: "post",
-        url: api + "/system/resource/updateResource ",
-        headers: {
-          "X-Requested-With": "XMLHttpRequest",
-          "Content-Type": "application/Json; charset=UTF-8",
-          "X-Authorization": "Bearer" + sessionStorage.getItem("token")
-        },
-        data: Object.assign({}, this.form, {
-          parentId: this.form.parentId || ""
-        })
-      })
-        .then(res => {
-          if (res.status !== 200 || res.data.code != 0) {
-            this.$message.error(
-              res.statusText || res.data.message || "请求错误!"
-            );
-            return;
-          }
-          this.$message.success("修改成功！");
-          this.cancel();
-          this.getTree();
-        })
-        .catch(err => {
-          this.$message.error(err || "请求错误！");
-        });
-    },
+    // 生成随机路径
     changeSwitch(boolean) {
       if (boolean) {
         let str =
@@ -413,20 +251,17 @@ export default {
           Math.ceil(Math.random() * 1000000) +
           "e" +
           Math.ceil(Math.random() * 1000000);
-        this.form.resUrl = str;
+        this.form.menuUrl = str;
       }
     },
     cancel() {
       this.clear();
       this.visible = false;
-    }
+    },
   },
   mounted() {
     this.getTree();
-    for (let i = 1; i <= 50; i++) {
-      this.form.sortCradle.push(i);
-    }
-  }
+  },
 };
 </script>
 

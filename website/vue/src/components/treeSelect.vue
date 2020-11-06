@@ -1,7 +1,7 @@
 <template>
   <div class="treeSelect" @mouseover="mouseover" @mouseout="mouseout">
-    <el-input readonly :placeholder="placeholder||'请选择'" :value="curChecked.label">
-      <a slot="suffix" v-show="curChecked.id" class="mt12 el-icon-circle-close" @click="clearAll"></a>
+    <el-input :placeholder="placeholder||'请选择'" :value="curChecked.label">
+      <a slot="suffix" v-show="curChecked.id" class="iconfont icon-close" @click="clearAll"></a>
     </el-input>
     <div class="minw100 tree">
       <el-tree
