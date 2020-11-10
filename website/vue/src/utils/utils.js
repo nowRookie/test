@@ -213,6 +213,7 @@ export function linearArrayToTree(list, topId) {
   _.forEach(list, unit => {
     unit.children = []
   })
+  console.log(111111,list)
   _.forEach(list, unit => {
     if (!unit.parentId || unit.parentId == topId) {
       arr.push(unit)

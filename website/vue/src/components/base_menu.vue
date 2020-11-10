@@ -1,7 +1,10 @@
 <template>
   <div class="basemenu">
     <div v-for="(unit, index) in data" :key="index">
-      <el-submenu :index="unit.id" v-if="unit.children && unit.children.length">
+      <el-submenu
+        :index="unit.url"
+        v-if="unit.children && unit.children.length"
+      >
         <template slot="title">
           <i :class="['iconfont', unit.icon]"></i>
           <span slot="title">{{ unit.name }}</span>
@@ -9,7 +12,7 @@
         <basemenu :data="unit.children"></basemenu>
       </el-submenu>
       <router-link :to="unit.url || ''" v-else>
-        <el-menu-item :index="unit.id">
+        <el-menu-item :index="unit.url">
           <i :class="['iconfont', unit.icon]"></i>
           <span slot="title">{{ unit.name }}</span>
         </el-menu-item></router-link

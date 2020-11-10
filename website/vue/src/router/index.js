@@ -74,12 +74,12 @@ const routes = [
     children: [
       // 后台=>笔记列表
       {
-        path: "noteList",
-        name: "noteList",
+        path: "noteList/:id",
+        name: "noteList/:id",
         meta: {
           title: "后台=>笔记列表"
         },
-        component: () => import("@/views/backend/note/list.vue"),
+        component: () => import("@/views/backend/note/noteList.vue"),
         children: [],
       },
       // 后台=>新建笔记

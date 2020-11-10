@@ -7,20 +7,14 @@
       :span="24"
       label-width="80px"
     >
-      <template v-slot:tips>
-        <div class="el-form-item">
-          <div class="el-form-item__label" style="width: 80px">标签</div>
+      <!-- <template v-slot:tips>
+        <div class="el-form-item row">
+          <div class="el-form-item__label" style="width: 80px">分类</div>
           <div class="el-form-item__content">
-            <div
-              v-for="(unit, index) in cacheTipsList"
-              :key="index"
-              class="tips"
-            >
-              {{ unit.name }}
-            </div>
+            <treeSelect></treeSelect>
           </div>
         </div>
-      </template>
+      </template> -->
       <template v-slot:markdown>
         <div class="el-form-item">
           <div class="el-form-item__label" style="width: 80px">内容</div>
@@ -55,31 +49,32 @@ import "github-markdown-css";
 import { getOptions } from "@/utils/utils";
 
 import containerInput from "@/components/container_input_form";
+import treeSelect from "@/components/treeSelect";
 
 export default {
   name: "newNote",
-  components: { containerInput },
+  components: { containerInput, treeSelect },
   data() {
     return {
       markdown: "",
       markdownHTML: "",
-      curtips: [],
-      cacheTipsList: [
-        {
-          key: "1",
-          name: "细嫩",
-        },
-      ],
+      // curtips: [],
+      // cacheTipsList: [
+      //   {
+      //     key: "1",
+      //     name: "细嫩",
+      //   },
+      // ],
       inputItems: [
         {
           key: "title",
           title: "标题",
         },
-        {
-          key: "tips",
-          title: "标签",
-          type: "slot",
-        },
+        // {
+        //   key: "tips",
+        //   title: "标签",
+        //   type: "slot",
+        // },
         {
           key: "summarize",
           title: "概述",
@@ -108,14 +103,18 @@ export default {
             method: "post",
             data: {
               ...data,
-              tips: this.curtips,
+              // tips: this.curtips,
+              classifyId: this.$route.query.classifyId,
               content: this.markdown,
               html: this.markdownHTML,
             },
           });
           axios(options)
             .then((res) => {
-              this.$router.push({ path: "/backend/noteList", query: {} });
+              this.$router.push({
+                path: "/backend/noteList" + "/" + this.$route.query.classifyId,
+                query: {},
+              });
             })
             .catch((err) => {
               this.$message({

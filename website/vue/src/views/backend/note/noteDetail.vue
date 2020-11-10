@@ -114,7 +114,10 @@ export default {
           });
           axios(options)
             .then((res) => {
-              this.$router.push({ path: "/backend/noteList", query: {} });
+              this.$router.push({
+                path: "/backend/noteList" + "/" + this.$route.query.classifyId,
+                query: {},
+              });
             })
             .catch((err) => {
               this.$message({

@@ -18,7 +18,7 @@ app.use(log())
 
 // 静态资源
 app.set('view engine', 'hbs')
-app.set("views", process.cwd() + "/template")
+app.set("views", process.cwd() + "/hbs")
 app.use(express.static("static"))
 app.use(express.static("uploads"))
 app.use("/virtual", express.static(path.join(__dirname, "static")))

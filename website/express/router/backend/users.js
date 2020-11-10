@@ -1,29 +1,6 @@
-const mongoose = require("mongoose")
+import Model from "../../model/user"
 
 export default function (eRouter) {
-    // schema(定义数据表)，第二个参数表示使用已经存在的documents
-    let Schema = mongoose.Schema({
-        username: {
-            type: String,
-            required: true,
-        },
-        password: {
-            type: String,
-            required: true,
-            minLength: 6,
-            maxLength: 20,
-            validate: {
-                validator: (value) => {
-                    return /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,20}$/.test(value)
-                },
-                message: "tags 必填"
-            }
-        }
-    }, { collection: "users" })
-
-    // mongoose规定的一个类
-    let Model = mongoose.model("users", Schema)
-
     // 用户帐号
     eRouter.route("/backend/users")
         .get((req, res,) => {
@@ -83,7 +60,6 @@ export default function (eRouter) {
                 res.send("删除成功")
             })
         })
-
     // 登录
     eRouter.post("/backend/login", (req, res) => {
         Model.find({ username: req.body.username }, (dbErr, dbRes) => {
@@ -100,5 +76,4 @@ export default function (eRouter) {
             res.send({ code: 200, data: { username: user.username, password: user.password }, message: "请求成功" })
         })
     })
-
 }

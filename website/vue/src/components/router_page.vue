@@ -56,10 +56,14 @@
         >
           <el-input v-model="form.menuName" placeholder="请输入"></el-input>
         </el-form-item>
-        <el-form-item label="是否有子菜单" prop="hasChildMenu">
+        <el-form-item
+          label="生成动态路径"
+          prop="isDynamicUrl"
+          v-if="formType == 'add'"
+        >
           <el-switch
-            v-model="form.hasChildMenu"
-            @change="changeSwitch"
+            v-model="form.isDynamicUrl"
+            @change="dynamicUrlSwitchChange"
           ></el-switch>
         </el-form-item>
         <el-form-item
@@ -70,8 +74,14 @@
           <el-input
             v-model="form.menuUrl"
             placeholder="请输入"
-            :disabled="form.hasChildMenu"
+            :disabled="form.isDynamicUrl"
           ></el-input>
+        </el-form-item>
+        <el-form-item label="是否在前台展示" prop="willFrontShow">
+          <el-switch
+            v-model="form.willFrontShow"
+            @change="willFrontShowSwitchChange"
+          ></el-switch>
         </el-form-item>
       </el-form>
       <footer slot="footer">
@@ -104,10 +114,11 @@ export default {
       formType: "add",
       form: {
         menuName: "", //菜单名称
-        hasChildMenu: false, //是否有子菜单
+        isDynamicUrl: false, //生成动态路径
         menuUrl: "", //菜单路径
         id: "", //当前项id
         parentId: "",
+        willFrontShow: false,
       },
       treeData: [
         {
@@ -123,7 +134,7 @@ export default {
     clear() {
       this.form = Object.assign({}, this.form, {
         menuName: "", //菜单名称
-        hasChildMenu: false, //是否有子菜单
+        isDynamicUrl: false, //生成动态路径
         menuUrl: "", //路径
         // 自定义
         id: "",
@@ -138,7 +149,6 @@ export default {
       loading(true);
       axios(options)
         .then((res) => {
-          console.log(res);
           if (res.status !== 200 || res.data.code != 200) {
             this.$message.error(
               res.statusText || res.data.message || "请求错误!"
@@ -151,6 +161,7 @@ export default {
               ...unit,
               label: unit.menuName,
               id: unit._id,
+              willFrontShow: unit.willFrontShow ? true : false,
             };
           });
           this.treeData[0].children = linearArrayToTree(data, "100100100");
@@ -172,8 +183,6 @@ export default {
     },
     removeMenu(node, data) {
       let idList = treeToLinearArray(data).map((unit) => unit.id);
-      console.log(idList);
-      return;
       const options = getOptions({
         method: "delete",
         url: "/backend/menu",
@@ -244,7 +253,7 @@ export default {
       });
     },
     // 生成随机路径
-    changeSwitch(boolean) {
+    dynamicUrlSwitchChange(boolean) {
       if (boolean) {
         let str =
           "/m" +
@@ -253,6 +262,9 @@ export default {
           Math.ceil(Math.random() * 1000000);
         this.form.menuUrl = str;
       }
+    },
+    willFrontShowSwitchChange(boolean) {
+      this.form.willFrontShow = boolean;
     },
     cancel() {
       this.clear();

@@ -12,7 +12,12 @@
     <div>
       <el-button
         class="orangebtn"
-        @click="$router.push({ path: '/backend/newNote', query: {} })"
+        @click="
+          $router.push({
+            path: '/backend/newNote',
+            query: { classifyId: $route.params.id },
+          })
+        "
         >新增</el-button
       >
     </div>
@@ -29,7 +34,7 @@
           @click="
             $router.push({
               path: '/backend/noteDetail',
-              query: { id: scope.row._id },
+              query: { id: scope.row._id, classifyId: $route.params.id },
             })
           "
           >修改</el-button
@@ -87,7 +92,9 @@ export default {
       queryParams: {
         url: "/backend/noteList",
         method: "get",
-        params: {},
+        params: {
+          classifyId: this.$route.params.id,
+        },
       },
     };
   },
@@ -123,16 +130,15 @@ export default {
         });
     },
   },
-  mounted() {
-    // const options = getOptions({
-    //   url: "/backend/notes",
-    //   method: "get",
-    //   params: {},
-    // });
-    // console.log("options===", options);
-    // axios(options).then((res) => {
-    //   console.log("res===", res);
-    // });
+  mounted() {},
+  watch: {
+    $route(to, from) {
+      this.queryParams = Object.assign({}, this.queryParams, {
+        params: {
+          classifyId: to.params.id,
+        },
+      });
+    },
   },
 };
 </script>

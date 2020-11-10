@@ -14,24 +14,14 @@
         </div>
         <div class="content">
           <ul>
-            <li class="mt10 between pointer">
-              <span class="title">
-                <span>【大前端】</span>
-                <span>标题</span>
-              </span>
-              <span class="ml10">2020-11-02</span>
-            </li>
-            <li class="mt10 between pointer">
+            <li
+              class="mt10 between pointer"
+              v-for="(unit, index) in recentNoteList"
+              :key="index"
+            >
               <span class="title">
                 <span>【跟着时代走】</span>
-                <span>标题标题标题标题标题标题标题标题标题标题标题</span>
-              </span>
-              <span class="ml10">2020-11-02</span>
-            </li>
-            <li class="mt10 between pointer">
-              <span class="title">
-                <span>【新闻】</span>
-                <span>标题</span>
+                <span>{{ unit.title }}</span>
               </span>
               <span class="ml10">2020-11-02</span>
             </li>
@@ -57,10 +47,33 @@ export default {
   name: "frontend",
   components: { catClaw },
   data() {
-    return {};
+    return {
+      recentNoteList: [],
+    };
   },
-  methods: {},
-  mounted() {},
+  methods: {
+    getRecentNote() {
+      const options = getOptions({
+        url: "/frontend/recentNote",
+        method: "get",
+        params: {},
+      });
+      axios(options)
+        .then((res) => {
+          let data = res.data.data || [];
+          this.recentNoteList = data;
+        })
+        .catch((err) => {
+          this.$message({
+            type: "error",
+            message: err || "请求错误",
+          });
+        });
+    },
+  },
+  mounted() {
+    this.getRecentNote();
+  },
 };
 </script>
 

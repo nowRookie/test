@@ -1,9 +1,10 @@
 <template>
   <div class="list">
-    <div class="bb font24 title">大前端</div>
-    <ul class="content">
+    <div class="bb font24 title">{{ $route.query.classifyName }}</div>
+    <!-- 数据table -->
+    <ul class="content" v-if="noteList.length">
       <li
-        class="mt10 pointer between"
+        class="pointer between"
         v-for="(unit, index) in noteList"
         :key="index"
         @click="
@@ -14,6 +15,21 @@
         <span class="ml10">{{ unit.time }}</span>
       </li>
     </ul>
+    <div class="mt10" v-else>暂无数据</div>
+    <!-- 分页 -->
+    <el-pagination
+      class="mt20"
+      small
+      hide-on-single-page
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="pageNo"
+      :page-sizes="[10, 20, 30, 40]"
+      :page-size="pageSize"
+      layout="prev,pager,next,jumper,sizes,total"
+      :total="total"
+    >
+    </el-pagination>
   </div>
 </template>
 
@@ -30,14 +46,17 @@ export default {
   data() {
     return {
       noteList: [],
+      pageNo: 1,
+      pageSize: 10,
+      total: 0,
     };
   },
   methods: {
-    getList() {
+    getList({ pageNo, pageSize } = { pageNo: 1, pageSize: 10 }) {
       const options = getOptions({
         url: "/frontend/noteList",
         method: "get",
-        params: {},
+        params: { pageNo, pageSize, classifyId: this.$route.query.classifyId },
       });
       loading(true);
       axios(options)
@@ -49,6 +68,9 @@ export default {
               time: moment(unit.time).format("YYYY-MM-DD HH:mm:ss"),
             };
           });
+          this.pageNo = res.data.pageNo;
+          this.pageSize = res.data.pageSize;
+          this.total = res.data.total;
         })
         .catch((err) => {
           this.$message({
@@ -59,6 +81,13 @@ export default {
         .then(() => {
           loading(false);
         });
+    },
+    handleSizeChange(pageSize) {
+      this.pageSize = pageSize;
+      this.handleCurrentChange(1);
+    },
+    handleCurrentChange(pageNo) {
+      this.getList({ pageNo: pageNo, pageSize: this.pageSize });
     },
   },
   mounted() {
@@ -79,6 +108,12 @@ export default {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+  }
+  .pointer {
+    padding: 8px 10px;
+    &:hover {
+      background: #efefef;
+    }
   }
 }
 </style>

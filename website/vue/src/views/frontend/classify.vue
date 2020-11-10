@@ -1,19 +1,18 @@
 <template>
-  <ul class="row classify">
+  <ul class="oh classify">
     <li
-      class="tc mr20 pointer"
-      @click="$router.push({ path: '/frontend/list', query: {} })"
+      v-for="(unit, index) in classifyList"
+      :key="index"
+      class="fl tc mb20 mr20 pointer"
+      @click="
+        $router.push({
+          path: '/frontend/list',
+          query: { classifyId: unit._id, classifyName: unit.menuName },
+        })
+      "
     >
       <div class="icon icon1"></div>
-      <div class="mt5 title">大前端</div>
-    </li>
-    <li class="tc mr20 pointer">
-      <div class="icon icon2"></div>
-      <div class="mt5 title">新闻</div>
-    </li>
-    <li class="tc mr20 pointer">
-      <div class="icon icon3"></div>
-      <div class="mt5 title">跟着时代走</div>
+      <div class="mt5 title">{{ unit.menuName }}</div>
     </li>
   </ul>
 </template>
@@ -23,16 +22,45 @@ import axios from "axios";
 import _ from "lodash";
 import moment from "moment";
 
-import { getOptions } from "@/utils/utils";
+import { getOptions, loading } from "@/utils/utils";
 
 export default {
   name: "classify",
   components: {},
   data() {
-    return {};
+    return {
+      classifyList: [],
+    };
   },
-  methods: {},
-  mounted() {},
+  methods: {
+    getList() {
+      const options = getOptions({
+        url: "/backend/menuList",
+        method: "get",
+        params: {},
+      });
+      loading(true);
+      axios(options)
+        .then((res) => {
+          let data = res.data.data || [];
+          this.classifyList = data.filter((unit) => {
+            return unit.willFrontShow;
+          });
+        })
+        .catch((err) => {
+          this.$message({
+            type: "error",
+            message: err || "请求错误",
+          });
+        })
+        .then(() => {
+          loading(false);
+        });
+    },
+  },
+  mounted() {
+    this.getList();
+  },
 };
 </script>
 
