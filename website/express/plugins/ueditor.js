@@ -1,7 +1,9 @@
+// 百度富文本编辑器
 import path from "path"
 import fs from "fs"
 
 var ueditor = require("ueditor")
+
 export default (app) => {
   app.use("/ueditor/ue", ueditor(path.join(__dirname, 'uploads'), function (req, res, next) {
     var actionType = req.query.action
