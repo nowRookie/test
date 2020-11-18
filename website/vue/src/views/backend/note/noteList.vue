@@ -90,7 +90,7 @@ export default {
         },
       ],
       queryParams: {
-        url: "/backend/noteList",
+        url: "/api/noteList",
         method: "get",
         params: {
           classifyId: this.$route.params.id,
@@ -110,7 +110,7 @@ export default {
     inputSearch() {},
     handleDel(row) {
       const options = getOptions({
-        url: "/backend/note",
+        url: "/api/note",
         method: "delete",
         data: { ...row },
       });

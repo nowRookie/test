@@ -55,7 +55,7 @@ export default {
   methods: {
     getMenuTree() {
       const options = getOptions({
-        url: "/backend/menuList",
+        url: "/api/menuList",
         method: "get",
         params: {},
       });

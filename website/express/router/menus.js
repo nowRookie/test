@@ -3,7 +3,7 @@ const eRouter = express.Router()
 import menuModel from "../model/menu.js"
 
 // 菜单
-eRouter.route("/backend/menu")
+eRouter.route("/api/menu")
 	.post((req, res,) => {
 		menuModel.find({ menuName: req.body.menuName }, (dbErr, dbRes) => {
 			if (dbErr) {
@@ -64,7 +64,7 @@ eRouter.route("/backend/menu")
 	})
 
 // 菜单
-eRouter.route("/backend/menuList")
+eRouter.route("/api/menuList")
 	.get((req, res,) => {
 		menuModel.find({}, (dbErr, dbRes) => {
 			if (dbErr) return res.status(500).send({ code: 201, message: "数据库查询错误" })

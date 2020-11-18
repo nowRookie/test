@@ -54,7 +54,7 @@ export default {
   methods: {
     getRecentNote() {
       const options = getOptions({
-        url: "/frontend/recentNote",
+        url: "/api/recentNote",
         method: "get",
         params: {},
       });

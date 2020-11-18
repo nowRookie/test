@@ -213,7 +213,7 @@ export function linearArrayToTree(list, topId) {
   _.forEach(list, unit => {
     unit.children = []
   })
-  console.log(111111,list)
+  console.log(111111, list)
   _.forEach(list, unit => {
     if (!unit.parentId || unit.parentId == topId) {
       arr.push(unit)
@@ -242,4 +242,36 @@ export function treeToLinearArray(obj) {
     })(obj.children)
   }
   return result
+}
+
+// 格式化json，参数必须为json，不能是字符串
+/* 需要配合设置css样式
+pre { word-break: break-all;}
+.string {color: green;}
+.number {color: darkorange;}
+.boolean {color: blue;}
+.null {color: magenta;}
+.key {color: red;}
+ */
+export function formatJson(json) {
+  if (typeof json != 'string') {
+    json = JSON.stringify(json, undefined, 2);
+  }
+  json = json.replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>');
+  let result = json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+    var cls = 'number';
+    if (/^"/.test(match)) {
+      if (/:$/.test(match)) {
+        cls = 'key';
+      } else {
+        cls = 'string';
+      }
+    } else if (/true|false/.test(match)) {
+      cls = 'boolean';
+    } else if (/null/.test(match)) {
+      cls = 'null';
+    }
+    return '<span class="' + cls + '">' + match + '</span>';
+  });
+  return `<div class="jsonText"><pre>${result}</pre></div>`
 }

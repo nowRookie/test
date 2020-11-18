@@ -47,7 +47,7 @@ const filesFolder = "D:\\mongodb_database\\data\\files"
 // const contentType = "image/jpg,images/jpeg,image/png,image/gif,"
 
 // 图片
-eRouter.get("/images*", (req, res, next) => {
+eRouter.get("/api/images*", (req, res, next) => {
 	const url = imgFolder + req.params[0]
 	fs.exists(url, (exist) => {
 		if (!exist) {
@@ -57,7 +57,7 @@ eRouter.get("/images*", (req, res, next) => {
 		res.end(fs.readFileSync(url))
 	})
 })
-eRouter.post("/images*",
+eRouter.post("/api/images*",
 	(req, res, next) => {
 		uploadImg(req, res, function (err) {
 			if (err instanceof multer.MulterError) {
@@ -98,7 +98,7 @@ eRouter.post("/images*",
 		})
 	})
 // 文件
-eRouter.get("/files*", (req, res, next) => {
+eRouter.get("/api/files*", (req, res, next) => {
 	const url = filesFolder + req.params[0]
 	fs.exists(url, (exist) => {
 		if (!exist) {
@@ -108,7 +108,7 @@ eRouter.get("/files*", (req, res, next) => {
 		res.send(fs.readFileSync(url, { encoding: "utf8" }))
 	})
 })
-eRouter.post("/files*",
+eRouter.post("/api/files*",
 	(req, res, next) => {
 		uploadFile(req, res, function (err) {
 			if (err instanceof multer.MulterError) {

@@ -1,9 +1,9 @@
 import express from "express"
 const eRouter = express.Router()
-import noteModel from "../../model/note.js"
+import noteModel from "../model/note.js"
 
 // 笔记列表
-eRouter.route("/backend/noteList")
+eRouter.route("/api/noteList")
 	.get((req, res,) => {
 		let pageSize = Number(req.query.pageSize || 10)
 		let pageNo = Number(req.query.pageNo || 1)
@@ -21,7 +21,7 @@ eRouter.route("/backend/noteList")
 		})
 	})
 // 笔记
-eRouter.route("/backend/note")
+eRouter.route("/api/note")
 	.get((req, res,) => {
 		noteModel.findById(req.query._id, (dbErr, dbRes) => {
 			if (dbErr) return res.status(500).send({ code: 201, message: "数据库查询错误" })
@@ -69,5 +69,11 @@ eRouter.route("/backend/note")
 			res.send({ code: 200, message: "删除成功" })
 		})
 	})
-
+// 最新笔记
+eRouter.get("/api/recentNote", (req, res) => {
+	noteModel.find({}, null, { sort: { createTime: -1 }, limit: 10 }, (dbErr, dbRes) => {
+		if (dbErr) return res.status(500).send({ code: 201, message: "数据库查询错误" })
+		res.send({ code: 200, data: dbRes, message: "数据查询成功" })
+	})
+})
 export default eRouter

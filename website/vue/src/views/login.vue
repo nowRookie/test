@@ -74,7 +74,7 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           const options = getOptions({
-            url: "/backend/login",
+            url: "/api/login",
             method: "post",
             data: { ...this.ruleForm },
           });

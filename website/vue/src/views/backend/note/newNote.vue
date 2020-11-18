@@ -99,7 +99,7 @@ export default {
         .getData()
         .then((data) => {
           const options = getOptions({
-            url: "/backend/note",
+            url: "/api/note",
             method: "post",
             data: {
               ...data,

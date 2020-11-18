@@ -54,7 +54,7 @@ export default {
   methods: {
     getList({ pageNo, pageSize } = { pageNo: 1, pageSize: 10 }) {
       const options = getOptions({
-        url: "/frontend/noteList",
+        url: "/api/noteList",
         method: "get",
         params: { pageNo, pageSize, classifyId: this.$route.query.classifyId },
       });

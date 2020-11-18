@@ -35,7 +35,7 @@ export default {
   methods: {
     getList() {
       const options = getOptions({
-        url: "/backend/menuList",
+        url: "/api/menuList",
         method: "get",
         params: {},
       });

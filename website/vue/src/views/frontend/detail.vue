@@ -26,7 +26,7 @@ export default {
   methods: {
     getDetail() {
       const options = getOptions({
-        url: "/backend/note",
+        url: "/api/note",
         method: "get",
         params: {
           _id: this.$route.query.id,

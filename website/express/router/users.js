@@ -3,7 +3,7 @@ const eRouter = express.Router()
 import userModel from "../model/user"
 
 // 用户帐号
-eRouter.route("/backend/users")
+eRouter.route("/api/users")
     .get((req, res,) => {
         userModel.find(req.query, (dbErr, dbRes) => {
             if (dbErr) return res.status(500).send({ code: 201, message: "数据库查询错误" })
@@ -62,7 +62,7 @@ eRouter.route("/backend/users")
         })
     })
 // 登录
-eRouter.post("/backend/login", (req, res) => {
+eRouter.post("/api/login", (req, res) => {
     userModel.find({ username: req.body.username }, (dbErr, dbRes) => {
         if (dbErr) return res.status(500).send({ code: 201, message: "数据库查询错误" })
         if (!dbRes.length) {
