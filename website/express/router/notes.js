@@ -71,30 +71,16 @@ eRouter.route("/api/note")
 	})
 // 最新笔记
 eRouter.get("/api/recentNote", (req, res) => {
-	noteModel.find({}, null, { limit: 10 }, (dbErr, dbRes) => {
-		if (dbErr) return res.status(500).send({ code: 201, message: "数据库查询错误" })
-		let arr = []
-		Promise.all(
-			dbRes.map(unit => {
-				return new Promise(resolve => {
-					noteModel.findOne({ _id: unit._id }).populate("classifyId").exec((err, row) => {
-						if (err) {
-							reject({ code: 201, message: "数据库查询错误" })
-							return
-						}
-						arr.push(row)
-						resolve()
-					})
-				})
-			})).then(() => {
-				res.send({
-					code: 200, data: arr.sort((a, b) => {
-						return b.createTime - a.createTime
-					}), message: "数据查询成功"
-				})
-			}).catch(err => {
-				res.status(500).send(err)
-			})
+	noteModel.find({}, null, { limit: 10, sort: { createTime: -1 } }).populate({
+		path: "classifyId"
+	}).exec((err, dbRes) => {
+		if (err) {
+			res.status(500).send({ code: 201, message: "数据库查询错误" })
+			return
+		}
+		res.send({
+			code: 200, data: dbRes, message: "数据查询成功"
+		})
 	})
 })
 export default eRouter
