@@ -6,6 +6,15 @@
       default-expand-all
       :expand-on-click-node="true"
       :highlight-current="true"
+      draggable
+      @node-drag-start="handleDragStart"
+      @node-drag-enter="handleDragEnter"
+      @node-drag-leave="handleDragLeave"
+      @node-drag-over="handleDragOver"
+      @node-drag-end="handleDragEnd"
+      @node-drop="handleDrop"
+      :allow-drop="allowDrop"
+      :allow-drag="allowDrag"
     >
       <span class="custom-tree-node" slot-scope="{ node, data }">
         <span :style="data.menu ? 'color:#333' : 'color:#bbb'">{{
@@ -185,7 +194,7 @@ export default {
       let idList = treeToLinearArray(data).map((unit) => unit.id);
       const options = getOptions({
         method: "delete",
-        url: "/backend/menu",
+        url: "/api/menu",
         data: {
           id: idList,
         },
@@ -219,7 +228,7 @@ export default {
         if (boolean) {
           const options = getOptions({
             method: this.formType == "edit" ? "put" : "post",
-            url: "/backend/menu",
+            url: "/api/menu",
             data:
               this.formType == "edit"
                 ? Object.assign({}, this.form, {
@@ -270,6 +279,30 @@ export default {
       this.clear();
       this.visible = false;
     },
+    handleDragStart(node, ev) {
+      console.log("drag start", node);
+    },
+    handleDragEnter(draggingNode, dropNode, ev) {
+      console.log("tree drag enter: ", dropNode.label);
+    },
+    handleDragLeave(draggingNode, dropNode, ev) {
+      console.log("tree drag leave: ", dropNode.label);
+    },
+    handleDragOver(draggingNode, dropNode, ev) {
+      console.log("tree drag over: ", dropNode.label);
+    },
+    handleDragEnd(draggingNode, dropNode, dropType, ev) {
+      console.log("tree drag end: ", dropNode && dropNode.label, dropType);
+    },
+    handleDrop(draggingNode, dropNode, dropType, ev) {
+      console.log("tree drop: ", dropNode.label, dropType);
+    },
+    allowDrop(draggingNode, dropNode, type) {
+      return true
+    },
+    allowDrag(draggingNode) {
+      return true
+    },
   },
   mounted() {
     this.getTree();
@@ -283,7 +316,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 14px;
+  font-size: 16px;
   padding-right: 8px;
 }
 </style>
