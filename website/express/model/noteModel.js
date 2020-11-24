@@ -7,7 +7,8 @@ let Schema = mongoose.Schema({
         required: true,
     },
     classifyId: {
-        type: String
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "menus"
     },
     summarize: {
         type: String,
@@ -29,7 +30,7 @@ let Schema = mongoose.Schema({
     }
 }, {
     collection: "notes",
-    autoIndex: true,
+    autoIndex: true,//测试 index
     minimize: false,//将会保存空对象
     timestamps: { createdAt: 'createTime', updatedAt: "updateTime" }
 })

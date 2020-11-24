@@ -1,0 +1,48 @@
+// ****************************** mixin *************************************
+// ##、定义一个mixin类:
+// 方式一:(会在css中输出)
+// .red {
+//     color: red
+// }
+// 方式二:(不会在css中输出)
+.red() {
+    color: red;
+}
+
+// ##、命名空间:使用#()或者.()
+// 调用:
+// .parent>.child()
+// .parent .child()
+// .parent.child()
+
+.parent() {
+    .child {
+        font-size: 16px;
+    }
+}
+
+// ##、@arguments(备注:@arguments跟传入的参数位置息息相关)
+// 示例:
+// .box-shadow(@x: 0; @y: 0; @blur: 1px; @color: #000) {
+//     box-shadow: @arguments;
+// }
+
+// ##、@rest...(表示:剩余的参数)
+// .pad(@top, @right, @rest...) {
+//     padding: @top @right @rest;
+// }
+
+// ##、相同名字的mixin
+// .mixin(@width) {
+//     width: @width;
+// }
+// .mixin(@width, @height: 5) {
+//     width: @width;
+//     height: @height;
+// }
+
+// ##、迭代
+// .loop(@width:1) when(@width<10) {
+//     .loop((@width+1)); //下一个迭代
+//     width: (@width*10px); //每一个迭代内的 代码
+// }

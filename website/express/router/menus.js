@@ -1,6 +1,6 @@
 import express from "express"
 const eRouter = express.Router()
-import menuModel from "../model/menu.js"
+import menuModel from "../model/menuModel.js"
 
 // 菜单
 eRouter.route("/api/menu")

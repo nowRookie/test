@@ -60,12 +60,12 @@ a:hover {
   cursor: pointer;
 }
 
-.w33 {
-  width: 33.33%;
-}
-
 .w25 {
   width: 25%
+}
+
+.w33 {
+  width: 33.33%;
 }
 
 .w50 {
@@ -156,7 +156,7 @@ a:hover {
   position: fixed;
 }
 
-.border {
+.b {
   border: 1px solid #ddd;
 }
 
@@ -195,3 +195,85 @@ a:hover {
   display: flex;
   align-items: center;
 }
+
+#margin(@value: 10) when(@value=<100) {
+  #margin((@value+10));
+
+  .m@{value} {
+    margin:~"@{value}px";
+  }
+
+  .mt@{value} {
+    margin-top:~"@{value}px";
+  }
+
+  .mr@{value} {
+    margin-right:~"@{value}px";
+  }
+
+  .mb@{value} {
+    margin-bottom:~"@{value}px";
+  }
+
+  .ml@{value} {
+    margin-left:~"@{value}px";
+  }
+
+  .mx@{value} {
+    margin-left:~"@{value}px";
+    margin-right:~"@{value}px";
+  }
+
+  .my@{value} {
+    margin-top:~"@{value}px";
+    margin-bottom:~"@{value}px";
+  }
+}
+
+#margin();
+
+#padding(@value: 10) when(@value=<100) {
+  #padding((@value+10));
+
+  .p@{value} {
+    padding:~"@{value}px";
+  }
+
+  .pt@{value} {
+    padding-top:~"@{value}px";
+  }
+
+  .pr@{value} {
+    padding-right:~"@{value}px";
+  }
+
+  .pb@{value} {
+    padding-bottom:~"@{value}px";
+  }
+
+  .pl@{value} {
+    padding-left:~"@{value}px";
+  }
+
+  .px@{value} {
+    padding-left:~"@{value}px";
+    padding-right:~"@{value}px";
+  }
+
+  .py@{value} {
+    padding-top:~"@{value}px";
+    padding-bottom:~"@{value}px";
+  }
+}
+
+#padding();
+
+#font(@value: 12) when(@value=<36) {
+  #font((@value+2));
+
+  .font@{value} {
+    font-size:~"@{value}px";
+  }
+}
+
+#font();

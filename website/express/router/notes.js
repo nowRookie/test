@@ -1,6 +1,6 @@
 import express from "express"
 const eRouter = express.Router()
-import noteModel from "../model/note.js"
+import noteModel from "../model/noteModel.js"
 
 // 笔记列表
 eRouter.route("/api/noteList")
@@ -71,9 +71,30 @@ eRouter.route("/api/note")
 	})
 // 最新笔记
 eRouter.get("/api/recentNote", (req, res) => {
-	noteModel.find({}, null, { sort: { createTime: -1 }, limit: 10 }, (dbErr, dbRes) => {
+	noteModel.find({}, null, { limit: 10 }, (dbErr, dbRes) => {
 		if (dbErr) return res.status(500).send({ code: 201, message: "数据库查询错误" })
-		res.send({ code: 200, data: dbRes, message: "数据查询成功" })
+		let arr = []
+		Promise.all(
+			dbRes.map(unit => {
+				return new Promise(resolve => {
+					noteModel.findOne({ _id: unit._id }).populate("classifyId").exec((err, row) => {
+						if (err) {
+							reject({ code: 201, message: "数据库查询错误" })
+							return
+						}
+						arr.push(row)
+						resolve()
+					})
+				})
+			})).then(() => {
+				res.send({
+					code: 200, data: arr.sort((a, b) => {
+						return b.createTime - a.createTime
+					}), message: "数据查询成功"
+				})
+			}).catch(err => {
+				res.status(500).send(err)
+			})
 	})
 })
 export default eRouter

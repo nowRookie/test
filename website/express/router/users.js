@@ -1,6 +1,6 @@
 import express from "express"
 const eRouter = express.Router()
-import userModel from "../model/user"
+import userModel from "../model/userModel"
 
 // 用户帐号
 eRouter.route("/api/users")

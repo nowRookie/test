@@ -20,10 +20,10 @@
               :key="index"
             >
               <span class="title">
-                <span>【跟着时代走】</span>
+                <span>【{{ unit.classifyId.menuName }}】</span>
                 <span>{{ unit.title }}</span>
               </span>
-              <span class="ml10">2020-11-02</span>
+              <span class="ml10">{{ formatDate(unit.createTime) }}</span>
             </li>
           </ul>
         </div>
@@ -39,7 +39,7 @@ import axios from "axios";
 import _ from "lodash";
 import moment from "moment";
 
-import { getOptions } from "@/utils/utils";
+import { getOptions, formatDate } from "@/utils/utils";
 
 import catClaw from "@/components/page/catClaw.vue";
 
@@ -69,6 +69,9 @@ export default {
             message: err || "请求错误",
           });
         });
+    },
+    formatDate(val) {
+      return formatDate({ value: val });
     },
   },
   mounted() {

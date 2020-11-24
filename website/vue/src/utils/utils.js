@@ -145,17 +145,7 @@ export function getOptions(options) {
   }
 }
 
-// 处理20190101这种8位数的时间
-export function dealDate({ value, format } = {}) {
-  let str = (value + "").slice(0, 4) +
-    "-" +
-    (value + "").slice(4, 6) +
-    "-" +
-    (value + "").slice(6)
-  return format ? moment(str).format(format) : str
-}
-
-export function calculate({ value, format }) {
+export function formatDate({ value, format }) {
   let formater = format || "YYYY-MM-DD";
   return moment(value).format(formater);
 }
@@ -213,11 +203,11 @@ export function linearArrayToTree(list, topId) {
   _.forEach(list, unit => {
     unit.children = []
   })
-  console.log(111111, list)
   _.forEach(list, unit => {
     if (!unit.parentId || unit.parentId == topId) {
       arr.push(unit)
     } else {
+      // 找到父级的index
       let index = _.findIndex(list, item => {
         return item.id == unit.parentId
       })
