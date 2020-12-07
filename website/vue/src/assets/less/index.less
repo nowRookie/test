@@ -196,6 +196,35 @@ a:hover {
   align-items: center;
 }
 
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scroll::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.scroll::-webkit-scrollbar-track {
+  background: rgb(239, 239, 239);
+  border-radius: 2px;
+}
+
+.scroll::-webkit-scrollbar-thumb {
+  background-color: #ddd;
+  border-radius: 10px;
+}
+
+.scroll::-webkit-scrollbar-thumb:hover {
+  background: #bbb;
+}
+
+.scroll::-webkit-scrollbar-corner {
+  background: #179a16;
+}
+
 #margin(@value: 10) when(@value=<100) {
   #margin((@value+10));
 

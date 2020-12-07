@@ -148,6 +148,29 @@ a:hover {
   display: flex;
   align-items: center;
 }
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.scroll::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.scroll::-webkit-scrollbar-track {
+  background: #efefef;
+  border-radius: 2px;
+}
+.scroll::-webkit-scrollbar-thumb {
+  background-color: #ddd;
+  border-radius: 10px;
+}
+.scroll::-webkit-scrollbar-thumb:hover {
+  background: #bbb;
+}
+.scroll::-webkit-scrollbar-corner {
+  background: #179a16;
+}
 .m100 {
   margin: 100px;
 }

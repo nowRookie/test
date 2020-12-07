@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>闪烁点</title>
+</head>
+<style>
+	html,
+	body {
+		width: 100%;
+		height: 100%;
+		margin: 0;
+	}
+</style>
+
+<body>
+	<canvas id="canvas"></canvas>
+</body>
+
+</html>
+<script>
+	function typeOf(val) {
+		var typeString = Object.prototype.toString.call(val)
+		return typeString.match(/\[object\s(.*)\]/)[1].toLowerCase()
+	}
+	function randomScope(start, end) {
+		if (end - start <= 0) {
+			throw new Error("初始值不能大于结束值")
+		}
+		return start + Math.random() * (end - start)
+	}
+	function randomColor() {
+		return '#' + Math.random().toString(16).substr(2, 6).toUpperCase();
+	}
+	function getStyle(element, attr) {
+		if (getComputedStyle) {
+			return getComputedStyle(element, null)[attr]
+		}
+		return element.currentStyle[attr] || element.style[attr]
+	}
+
+	var body = document.getElementsByTagName("body")[0]
+	var width = getStyle(body, "width").replace("px", "")
+	var height = getStyle(body, "height").replace("px", "")
+
+	var canvas = document.getElementById("canvas")
+	canvas.setAttribute("width", width)
+	canvas.setAttribute("height", height)
+
+	var ctx = canvas.getContext("2d");
+	ctx.width = Number(width)
+	ctx.height = Number(height)
+
+	let theme = "#D07B49"
+	let start = { x: 300, y: 180 }//起点
+	// 终点(数组集合)
+	let endArray = [
+		{ x: 100, y: 120 },
+		{ x: 300, y: 320 },
+		{ x: 100, y: 420 },
+		{ x: 420, y: 280 },
+		{ x: 490, y: 490 },
+		{ x: 490, y: 90 },
+	]
+	let travelNumber = 30
+	bezierTStep = 0.008
+
+	// 给点设置初始化变量
+	start.radius = 0
+	start.boundary = 40
+	start.step = 0.5
+	endArray.forEach(unit => {
+		unit.t = 0//贝塞尔曲线t
+		unit.control = { x: 0, y: 0 }//控制点
+		unit.radius = 0
+	})
+
+	// 初始化
+	function init() {
+		drawTwinkle(start)
+		endArray.forEach(end => {
+			// 绘制终点
+			ctx.beginPath()
+			drawTwinkle(end)
+			// 绘制贝塞尔曲线
+			let control = end.control = controlPoint(start, end)
+			ctx.beginPath()
+			ctx.moveTo(start.x, start.y)
+			ctx.quadraticCurveTo(control.x, control.y, end.x, end.y)
+			ctx.strokeStyle = theme
+			ctx.stroke()
+			// 添加travel点(带拖尾效果)
+			drawTravel(end)
+		})
+	}
+	// 绘制闪烁点
+	function drawTwinkle(point) {
+		let boundary = point.boundary || 6
+		let radialColorStart = "rgba(255,255,255,0)"
+		let radialColorEnd = theme
+		point.radius += point.step || 0.15
+		if (point.radius >= boundary) {
+			point.radius = 0
+		}
+		ctx.save()
+		// 内圈
+		ctx.beginPath()
+		var gradient = ctx.createRadialGradient(point.x, point.y, 0, point.x, point.y, point.radius)
+		gradient.addColorStop(0, radialColorStart)
+		gradient.addColorStop(1, radialColorEnd)
+		ctx.fillStyle = gradient
+		ctx.arc(point.x, point.y, point.radius, 0, 2 * Math.PI, false)
+		ctx.fill()
+
+		// 外圈
+		ctx.globalAlpha = (boundary - point.radius) / boundary
+		ctx.beginPath()
+		var gradient = ctx.createRadialGradient(point.x, point.y, 0, point.x, point.y, boundary)
+		gradient.addColorStop(0, radialColorStart)
+		gradient.addColorStop(1, radialColorEnd)
+		ctx.fillStyle = gradient
+		ctx.arc(point.x, point.y, boundary, 0, 2 * Math.PI, false)
+		ctx.fill()
+
+		ctx.restore()
+	}
+
+	// 绘制曲线中的travel点，参数point表示终点
+	function drawTravel(point) {
+		let control = point.control
+		point.t += bezierTStep
+		if (point.t > 1) {
+			point.t = 0
+		}
+		for (let i = 0; i <= travelNumber; i++) {
+			let rate = 0.005
+			let nt = (point.t - rate * i < 0) ? 0 : (point.t - rate * i)
+			let radius = 1.6 * (travelNumber - i) / travelNumber
+			let travelPoint = twoBezier(nt, start, control, point)
+			ctx.beginPath()
+			ctx.arc(travelPoint.x, travelPoint.y, radius, 0, 2 * Math.PI)
+			ctx.fillStyle = theme
+			ctx.fill()
+		}
+	}
+	function controlPoint(start, end) {
+		let middleX, middleY, rateX = 0.9, rateY = 0.85
+		// // 左上(终点在起点的左上)
+		// if (start.x > end.x && start.y > end.y) {
+		//   middleX = rateX * (start.x + end.x) / 2
+		//   middleY = rateY * (start.y + end.y) / 2
+		// }
+		// // 左下
+		// if (start.x > end.x && start.y < end.y) {
+		//   middleX = rateX * (start.x + end.x) / 2
+		//   middleY = rateY * (start.y + end.y) / 2
+		// }
+		// // 右上
+		// if (start.x < end.x && start.y > end.y) {
+		//   middleX = rateX * (start.x + end.x) / 2
+		//   middleY = rateY * (start.y + end.y) / 2
+		// }
+		// // 右下
+		// if (start.x < end.x && start.y < end.y) {
+		//   middleX = rateX * (start.x + end.x) / 2
+		//   middleY = rateY * (start.y + end.y) / 2
+		// }
+		middleX = rateX * (start.x + end.x) / 2
+		middleY = rateY * (start.y + end.y) / 2
+		return { x: middleX, y: middleY }
+	}
+	function twoBezier(bezierT, p1, cp, p2) {
+		const { x: x1, y: y1 } = p1;
+		const { x: cx, y: cy } = cp
+		const { x: x2, y: y2 } = p2;
+		let x = (1 - bezierT) * (1 - bezierT) * x1 + 2 * bezierT * (1 - bezierT) * cx + bezierT * bezierT * x2;
+		let y = (1 - bezierT) * (1 - bezierT) * y1 + 2 * bezierT * (1 - bezierT) * cy + bezierT * bezierT * y2;
+		return { x, y };
+	}
+
+	(function animation() {
+		requestAnimationFrame(animation)
+		ctx.clearRect(0, 0, width, height)
+		init()
+	})()
+</script>
