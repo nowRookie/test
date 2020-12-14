@@ -1,0 +1,1 @@
+// app.ts用来修改运行时的配置，具体参考https://umijs.org/zh-CN/docs/runtime-config
