@@ -2,15 +2,26 @@
   <!-- 查询搜索框 -->
   <div class="searchOrgInput">
     <div class="row">
-      <div class="border mh40px px15 input" style="flex:1;" @click="triggerFocus">
+      <div
+        class="border mh40px px15 input"
+        style="flex: 1"
+        @click="triggerFocus"
+      >
         <a
-          v-for="(unit,index) in personList"
-          :key="'sendPeson'+index"
-          @click="e=>clickOne(e,index,unit)"
-          :class="unit.actived?'mr10 border px10 py4 border-item white bgblue':'mr10 border px10 py4 border-item bgf'"
+          v-for="(unit, index) in personList"
+          :key="'sendPeson' + index"
+          @click="(e) => clickOne(e, index, unit)"
+          :class="
+            unit.actived
+              ? 'mr10 border px10 py4 border-item white bgblue'
+              : 'mr10 border px10 py4 border-item bgf'
+          "
         >
-          <span class="br pr5">{{unit.label}}</span>
-          <i class="ml5 el-icon-close" @click="e=>delOne(e,index.unit)"></i>
+          <span class="br pr5">{{ unit.label }}</span>
+          <i
+            class="ml5 el-icon-close"
+            @click="(e) => delOne(e, index.unit)"
+          ></i>
         </a>
         <el-select
           ref="selectRef"
@@ -23,7 +34,12 @@
           placeholder
           @change="selectChange"
         >
-          <el-option v-for="item in optionList" :key="item.value" :label="item.label" :value="item"></el-option>
+          <el-option
+            v-for="item in optionList"
+            :key="item.value"
+            :label="item.label"
+            :value="item"
+          ></el-option>
         </el-select>
       </div>
       <el-button plain @click="$emit('select')">...</el-button>
@@ -35,7 +51,6 @@
 import _ from "lodash";
 import moment from "moment";
 import { getOptions, dealDate } from "@/utils/utils";
-import { request } from "@/http/luyi";
 
 export default {
   name: "",

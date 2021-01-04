@@ -43,11 +43,8 @@ import moment from "moment";
 
 import { getOptions } from "@/utils/utils";
 
-import catClaw from "@/components/page/catClaw.vue";
-
 export default {
   name: "login",
-  components: { catClaw },
   directives: {
     focus: {
       inserted(el, binding, vnode) {

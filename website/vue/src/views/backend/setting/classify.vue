@@ -11,11 +11,8 @@ import moment from "moment";
 
 import { getOptions } from "@/utils/utils";
 
-import routerPage from "@/components/router_page";
-
 export default {
   name: "addClassify",
-  components: { routerPage },
   data() {
     return {};
   },

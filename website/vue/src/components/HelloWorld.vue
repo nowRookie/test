@@ -194,32 +194,16 @@
 </template>
 
 <script>
-import feeInput from "@/components/base/feeInput";
-
-import baseModal from "@/components/base/base_modal";
-import containerInput from "@/components/base/container_input";
-import baseTable from "@/components/base/base_table";
-import queryTable from "@/components/base/query_table";
-import addTable from "@/components/base/add_table";
 
 import _ from "lodash";
 import moment from "moment";
 import axios from "axios";
 import { getOptions, dealDate } from "@/utils/utils";
-import { request } from "@/http/luyi";
 
 const api = process.env.VUE_APP_API_URL;
 
 export default {
   name: "HelloWorld",
-  components: {
-    baseModal,
-    containerInput,
-    baseTable,
-    queryTable,
-    addTable,
-    feeInput,
-  },
   computed: {
     inputItems() {
       return [].concat(this.modalItems);

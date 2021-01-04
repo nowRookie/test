@@ -3,7 +3,7 @@ import VueRouter from "vue-router"
 
 Vue.use(VueRouter)
 
-const routes = [
+export const routes = [
   {
     path: "/login",
     name: "login",
@@ -160,5 +160,15 @@ const routes = [
 const router = new VueRouter({
   routes
 })
+
+// 路由拦截
+// router.beforeEach((to, from, next) => {
+//   if (!sessionStorage.getItem("username") && !to.meta.noValidate) {
+//     router.replace("/login");
+//     next(false); //阻止路由跳转
+//     return;
+//   }
+//   next(); //路由跳转
+// })
 
 export default router

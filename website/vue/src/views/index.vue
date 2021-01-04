@@ -10,8 +10,6 @@ import axios from "axios";
 import _ from "lodash";
 import moment from "moment";
 
-import catClaw from "@/components/page/catClaw.vue";
-
 import {
   getOptions,
   typeOf,
@@ -26,7 +24,6 @@ var starSkyPng = require("@/assets/img/starSky.png");
 
 export default {
   name: "index",
-  components: { catClaw },
   data() {
     return {};
   },

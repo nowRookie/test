@@ -32,12 +32,8 @@ import moment from "moment";
 
 import { getOptions, linearArrayToTree } from "@/utils/utils";
 
-import BaseMenu from "@/components/base_menu";
-import catClaw from "@/components/page/catClaw.vue";
-
 export default {
   name: "backend",
-  components: { BaseMenu, catClaw },
   data() {
     return {
       isCollapse: false,

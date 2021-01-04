@@ -60,6 +60,10 @@ a:hover {
   cursor: pointer;
 }
 
+.w20 {
+  width: 20%;
+}
+
 .w25 {
   width: 25%
 }
@@ -160,7 +164,6 @@ a:hover {
   border: 1px solid #ddd;
 }
 
-
 .bt {
   border-top: 1px solid #ddd;
 }
@@ -202,31 +205,33 @@ a:hover {
   white-space: nowrap;
 }
 
-.scroll::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+.scroll {
+  &::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgb(239, 239, 239);
+    border-radius: 2px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #ddd;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #bbb;
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: #179a16;
+  }
 }
 
-.scroll::-webkit-scrollbar-track {
-  background: rgb(239, 239, 239);
-  border-radius: 2px;
-}
-
-.scroll::-webkit-scrollbar-thumb {
-  background-color: #ddd;
-  border-radius: 10px;
-}
-
-.scroll::-webkit-scrollbar-thumb:hover {
-  background: #bbb;
-}
-
-.scroll::-webkit-scrollbar-corner {
-  background: #179a16;
-}
-
-#margin(@value: 10) when(@value=<100) {
-  #margin((@value+10));
+#margin(@value: 0) when(@value=<100) {
+  #margin((@value+1));
 
   .m@{value} {
     margin:~"@{value}px";
@@ -261,8 +266,8 @@ a:hover {
 
 #margin();
 
-#padding(@value: 10) when(@value=<100) {
-  #padding((@value+10));
+#padding(@value: 0) when(@value=<100) {
+  #padding((@value+1));
 
   .p@{value} {
     padding:~"@{value}px";
@@ -297,8 +302,8 @@ a:hover {
 
 #padding();
 
-#font(@value: 12) when(@value=<36) {
-  #font((@value+2));
+#font(@value: 12) when(@value=<100) {
+  #font((@value+1));
 
   .font@{value} {
     font-size:~"@{value}px";
