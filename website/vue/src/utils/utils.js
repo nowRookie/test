@@ -1,105 +1,121 @@
-import axios from "axios"
-import _ from "lodash"
-import { Loading } from "element-ui"
+import axios from "axios";
+import _ from "lodash";
+import { Loading } from "element-ui";
 
-import moment from "moment"
+import moment from "moment";
 
 const api = process.env.VUE_APP_API_URL;
 
-export default {}
+export default {};
 
-let isLoading
+let isLoading;
 export function loading(boolean) {
-  boolean ?
-    isLoading = Loading.service({
-      lock: true,
-      text: 'Loading',
-      spinner: 'el-icon-loading',
-      // background: 'rgba(0, 0, 0, 0.7)'
-    }) :
-    isLoading ? isLoading.close() : null
+  boolean
+    ? (isLoading = Loading.service({
+        lock: true,
+        text: "Loading",
+        spinner: "el-icon-loading",
+        // background: 'rgba(0, 0, 0, 0.7)'
+      }))
+    : isLoading
+    ? isLoading.close()
+    : null;
 }
 
 // 下载二进制文件
-export function downloadBlob({ name, ieName, url, method, data, params, type } = {}) {
-  const options = method === "get" ? getOptions({
-    method: "get",
-    url,
-    responseType: "blob",
-    params
-  }) : getOptions({
-    method: "post",
-    url,
-    responseType: "blob",
-    data
-  });
+export function downloadBlob({
+  name,
+  ieName,
+  url,
+  method,
+  data,
+  params,
+  type,
+} = {}) {
+  const options =
+    method === "get"
+      ? getOptions({
+          method: "get",
+          url,
+          responseType: "blob",
+          params,
+        })
+      : getOptions({
+          method: "post",
+          url,
+          responseType: "blob",
+          data,
+        });
   return new Promise((resolve, reject) => {
-    axios(options).then(res => {
-      //这里res.data是返回的blob对象,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet这里表示xlsx类型
-      var blob = new Blob([res.data], {
-        type: type ||
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+    axios(options)
+      .then((res) => {
+        //这里res.data是返回的blob对象,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet这里表示xlsx类型
+        var blob = new Blob([res.data], {
+          type:
+            type ||
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8",
+        });
+        var downloadElement = document.createElement("a");
+        var href = window.URL.createObjectURL(blob); //创建下载的链接
+        downloadElement.href = href;
+        if (navigator.msSaveBlob) {
+          navigator.msSaveBlob(blob, name || ieName);
+        } else {
+          downloadElement.download = ieName || name; //下载后文件名
+        }
+        document.body.appendChild(downloadElement);
+        downloadElement.click(); //点击下载
+        document.body.removeChild(downloadElement); //下载完成移除元素
+        window.URL.revokeObjectURL(href); //释放掉blob对象
+        resolve();
+      })
+      .catch((err) => {
+        reject(err);
       });
-      var downloadElement = document.createElement("a");
-      var href = window.URL.createObjectURL(blob); //创建下载的链接
-      downloadElement.href = href;
-      if (navigator.msSaveBlob) {
-        navigator.msSaveBlob(blob, name || ieName);
-      } else {
-        downloadElement.download = ieName || name; //下载后文件名
-      }
-      document.body.appendChild(downloadElement);
-      downloadElement.click(); //点击下载
-      document.body.removeChild(downloadElement); //下载完成移除元素
-      window.URL.revokeObjectURL(href); //释放掉blob对象
-      resolve()
-    }).catch(err => {
-      reject(err)
-    });
-  })
+  });
 }
 
 // xhr下载blob文件：url请求路径、params参数、name文件名、type文件类型(.xlsx等)
 export function downloadBlobXhr({ url, params, name, type }) {
   return new Promise((resolve, reject) => {
-    var requstUrl = url + "?"
+    var requstUrl = url + "?";
     for (var key in params) {
-      requstUrl += `${key}=${params[key]}&`
+      requstUrl += `${key}=${params[key]}&`;
     }
     var xhr = new XMLHttpRequest();
-    xhr.open('post', requstUrl, true);
-    xhr.setRequestHeader("token", window.sessionStorage.getItem('token'))
-    xhr.responseType = 'blob';
-    xhr.onload = function () {
+    xhr.open("post", requstUrl, true);
+    xhr.setRequestHeader("token", window.sessionStorage.getItem("token"));
+    xhr.responseType = "blob";
+    xhr.onload = function() {
       try {
         var blob = this.response;
         if (window.navigator.msSaveOrOpenBlob) {
           window.navigator.msSaveBlob(blob, name);
         } else {
-          var downloadElement = document.createElement('a');
+          var downloadElement = document.createElement("a");
           downloadElement.href = window.URL.createObjectURL(blob);
           document.body.appendChild(downloadElement);
           downloadElement.download = name + type;
           downloadElement.click();
           document.body.removeChild(downloadElement);
           window.URL.revokeObjectURL(downloadElement.href);
-          resolve()
+          resolve();
         }
-        callback && callback()
+        callback && callback();
       } catch (err) {
-        console.log("下载文件错误:", err)
-        reject(err)
+        console.log("下载文件错误:", err);
+        reject(err);
       }
-    }
+    };
     xhr.send(null);
-  })
+  });
 }
 
 // 手动上传文件，data必须为[File]数组
 export function upload({ url, data, params, name, headers }) {
   return new Promise((resolve, reject) => {
     let fileData = new FormData();
-    _.map(data, unit => {
+    _.map(data, (unit) => {
       fileData.append(name || "files", unit);
     });
     _.map(params, (value, key) => {
@@ -110,26 +126,34 @@ export function upload({ url, data, params, name, headers }) {
       method: "post",
       headers: {
         ...headers,
-        "Content-Type": "multipart/form-data"
+        "Content-Type": "multipart/form-data",
       },
-      data: fileData
-    }).then(res => {
-      resolve({ success: true, error: false, message: "请求成功", res: res, data: res.data.data })
-    }).catch(err => {
-      reject({ success: false, error: true, message: "请求错误" })
+      data: fileData,
     })
-  })
+      .then((res) => {
+        resolve({
+          success: true,
+          error: false,
+          message: "请求成功",
+          res: res,
+          data: res.data.data,
+        });
+      })
+      .catch((err) => {
+        reject({ success: false, error: true, message: "请求错误" });
+      });
+  });
 }
 
 // 判断是否为对象
 export function isObject(value) {
-  return value === Object(value)
+  return value === Object(value);
 }
 
 // 类型判断(可以细致区分date、array等等)
 export function typeOf(value) {
-  let str = Object.prototype.toString.call(value)
-  return str.match(/\[object (.*?)\]/)[1].toLowerCase()
+  let str = Object.prototype.toString.call(value);
+  return str.match(/\[object (.*?)\]/)[1].toLowerCase();
 }
 
 // 获取axios请求配置
@@ -140,9 +164,9 @@ export function getOptions(options) {
     headers: {
       "X-Requested-With": "XMLHttpRequest",
       "Content-Type": "application/Json; charset=UTF-8",
-      "X-Authorization": "Bearer" + sessionStorage.getItem("token")
-    }
-  }
+      "X-Authorization": "Bearer" + sessionStorage.getItem("token"),
+    },
+  };
 }
 
 export function formatDate({ value, format }) {
@@ -153,14 +177,14 @@ export function formatDate({ value, format }) {
 // 获取样式
 export function getStyle(element, attr) {
   if (getComputedStyle) {
-    return getComputedStyle(element, null)[attr]
+    return getComputedStyle(element, null)[attr];
   }
-  return element.currentStyle[attr] || element.style[attr]
+  return element.currentStyle[attr] || element.style[attr];
 }
 
 // 随机数范围
 export function randomScope(start, end) {
-  return start + Math.random() * (end - start)
+  return start + Math.random() * (end - start);
 }
 
 // 范围以外随机数：boundary边界距离
@@ -173,22 +197,30 @@ export function outerScope(start, end, boundary) {
 
 // 随机颜色
 export function randomColor() {
-  return '#' + Math.random().toString(16).substr(2, 6).toUpperCase();
+  return (
+    "#" +
+    Math.random()
+      .toString(16)
+      .substr(2, 6)
+      .toUpperCase()
+  );
 }
 
 // 防抖 dom.addEventListenter("click",debounce(handle,delay))
 export function debounce(fn, delay) {
-  let timer = null
-  return function () {
-    if (timer) clearTimeout(timer)
-    timer = setTimeout(() => { fn.apply(this, arguments) }, delay)
-  }
+  let timer = null;
+  return function() {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => {
+      fn.apply(this, arguments);
+    }, delay);
+  };
 }
 
 // 节流 dom.addEventListenter("click",throttle(handle,delay))
 export function throttle(fn, delay) {
   let prev = Date.now();
-  return function () {
+  return function() {
     let now = Date.now();
     if (now - prev > delay) {
       fn && fn.apply(this, arguments);
@@ -199,22 +231,22 @@ export function throttle(fn, delay) {
 
 // 一维数组转树形结构[{id:1},{parentId:1,id:2},{parentId:1,id:3}]
 export function linearArrayToTree(list, topId) {
-  let arr = []
-  _.forEach(list, unit => {
-    unit.children = []
-  })
-  _.forEach(list, unit => {
+  let arr = [];
+  _.forEach(list, (unit) => {
+    unit.children = [];
+  });
+  _.forEach(list, (unit) => {
     if (!unit.parentId || unit.parentId == topId) {
-      arr.push(unit)
+      arr.push(unit);
     } else {
       // 找到父级的index
-      let index = _.findIndex(list, item => {
-        return item.id == unit.parentId
-      })
-      list[index].children.push(unit)
+      let index = _.findIndex(list, (item) => {
+        return item.id == unit.parentId;
+      });
+      list[index].children.push(unit);
     }
-  })
-  return arr
+  });
+  return arr;
 }
 
 // 树形结构转一维数组{id:1,children:[{id:2,parentId:1}]}
@@ -223,15 +255,15 @@ export function treeToLinearArray(obj) {
   result.push(obj);
   if (obj.children && obj.children.length) {
     (function deep(arr) {
-      _.forEach(arr, unit => {
-        result.push(unit)
+      _.forEach(arr, (unit) => {
+        result.push(unit);
         if (unit.children && unit.children.length) {
-          deep(unit.children)
+          deep(unit.children);
         }
-      })
-    })(obj.children)
+      });
+    })(obj.children);
   }
-  return result
+  return result;
 }
 
 // 格式化json，参数必须为json，不能是字符串
@@ -244,44 +276,90 @@ pre { word-break: break-all;}
 .key {color: red;}
  */
 export function formatJson(json) {
-  if (typeof json != 'string') {
+  if (typeof json != "string") {
     json = JSON.stringify(json, undefined, 2);
   }
-  json = json.replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>');
-  let result = json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-    var cls = 'number';
-    if (/^"/.test(match)) {
-      if (/:$/.test(match)) {
-        cls = 'key';
-      } else {
-        cls = 'string';
+  json = json
+    .replace(/&/g, "&")
+    .replace(/</g, "<")
+    .replace(/>/g, ">");
+  let result = json.replace(
+    /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+    function(match) {
+      var cls = "number";
+      if (/^"/.test(match)) {
+        if (/:$/.test(match)) {
+          cls = "key";
+        } else {
+          cls = "string";
+        }
+      } else if (/true|false/.test(match)) {
+        cls = "boolean";
+      } else if (/null/.test(match)) {
+        cls = "null";
       }
-    } else if (/true|false/.test(match)) {
-      cls = 'boolean';
-    } else if (/null/.test(match)) {
-      cls = 'null';
+      return '<span class="' + cls + '">' + match + "</span>";
     }
-    return '<span class="' + cls + '">' + match + '</span>';
-  });
-  return `<div class="jsonText"><pre>${result}</pre></div>`
+  );
+  return `<div class="jsonText"><pre>${result}</pre></div>`;
 }
 
 // 优化onresize事件
-(function () {
-  var throttle = function (type, name, obj) {
-      obj = obj || window;
-      var running = false;
-      var func = function () {
-          if (running) {
-              return;
-          }
-          running = true;
-          requestAnimationFrame(function () {
-              obj.dispatchEvent(new CustomEvent(name));
-              running = false;
-          });
-      };
-      obj.addEventListener(type, func);
+(function() {
+  var throttle = function(type, name, obj) {
+    obj = obj || window;
+    var running = false;
+    var func = function() {
+      if (running) {
+        return;
+      }
+      running = true;
+      requestAnimationFrame(function() {
+        obj.dispatchEvent(new CustomEvent(name));
+        running = false;
+      });
+    };
+    obj.addEventListener(type, func);
   };
   throttle("resize", "optimizedResize");
 })();
+
+function getTranslate(node, sty) {
+  //获取transform值
+  var translates = document.defaultView
+    .getComputedStyle(node, null)
+    .transform.substring(7);
+  var result = translates.match(/\(([^)]*)\)/); // 正则()内容
+  var matrix = result ? result[1].split(",") : translates.split(",");
+  if (sty == "x" || sty == undefined) {
+    return matrix.length > 6 ? parseFloat(matrix[12]) : parseFloat(matrix[4]);
+  } else if (sty == "y") {
+    return matrix.length > 6 ? parseFloat(matrix[13]) : parseFloat(matrix[5]);
+  } else if (sty == "z") {
+    return matrix.length > 6 ? parseFloat(matrix[14]) : 0;
+  } else if (sty == "rotate") {
+    return matrix.length > 6
+      ? getRotate([
+          parseFloat(matrix[0]),
+          parseFloat(matrix[1]),
+          parseFloat(matrix[4]),
+          parseFloat(matrix[5]),
+        ])
+      : getRotate(matrix);
+  }
+}
+function getRotate(matrix) {
+  var aa = Math.round((180 * Math.asin(matrix[0])) / Math.PI);
+  var bb = Math.round((180 * Math.acos(matrix[1])) / Math.PI);
+  var cc = Math.round((180 * Math.asin(matrix[2])) / Math.PI);
+  var dd = Math.round((180 * Math.acos(matrix[3])) / Math.PI);
+  var deg = 0;
+  if (aa == bb || -aa == bb) {
+    deg = dd;
+  } else if (-aa + bb == 180) {
+    deg = 180 + cc;
+  } else if (aa + bb == 180) {
+    deg = 360 - cc || 360 - dd;
+  }
+  return deg >= 360 ? 0 : deg;
+}

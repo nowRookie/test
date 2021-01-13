@@ -1,3 +1,5 @@
+import { Message } from 'element-ui';
+
 export default {
     install(Vue) {
         const msgType = ["success", "error", "info", "warning"]

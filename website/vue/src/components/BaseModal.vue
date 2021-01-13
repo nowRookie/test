@@ -5,148 +5,432 @@
       :fullscreen="fullScreen"
       ref="dialogRef"
       @close="$emit('cancel')"
-      :width="width||'1000px'"
-      :modal="shadow?true:false"
+      :width="width || '1000px'"
+      :modal="shadow ? true : false"
       :destroy-on-close="true"
     >
-      <div class="head_title" slot="title">{{title||"title"}}</div>
+      <div class="head_title" slot="title">{{ title || "title" }}</div>
       <div class="content">
         <el-form
           :model="formData"
           ref="formRef"
-          :label-width="labelWidth||'100px'"
+          :label-width="labelWidth || '100px'"
           :inline="false"
           label-position="right"
           :hide-required-asterisk="false"
         >
           <el-row class="oh">
-            <el-col v-for="item in items" :key="item.key" :span="item.span||span||24">
-              <!-- fee -->
+            <el-col
+              v-for="item in items"
+              :key="item.key"
+              :span="item.span || span || 24"
+            >
+              <!-- fee：金额(只能正数，喊正小数) -->
               <el-form-item
-                :class="item.hide?'hide':'block h40px'"
-                :label-width="item.labelWidth||labelWidth"
+                :class="item.hide ? 'hide' : 'block h40px'"
+                :label-width="item.labelWidth"
                 :label="item.title"
                 :prop="item.key"
                 :required="item.required"
-                :rules="item.rules?[{ required: true, message: `请输入${item.title}`, trigger: 'change' },{ required: true, message: `请输入${item.title}`, trigger: 'blur' },{ validator: validateTrim, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请输入${item.title}`,trigger:'change'},{ required: true, message: `请输入${item.title}`, trigger: 'blur' },{ validator: validateTrim, trigger: 'blur' }]:[]"
-                v-if="(item.type=='fee')"
+                :rules="
+                  item.rules
+                    ? [
+                        {
+                          required: true,
+                          message: `请输入${item.title}`,
+                          trigger: 'change',
+                        },
+                        {
+                          required: true,
+                          message: `请输入${item.title}`,
+                          trigger: 'blur',
+                        },
+                        { validator: validateTrim, trigger: 'blur' },
+                      ].concat(item.rules)
+                    : item.required
+                    ? [
+                        {
+                          required: true,
+                          message: `请输入${item.title}`,
+                          trigger: 'change',
+                        },
+                        {
+                          required: true,
+                          message: `请输入${item.title}`,
+                          trigger: 'blur',
+                        },
+                        { validator: validateTrim, trigger: 'blur' },
+                      ]
+                    : []
+                "
+                v-if="item.type == 'fee'"
               >
-                <div class="row">
+                <div class="row" style="width: 100%">
                   <el-input
-                    style="flex:1;"
-                    :maxlength="item.maxlength||8"
+                    style="flex: 1"
+                    :maxlength="item.maxlength || 15"
                     :value="formData[item.key]"
-                    @input="(val)=>triggerInput(item,val,item.bit)"
-                    :placeholder="item.placeholder||''"
-                    @change="(val)=>inputChange(item, val)"
+                    @input="(val) => triggerInputFee(item, val)"
+                    :placeholder="item.placeholder || ''"
+                    @change="(val) => inputChange(item, val)"
                     autocomplete="off"
-                    :disabled="type=='detail'||item.disabled"
+                    :disabled="type == 'detail' || item.disabled"
                     clearable
                   ></el-input>
-                  <span v-if="item.after" class="ml5 w50px">{{item.after}}</span>
+                  <span v-if="item.after" class="ml5 w50px tc">{{
+                    item.after
+                  }}</span>
+                </div>
+              </el-form-item>
+              <!-- int：只能是正整数 -->
+              <el-form-item
+                :class="item.hide ? 'hide' : 'block h40px'"
+                :label-width="item.labelWidth"
+                :label="item.title"
+                :prop="item.key"
+                :required="item.required"
+                :rules="
+                  item.rules
+                    ? [
+                        {
+                          required: true,
+                          message: `请输入${item.title}`,
+                          trigger: 'change',
+                        },
+                        {
+                          required: true,
+                          message: `请输入${item.title}`,
+                          trigger: 'blur',
+                        },
+                        { validator: validateTrim, trigger: 'blur' },
+                      ].concat(item.rules)
+                    : item.required
+                    ? [
+                        {
+                          required: true,
+                          message: `请输入${item.title}`,
+                          trigger: 'change',
+                        },
+                        {
+                          required: true,
+                          message: `请输入${item.title}`,
+                          trigger: 'blur',
+                        },
+                        { validator: validateTrim, trigger: 'blur' },
+                      ]
+                    : []
+                "
+                v-if="item.type == 'int'"
+              >
+                <div class="row" style="width: 100%">
+                  <el-input
+                    style="flex: 1"
+                    :maxlength="item.maxlength || 15"
+                    :value="formData[item.key]"
+                    @input="(val) => triggerInputInt(item, val)"
+                    :placeholder="item.placeholder || ''"
+                    @change="(val) => inputChange(item, val)"
+                    autocomplete="off"
+                    :disabled="type == 'detail' || item.disabled"
+                    clearable
+                  ></el-input>
+                  <span v-if="item.after" class="ml5 w50px tc">{{
+                    item.after
+                  }}</span>
+                </div>
+              </el-form-item>
+              <!-- decimal：正负小数 -->
+              <el-form-item
+                :class="item.hide ? 'hide' : 'block h40px'"
+                :label-width="item.labelWidth"
+                :label="item.title"
+                :prop="item.key"
+                :required="item.required"
+                :rules="
+                  item.rules
+                    ? [
+                        {
+                          required: true,
+                          message: `请输入${item.title}`,
+                          trigger: 'change',
+                        },
+                        {
+                          required: true,
+                          message: `请输入${item.title}`,
+                          trigger: 'blur',
+                        },
+                        { validator: validateTrim, trigger: 'blur' },
+                      ].concat(item.rules)
+                    : item.required
+                    ? [
+                        {
+                          required: true,
+                          message: `请输入${item.title}`,
+                          trigger: 'change',
+                        },
+                        {
+                          required: true,
+                          message: `请输入${item.title}`,
+                          trigger: 'blur',
+                        },
+                        { validator: validateTrim, trigger: 'blur' },
+                      ]
+                    : []
+                "
+                v-if="item.type == 'decimal'"
+              >
+                <div class="row" style="width: 100%">
+                  <el-input
+                    style="flex: 1"
+                    v-model="formData[item.key]"
+                    :maxlength="item.maxlength || 15"
+                    @input="(val) => triggerInputDecimal(item, val)"
+                    :placeholder="item.placeholder || ''"
+                    @change="(val) => inputChange(item, val)"
+                    autocomplete="off"
+                    :disabled="type == 'detail' || item.disabled"
+                    clearable
+                  ></el-input>
+                  <span v-if="item.after" class="ml5 w50px tc">{{
+                    item.after
+                  }}</span>
                 </div>
               </el-form-item>
               <!-- text -->
               <el-form-item
-                :class="item.hide?'hide':'block h40px'"
-                :label-width="item.labelWidth||labelWidth"
+                :class="item.hide ? 'hide' : 'block h40px'"
+                :label-width="item.labelWidth || labelWidth"
                 :label="item.title"
                 :prop="item.key"
                 :required="item.required"
-                :rules="item.rules?[{ required: true, message: `请输入${item.title}`, trigger: 'change' },{ required: true, message: `请输入${item.title}`, trigger: 'blur' },{ validator: validateTrim, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请输入${item.title}`,trigger:'change'},{ required: true, message: `请输入${item.title}`, trigger: 'blur' },{ validator: validateTrim, trigger: 'blur' }]:[]"
-                v-if="!item.type||(item.type=='text')"
+                :rules="
+                  item.rules
+                    ? [
+                        {
+                          required: true,
+                          message: `请输入${item.title}`,
+                          trigger: 'change',
+                        },
+                        {
+                          required: true,
+                          message: `请输入${item.title}`,
+                          trigger: 'blur',
+                        },
+                        { validator: validateTrim, trigger: 'blur' },
+                      ].concat(item.rules)
+                    : item.required
+                    ? [
+                        {
+                          required: true,
+                          message: `请输入${item.title}`,
+                          trigger: 'change',
+                        },
+                        {
+                          required: true,
+                          message: `请输入${item.title}`,
+                          trigger: 'blur',
+                        },
+                        { validator: validateTrim, trigger: 'blur' },
+                      ]
+                    : []
+                "
+                v-if="!item.type || item.type == 'text'"
               >
                 <div class="row">
                   <el-input
-                    style="flex:1;"
+                    style="flex: 1"
                     v-model="formData[item.key]"
-                    :placeholder="item.placeholder||''"
-                    @change="(val)=>inputChange(item, val)"
+                    :placeholder="item.placeholder || ''"
+                    @change="(val) => inputChange(item, val)"
                     autocomplete="off"
-                    :disabled="type=='detail'||item.disabled"
+                    :disabled="type == 'detail' || item.disabled"
                     clearable
                   ></el-input>
-                  <span v-if="item.after" class="ml5 w50px">{{item.after}}</span>
+                  <span v-if="item.after" class="ml5 w50px">{{
+                    item.after
+                  }}</span>
                 </div>
               </el-form-item>
               <!-- inputsNumber -->
               <el-form-item
-                :class="item.hide?'hide':'block h40px'"
-                :label-width="item.labelWidth||labelWidth"
+                :class="item.hide ? 'hide' : 'block h40px'"
+                :label-width="item.labelWidth || labelWidth"
                 :label="item.title"
                 :prop="item.key"
                 :required="item.required"
-                :rules="item.rules?[{ required: true, message: `请输入${item.title}`, trigger: 'change' },{ required: true, message: `请输入${item.title}`, trigger: 'blur' },{ validator: validateTrim, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请输入${item.title}`,trigger:'change'},{ required: true, message: `请输入${item.title}`, trigger: 'blur' },{ validator: validateTrim, trigger: 'blur' }]:[]"
-                v-if="item.type=='inputsNumber'"
+                :rules="
+                  item.rules
+                    ? [
+                        {
+                          required: true,
+                          message: `请输入${item.title}`,
+                          trigger: 'change',
+                        },
+                        {
+                          required: true,
+                          message: `请输入${item.title}`,
+                          trigger: 'blur',
+                        },
+                        { validator: validateTrim, trigger: 'blur' },
+                      ].concat(item.rules)
+                    : item.required
+                    ? [
+                        {
+                          required: true,
+                          message: `请输入${item.title}`,
+                          trigger: 'change',
+                        },
+                        {
+                          required: true,
+                          message: `请输入${item.title}`,
+                          trigger: 'blur',
+                        },
+                        { validator: validateTrim, trigger: 'blur' },
+                      ]
+                    : []
+                "
+                v-if="item.type == 'inputsNumber'"
               >
                 <el-input-number
                   v-model="formData[item.key]"
-                  @change="(val)=>inputChange(item, val)"
+                  @change="(val) => inputChange(item, val)"
                   autocomplete="off"
-                  :min="item.min||1"
+                  :min="item.min || 1"
                   :max="item.max"
-                  :step="item.step||1"
-                  :disabled="type=='detail'||item.disabled"
+                  :step="item.step || 1"
+                  :disabled="type == 'detail' || item.disabled"
                   clearable
                 ></el-input-number>
               </el-form-item>
               <!-- number -->
               <el-form-item
-                :class="item.hide?'hide':'block h40px'"
-                :label-width="item.labelWidth||labelWidth"
+                :class="item.hide ? 'hide' : 'block h40px'"
+                :label-width="item.labelWidth || labelWidth"
                 :label="item.title"
                 :prop="item.key"
                 :required="item.required"
-                :rules="item.rules?[{ required: true, message: `请输入${item.title}`, trigger: 'change' },{ required: true, message: `请输入${item.title}`, trigger: 'blur' },{validator:validateNumber,trigger:'change'},{validator:validateNumber,trigger:'blur'},{ validator: validateTrim, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请输入${item.title}`,trigger:'change'},{ required: true, message: `请输入${item.title}`, trigger: 'blur' },{validator:validateNumber,trigger:'change'},{validator:validateNumber,trigger:'blur'},{ validator: validateTrim, trigger: 'blur' }]:[]"
-                v-if="item.type=='number'"
+                :rules="
+                  item.rules
+                    ? [
+                        {
+                          required: true,
+                          message: `请输入${item.title}`,
+                          trigger: 'change',
+                        },
+                        {
+                          required: true,
+                          message: `请输入${item.title}`,
+                          trigger: 'blur',
+                        },
+                        { validator: validateNumber, trigger: 'change' },
+                        { validator: validateNumber, trigger: 'blur' },
+                        { validator: validateTrim, trigger: 'blur' },
+                      ].concat(item.rules)
+                    : item.required
+                    ? [
+                        {
+                          required: true,
+                          message: `请输入${item.title}`,
+                          trigger: 'change',
+                        },
+                        {
+                          required: true,
+                          message: `请输入${item.title}`,
+                          trigger: 'blur',
+                        },
+                        { validator: validateNumber, trigger: 'change' },
+                        { validator: validateNumber, trigger: 'blur' },
+                        { validator: validateTrim, trigger: 'blur' },
+                      ]
+                    : []
+                "
+                v-if="item.type == 'number'"
               >
                 <el-input
                   v-model="formData[item.key]"
-                  :placeholder="item.placeholder||''"
-                  @change="(val)=>inputChange(item, val)"
+                  :placeholder="item.placeholder || ''"
+                  @change="(val) => inputChange(item, val)"
                   autocomplete="off"
-                  :disabled="type=='detail'||item.disabled"
+                  :disabled="type == 'detail' || item.disabled"
                   clearable
                 ></el-input>
               </el-form-item>
               <!-- textarea -->
               <el-form-item
-                :class="item.hide?'hide':'block'"
-                :label-width="item.labelWidth||labelWidth"
+                :class="item.hide ? 'hide' : 'block'"
+                :label-width="item.labelWidth || labelWidth"
                 :label="item.title"
                 :prop="item.key"
                 :required="item.required"
-                :rules="item.rules?[{ required: true, message: `请输入${item.title}`, trigger: 'change' },{ validator: validateTrim, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请输入${item.title}`,trigger:'change'},{ validator: validateTrim, trigger: 'blur' }]:[]"
-                v-if="(item.type=='textarea')"
+                :rules="
+                  item.rules
+                    ? [
+                        {
+                          required: true,
+                          message: `请输入${item.title}`,
+                          trigger: 'change',
+                        },
+                        { validator: validateTrim, trigger: 'blur' },
+                      ].concat(item.rules)
+                    : item.required
+                    ? [
+                        {
+                          required: true,
+                          message: `请输入${item.title}`,
+                          trigger: 'change',
+                        },
+                        { validator: validateTrim, trigger: 'blur' },
+                      ]
+                    : []
+                "
+                v-if="item.type == 'textarea'"
               >
                 <el-input
                   type="textarea"
                   v-model="formData[item.key]"
-                  :placeholder="item.placeholder||''"
-                  @change="(val)=>inputChange(item, val)"
+                  :placeholder="item.placeholder || ''"
+                  @change="(val) => inputChange(item, val)"
                   autocomplete="off"
-                  :disabled="type=='detail'||item.disabled"
+                  :disabled="type == 'detail' || item.disabled"
                 ></el-input>
               </el-form-item>
               <!-- select -->
               <el-form-item
-                :class="item.hide?'hide':'block h40px'"
-                :label-width="item.labelWidth||labelWidth"
+                :class="item.hide ? 'hide' : 'block h40px'"
+                :label-width="item.labelWidth || labelWidth"
                 :label="item.title"
                 :prop="item.key"
                 :required="item.required"
-                :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
-                v-else-if="item.type=='select'"
+                :rules="
+                  item.rules
+                    ? [
+                        {
+                          required: true,
+                          message: `请选择${item.title}`,
+                          trigger: 'change',
+                        },
+                      ].concat(item.rules)
+                    : item.required
+                    ? [
+                        {
+                          required: true,
+                          message: `请选择${item.title}`,
+                          trigger: 'change',
+                        },
+                      ]
+                    : []
+                "
+                v-else-if="item.type == 'select'"
               >
                 <el-select
-                  :disabled="type=='detail'||item.disabled"
+                  :disabled="type == 'detail' || item.disabled"
                   clearable
                   filterable
                   value-key="value"
-                  @change="(val)=>selectChange(item, val)"
+                  @change="(val) => selectChange(item, val)"
                   v-model="formData[item.key]"
                   :placeholder="`请选择${item.title}`"
-                  style="width:100%;"
+                  style="width: 100%"
                 >
                   <el-option
                     v-for="unit in item.dataList"
@@ -158,23 +442,41 @@
               </el-form-item>
               <!-- mulSelect -->
               <el-form-item
-                :class="item.hide?'hide':'block h40px'"
-                :label-width="item.labelWidth||labelWidth"
+                :class="item.hide ? 'hide' : 'block h40px'"
+                :label-width="item.labelWidth || labelWidth"
                 :label="item.title"
                 :prop="item.key"
-                :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
-                v-else-if="item.type=='mulSelect'"
+                :rules="
+                  item.rules
+                    ? [
+                        {
+                          required: true,
+                          message: `请选择${item.title}`,
+                          trigger: 'change',
+                        },
+                      ].concat(item.rules)
+                    : item.required
+                    ? [
+                        {
+                          required: true,
+                          message: `请选择${item.title}`,
+                          trigger: 'change',
+                        },
+                      ]
+                    : []
+                "
+                v-else-if="item.type == 'mulSelect'"
               >
                 <el-select
-                  :disabled="type=='detail'||item.disabled"
+                  :disabled="type == 'detail' || item.disabled"
                   clearable
                   filterable
                   multiple
                   value-key="value"
-                  @change="(val)=>selectChange(item, val)"
+                  @change="(val) => selectChange(item, val)"
                   v-model="formData[item.key]"
                   :placeholder="`请选择${item.title}`"
-                  style="width:100%;"
+                  style="width: 100%"
                 >
                   <el-option
                     v-for="unit in item.dataList"
@@ -186,25 +488,47 @@
               </el-form-item>
               <!-- autocomplete -->
               <el-form-item
-                :class="item.hide?'hide':'block h40px'"
-                :label-width="item.labelWidth||labelWidth"
+                :class="item.hide ? 'hide' : 'block h40px'"
+                :label-width="item.labelWidth || labelWidth"
                 :label="item.title"
                 :prop="item.key"
                 :required="item.required"
-                :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
-                v-else-if="item.type=='autocomplete'"
+                :rules="
+                  item.rules
+                    ? [
+                        {
+                          required: true,
+                          message: `请选择${item.title}`,
+                          trigger: 'change',
+                        },
+                      ].concat(item.rules)
+                    : item.required
+                    ? [
+                        {
+                          required: true,
+                          message: `请选择${item.title}`,
+                          trigger: 'change',
+                        },
+                      ]
+                    : []
+                "
+                v-else-if="item.type == 'autocomplete'"
               >
                 <el-select
                   v-model="formData[item.key]"
-                  :disabled="type=='detail'||item.disabled"
+                  :disabled="type == 'detail' || item.disabled"
                   filterable
                   clearable
                   remote
                   :loading="item.loading"
-                  :remote-method="(query)=>{remoteMethod(item,query)}"
+                  :remote-method="
+                    (query) => {
+                      remoteMethod(item, query);
+                    }
+                  "
                   value-key="value"
                   :placeholder="`请选择${item.title}`"
-                  style="width:100%;"
+                  style="width: 100%"
                 >
                   <el-option
                     v-for="unit in item.dataList"
@@ -216,233 +540,474 @@
               </el-form-item>
               <!-- mulDate -->
               <el-form-item
-                :class="item.hide?'hide':'block h40px'"
-                :label-width="item.labelWidth||labelWidth"
+                :class="item.hide ? 'hide' : 'block h40px'"
+                :label-width="item.labelWidth || labelWidth"
                 :label="item.title"
                 :prop="item.key"
                 :required="item.required"
-                :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' },{validator:validateMulDateRequire}].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'},{validator:validateMulDateRequire}]:[]"
-                v-else-if="(item.type=='mulDate')"
+                :rules="
+                  item.rules
+                    ? [
+                        {
+                          required: true,
+                          message: `请选择${item.title}`,
+                          trigger: 'change',
+                        },
+                        { validator: validateMulDateRequire },
+                      ].concat(item.rules)
+                    : item.required
+                    ? [
+                        {
+                          required: true,
+                          message: `请选择${item.title}`,
+                          trigger: 'change',
+                        },
+                        { validator: validateMulDateRequire },
+                      ]
+                    : []
+                "
+                v-else-if="item.type == 'mulDate'"
               >
                 <el-col :span="11">
                   <el-date-picker
-                    :disabled="type=='detail'||item.disabled"
+                    :disabled="type == 'detail' || item.disabled"
                     type="date"
                     placeholder="开始日期"
                     v-model="formData[item.key].start"
-                    :picker-options="{disabledDate(date){return startDateOptions(date,item.key)}}"
-                    style="width: 100%;"
+                    :picker-options="{
+                      disabledDate(date) {
+                        return startDateOptions(date, item.key);
+                      },
+                    }"
+                    style="width: 100%"
                   ></el-date-picker>
                 </el-col>
                 <el-col class="tc line" :span="2">-</el-col>
                 <el-col :span="11">
                   <el-date-picker
-                    :disabled="type=='detail'||item.disabled"
+                    :disabled="type == 'detail' || item.disabled"
                     type="date"
                     placeholder="结束日期"
                     v-model="formData[item.key].end"
-                    :picker-options="{disabledDate(date){return endDateOptions(date,item.key)}}"
-                    style="width: 100%;"
+                    :picker-options="{
+                      disabledDate(date) {
+                        return endDateOptions(date, item.key);
+                      },
+                    }"
+                    style="width: 100%"
                   ></el-date-picker>
                 </el-col>
               </el-form-item>
               <!-- date -->
               <el-form-item
-                :class="item.hide?'hide':'block h40px'"
-                :label-width="item.labelWidth||labelWidth"
+                :class="item.hide ? 'hide' : 'block h40px'"
+                :label-width="item.labelWidth || labelWidth"
                 :label="item.title"
                 :prop="item.key"
                 :required="item.required"
-                :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' },{ required: true, message: `请选择${item.title}`, trigger: 'blur' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'},{ required: true, message: `请选择${item.title}`, trigger: 'blur' }]:[]"
-                v-else-if="(item.type=='date')"
+                :rules="
+                  item.rules
+                    ? [
+                        {
+                          required: true,
+                          message: `请选择${item.title}`,
+                          trigger: 'change',
+                        },
+                        {
+                          required: true,
+                          message: `请选择${item.title}`,
+                          trigger: 'blur',
+                        },
+                      ].concat(item.rules)
+                    : item.required
+                    ? [
+                        {
+                          required: true,
+                          message: `请选择${item.title}`,
+                          trigger: 'change',
+                        },
+                        {
+                          required: true,
+                          message: `请选择${item.title}`,
+                          trigger: 'blur',
+                        },
+                      ]
+                    : []
+                "
+                v-else-if="item.type == 'date'"
               >
                 <el-date-picker
-                  :disabled="type=='detail'||item.disabled"
+                  :disabled="type == 'detail' || item.disabled"
                   type="date"
                   :placeholder="`选择${item.title}`"
                   v-model="formData[item.key]"
-                  @change="(val)=>{datePickerChange(item,val)}"
-                  style="width: 100%;"
+                  @change="
+                    (val) => {
+                      datePickerChange(item, val);
+                    }
+                  "
+                  style="width: 100%"
                 ></el-date-picker>
               </el-form-item>
               <!-- checkbox -->
               <el-form-item
-                :class="item.hide?'hide':'block h40px'"
-                :label-width="item.labelWidth||labelWidth"
+                :class="item.hide ? 'hide' : 'block h40px'"
+                :label-width="item.labelWidth || labelWidth"
                 :label="item.title"
                 :prop="item.key"
                 :required="item.required"
-                :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
-                v-else-if="(item.type=='checkbox')"
+                :rules="
+                  item.rules
+                    ? [
+                        {
+                          required: true,
+                          message: `请选择${item.title}`,
+                          trigger: 'change',
+                        },
+                      ].concat(item.rules)
+                    : item.required
+                    ? [
+                        {
+                          required: true,
+                          message: `请选择${item.title}`,
+                          trigger: 'change',
+                        },
+                      ]
+                    : []
+                "
+                v-else-if="item.type == 'checkbox'"
               >
                 <el-checkbox-group
                   v-model="formData[item.key]"
-                  :disabled="type=='detail'||item.disabled"
+                  :disabled="type == 'detail' || item.disabled"
                 >
                   <el-checkbox
-                    v-for="(unit,index) in item.dataList"
+                    v-for="(unit, index) in item.dataList"
                     :disabled="unit.disabled"
                     :key="index"
                     :label="unit.value"
                     :name="item.key"
-                  >{{unit.label}}</el-checkbox>
+                    >{{ unit.label }}</el-checkbox
+                  >
                 </el-checkbox-group>
               </el-form-item>
               <!-- radio -->
               <el-form-item
-                :class="item.hide?'hide':'block h40px'"
-                :label-width="item.labelWidth||labelWidth"
+                :class="item.hide ? 'hide' : 'block h40px'"
+                :label-width="item.labelWidth || labelWidth"
                 :label="item.title"
                 :prop="item.key"
                 :required="item.required"
-                :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
-                v-else-if="(item.type=='radio')"
+                :rules="
+                  item.rules
+                    ? [
+                        {
+                          required: true,
+                          message: `请选择${item.title}`,
+                          trigger: 'change',
+                        },
+                      ].concat(item.rules)
+                    : item.required
+                    ? [
+                        {
+                          required: true,
+                          message: `请选择${item.title}`,
+                          trigger: 'change',
+                        },
+                      ]
+                    : []
+                "
+                v-else-if="item.type == 'radio'"
               >
                 <el-radio-group
                   v-model="formData[item.key]"
-                  :disabled="type=='detail'||item.disabled"
-                  @change="val=>switchChange(item, val)"
+                  :disabled="type == 'detail' || item.disabled"
+                  @change="(val) => switchChange(item, val)"
                 >
                   <el-radio
-                    v-for="(unit,index) in item.dataList"
+                    v-for="(unit, index) in item.dataList"
                     :disabled="unit.disabled"
                     :key="index"
                     :label="unit.value"
-                  >{{unit.label}}</el-radio>
+                    >{{ unit.label }}</el-radio
+                  >
                 </el-radio-group>
               </el-form-item>
               <!-- switch -->
               <el-form-item
-                :class="item.hide?'hide':'block h40px'"
-                :label-width="item.labelWidth||labelWidth"
+                :class="item.hide ? 'hide' : 'block h40px'"
+                :label-width="item.labelWidth || labelWidth"
                 :label="item.title"
                 :prop="item.key"
                 :required="item.required"
-                :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
-                v-else-if="(item.type=='switch')"
+                :rules="
+                  item.rules
+                    ? [
+                        {
+                          required: true,
+                          message: `请选择${item.title}`,
+                          trigger: 'change',
+                        },
+                      ].concat(item.rules)
+                    : item.required
+                    ? [
+                        {
+                          required: true,
+                          message: `请选择${item.title}`,
+                          trigger: 'change',
+                        },
+                      ]
+                    : []
+                "
+                v-else-if="item.type == 'switch'"
               >
                 <el-switch
                   v-model="formData[item.key]"
-                  :disabled="type=='detail'||item.disabled"
-                  @change="val=>switchChange(item, val)"
+                  :disabled="type == 'detail' || item.disabled"
+                  @change="(val) => switchChange(item, val)"
                 ></el-switch>
               </el-form-item>
               <!-- uploadFile -->
               <el-form-item
-                :class="item.hide?'hide':'block'"
-                :label-width="item.labelWidth||labelWidth"
+                :class="item.hide ? 'hide' : 'block'"
+                :label-width="item.labelWidth || labelWidth"
                 :label="item.title"
                 :prop="item.key"
                 :required="item.required"
-                :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
-                v-else-if="(item.type=='uploadFile')"
+                :rules="
+                  item.rules
+                    ? [
+                        {
+                          required: true,
+                          message: `请选择${item.title}`,
+                          trigger: 'change',
+                        },
+                      ].concat(item.rules)
+                    : item.required
+                    ? [
+                        {
+                          required: true,
+                          message: `请选择${item.title}`,
+                          trigger: 'change',
+                        },
+                      ]
+                    : []
+                "
+                v-else-if="item.type == 'uploadFile'"
               >
                 <el-upload
                   class="upload-demo"
-                  :multiple="item.limit==1?false:true"
+                  :multiple="item.limit == 1 ? false : true"
                   :ref="item.key"
-                  :disabled="type=='detail'||item.disabled"
-                  :limit="item.limit||5"
+                  :disabled="type == 'detail' || item.disabled"
+                  :limit="item.limit || 5"
                   :accept="item.accept"
-                  :action="item.action?item.action:''"
-                  :name="item.name||'file'"
-                  :list-type="item.listType?item.listType:'text'"
-                  :on-change="(file,fileList)=>{handleChange(item,file,fileList)}"
-                  :on-error="(file,fileList)=>{handleError(item,file,fileList)}"
+                  :action="item.action ? item.action : ''"
+                  :name="item.name || 'file'"
+                  :list-type="item.listType ? item.listType : 'text'"
+                  :on-change="
+                    (file, fileList) => {
+                      handleChange(item, file, fileList);
+                    }
+                  "
+                  :on-error="
+                    (file, fileList) => {
+                      handleError(item, file, fileList);
+                    }
+                  "
                   :before-upload="beforeUpload"
-                  :on-remove="(file,fileList)=>{handleRemove(item,file,fileList)}"
-                  :on-preview="(file)=>{handlePrevie(item,file)}"
+                  :on-remove="
+                    (file, fileList) => {
+                      handleRemove(item, file, fileList);
+                    }
+                  "
+                  :on-preview="
+                    (file) => {
+                      handlePrevie(item, file);
+                    }
+                  "
                   :file-list="formData[item.key]"
                   :auto-upload="false"
                 >
-                  <i class="el-icon-plus" slot="trigger" v-if="item.listType=='picture-card'"></i>
+                  <i
+                    class="el-icon-plus"
+                    slot="trigger"
+                    v-if="item.listType == 'picture-card'"
+                  ></i>
                   <el-button
                     slot="trigger"
                     size="small"
                     type="primary"
-                    :disabled="type=='detail'||item.disabled"
+                    :disabled="type == 'detail' || item.disabled"
                     v-else
-                  >选取文件</el-button>
-                  <div slot="tip" class="el-upload__tip">{{item.options?item.options.tip:""}}</div>
+                    >选取文件</el-button
+                  >
+                  <div slot="tip" class="el-upload__tip">
+                    {{ item.options ? item.options.tip : "" }}
+                  </div>
                 </el-upload>
               </el-form-item>
               <!-- autoupload -->
               <el-form-item
-                :class="item.hide?'hide':'block'"
-                :label-width="item.labelWidth||labelWidth"
+                :class="item.hide ? 'hide' : 'block'"
+                :label-width="item.labelWidth || labelWidth"
                 :label="item.title"
                 :prop="item.key"
                 :required="item.required"
-                :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
-                v-else-if="(item.type=='autoupload')"
+                :rules="
+                  item.rules
+                    ? [
+                        {
+                          required: true,
+                          message: `请选择${item.title}`,
+                          trigger: 'change',
+                        },
+                      ].concat(item.rules)
+                    : item.required
+                    ? [
+                        {
+                          required: true,
+                          message: `请选择${item.title}`,
+                          trigger: 'change',
+                        },
+                      ]
+                    : []
+                "
+                v-else-if="item.type == 'autoupload'"
               >
                 <el-upload
-                  :class="['upload-demo',(type=='detail'||item.disabled)?'disabled':'']"
-                  :multiple="item.limit==1?false:true"
+                  :class="[
+                    'upload-demo',
+                    type == 'detail' || item.disabled ? 'disabled' : '',
+                  ]"
+                  :multiple="item.limit == 1 ? false : true"
                   :ref="item.key"
-                  :disabled="type=='detail'||item.disabled"
-                  :limit="item.limit||5"
+                  :disabled="type == 'detail' || item.disabled"
+                  :limit="item.limit || 5"
                   :accept="item.accept"
                   :headers="item.headers"
-                  :action="item.action?(api+item.action):''"
-                  :name="item.name||'file'"
-                  :list-type="item.listType?item.listType:'text'"
-                  :on-success="(response, file, fileList)=>{handleSuccess(item,file,fileList)}"
-                  :on-error="(err,file,fileList)=>{handleError(item,file,fileList)}"
+                  :action="item.action ? api + item.action : ''"
+                  :name="item.name || 'file'"
+                  :list-type="item.listType ? item.listType : 'text'"
+                  :on-success="
+                    (response, file, fileList) => {
+                      handleSuccess(item, file, fileList);
+                    }
+                  "
+                  :on-error="
+                    (err, file, fileList) => {
+                      handleError(item, file, fileList);
+                    }
+                  "
                   :before-upload="beforeUpload"
-                  :on-remove="(file,fileList)=>{handleRemove(item,file,fileList)}"
-                  :on-preview="(file)=>{handlePrevie(item,file)}"
+                  :on-remove="
+                    (file, fileList) => {
+                      handleRemove(item, file, fileList);
+                    }
+                  "
+                  :on-preview="
+                    (file) => {
+                      handlePrevie(item, file);
+                    }
+                  "
                   :file-list="formData[item.key]"
                   :auto-upload="true"
                 >
-                  <i class="el-icon-plus" slot="trigger" v-if="item.listType=='picture-card'"></i>
+                  <i
+                    class="el-icon-plus"
+                    slot="trigger"
+                    v-if="item.listType == 'picture-card'"
+                  ></i>
                   <el-button
                     slot="trigger"
                     size="small"
                     type="primary"
-                    :disabled="type=='detail'||item.disabled"
+                    :disabled="type == 'detail' || item.disabled"
                     v-else
-                  >选取文件</el-button>
-                  <div slot="tip" class="el-upload__tip">{{item.options?item.options.tip:""}}</div>
+                    >选取文件</el-button
+                  >
+                  <div slot="tip" class="el-upload__tip">
+                    {{ item.options ? item.options.tip : "" }}
+                  </div>
                 </el-upload>
               </el-form-item>
               <!-- area省/市/区 -->
               <el-form-item
-                :class="item.hide?'hide':'block'"
-                :label-width="item.labelWidth||labelWidth"
+                :class="item.hide ? 'hide' : 'block'"
+                :label-width="item.labelWidth || labelWidth"
                 :label="item.title"
                 :prop="item.key"
                 :required="item.required"
-                :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
-                v-else-if="(item.type=='area')"
+                :rules="
+                  item.rules
+                    ? [
+                        {
+                          required: true,
+                          message: `请选择${item.title}`,
+                          trigger: 'change',
+                        },
+                      ].concat(item.rules)
+                    : item.required
+                    ? [
+                        {
+                          required: true,
+                          message: `请选择${item.title}`,
+                          trigger: 'change',
+                        },
+                      ]
+                    : []
+                "
+                v-else-if="item.type == 'area'"
               >
                 <el-cascader
                   ref="cascaderAddr"
                   :size="item.size"
                   :options="regionData"
                   clearable
-                  :disabled="type=='detail'||item.disabled"
+                  :disabled="type == 'detail' || item.disabled"
                   placeholder="请选择:省 / 市 / 区"
                   v-model="formData[item.key].area"
-                  @change="(arr)=>{handleAddressFun(item,arr)}"
+                  @change="
+                    (arr) => {
+                      handleAddressFun(item, arr);
+                    }
+                  "
                 ></el-cascader>
                 <el-input
                   v-model="formData[item.key].detail"
                   placeholder="详细地址"
                   clearable
-                  :disabled="type=='detail'||item.disabled"
-                  style="margin-top:10px;"
+                  :disabled="type == 'detail' || item.disabled"
+                  style="margin-top: 10px"
                 ></el-input>
               </el-form-item>
               <!-- tree -->
               <el-form-item
-                :class="item.hide?'hide':'block'"
-                :label-width="item.labelWidth||labelWidth"
+                :class="item.hide ? 'hide' : 'block'"
+                :label-width="item.labelWidth || labelWidth"
                 :label="item.title"
                 :prop="item.key"
                 :required="item.required"
-                :rules="item.rules?[{ required: true, message: `请选择${item.title}`, trigger: 'change' }].concat(item.rules):item.required?[{required:true,message:`请选择${item.title}`,trigger:'change'}]:[]"
-                v-else-if="(item.type=='tree')"
+                :rules="
+                  item.rules
+                    ? [
+                        {
+                          required: true,
+                          message: `请选择${item.title}`,
+                          trigger: 'change',
+                        },
+                      ].concat(item.rules)
+                    : item.required
+                    ? [
+                        {
+                          required: true,
+                          message: `请选择${item.title}`,
+                          trigger: 'change',
+                        },
+                      ]
+                    : []
+                "
+                v-else-if="item.type == 'tree'"
               >
                 <el-tree
                   :ref="item.key"
@@ -455,13 +1020,17 @@
                 ></el-tree>
               </el-form-item>
               <!-- slot -->
-              <slot v-else-if="(item.type=='slot')" :name="item.key"></slot>
+              <slot v-else-if="item.type == 'slot'" :name="item.key"></slot>
             </el-col>
           </el-row>
         </el-form>
       </div>
       <footer slot="footer">
-        <slot v-if="footer" name="footer" v-bind="{data:formData,params:params}"></slot>
+        <slot
+          v-if="footer"
+          name="footer"
+          v-bind="{ data: formData, params: params }"
+        ></slot>
         <div v-else>
           <el-button type="primary" @click="ok">确定</el-button>
           <el-button @click="cancel">取消</el-button>
@@ -562,7 +1131,41 @@ export default {
         callback(new Error("请输入数字,不超过5位小数！"));
       }
     },
-
+    triggerInputFee(item, val) {
+      let bit = item.bit || 4;
+      this.formData[item.key] = new String(val)
+        .replace(/[^\d\.]|^\./g, "") //只能填数字或者小数点
+        .replace(/\.{2}/g, ".") //不能连续填2个小数点
+        .replace(/^0+$/, "0") //全部填写0时只显示一个0
+        .replace(/^0(\d{1})/g, "$1") //以0开头的整数，只展示整数部分
+        // .replace(/^([1-9]\d*|0)(\.\d{1,4})(\.|\d{1})?$/, "$1$2")
+        .replace(
+          new RegExp("^([1-9]\\d*|0)(\\.\\d{1," + bit + "})(.|\\d{1})?$"),
+          "$1$2"
+        );
+    },
+    triggerInputInt(item, val) {
+      this.formData[item.key] = new String(val)
+        .replace(/[^\d]/g, "") //只能填数字
+        .replace(/^0+$/, "0") //全部填写0时只显示一个0
+        .replace(/^0(\d{1})/g, "$1"); //以0开头的整数，只展示整数部分;
+    },
+    triggerInputDecimal(item, val) {
+      let bit = item.bit || 4;
+      this.formData[item.key] = new String(val)
+        .replace(/[^\d\.\-]|^\./g, "")
+        .replace(/\.{2}/g, ".")
+        .replace(/(\-.*)\-/, "$1")
+        .replace(/^0+$/, "0")
+        .replace(/^0(\d{1})/g, "$1")
+        // .replace(/^([1-9]\d*|0)(\.\d{1,4})(\.|\d{1})?$/, "$1$2")
+        .replace(
+          new RegExp(
+            "^(\\-?[1-9]\\d*|\\-?0)(\\.\\d{1," + bit + "})(.|\\d{1})?$"
+          ),
+          "$1$2"
+        );
+    },
     startDateOptions(date, key) {
       if (this.formData[key].end !== null) {
         return date.getTime() > new Date(this.formData[key].end).getTime();
@@ -577,7 +1180,6 @@ export default {
         return false;
       }
     },
-
     handleAddressFun: function (item, arr) {
       setTimeout(() => {
         this.formData[item.key].label = (
