@@ -311,3 +311,66 @@ a:hover {
 }
 
 #font();
+
+#widthPercent(@value: 0) when(@value=<100) {
+  #widthPercent((@value+1));
+
+  .w@{value} {
+    width:~"@{value}%";
+  }
+
+  .h@{value} {
+    height:~"@{value}%"
+  }
+
+  .w@{value}px {
+    width:~"@{value}px";
+  }
+
+  .h@{value}px {
+    height:~"@{value}px"
+  }
+
+}
+
+#widthPercent();
+
+#widthPx(@value: 0) when(@value=<1000) {
+  #widthPx((@value+5));
+
+  .w@{value}px {
+    width:~"@{value}px";
+  }
+
+  .h@{value}px {
+    height:~"@{value}px"
+  }
+}
+
+#widthPx();
+
+#trbl(@value: 0) when(@value=<100) {
+  #trbl((@value+1));
+
+  .top@{value} {
+    top:~"@{value}px";
+  }
+
+  .right@{value} {
+    right:~"@{value}px";
+  }
+
+  .bottom@{value} {
+    bottom:~"@{value}px";
+  }
+
+  .left@{value} {
+    left:~"@{value}px";
+  }
+
+  .lh@{value}px {
+    line-height:~"@{value}px"
+  }
+}
+
+#trbl();
