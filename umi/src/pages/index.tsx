@@ -7,5 +7,5 @@ const Index = () => {
       <h1 className={styles.title}>Page index</h1>
     </div>
   );
-}
-export default Index
+};
+export default Index;
