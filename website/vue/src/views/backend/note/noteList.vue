@@ -52,12 +52,8 @@ import moment from "moment";
 
 import { getOptions } from "@/utils/utils";
 
-import containerInput from "@/components/container_input_form";
-import queryTable from "@/components/query_table";
-
 export default {
   name: "noteList",
-  components: { containerInput, queryTable },
   data() {
     return {
       inputItems: [

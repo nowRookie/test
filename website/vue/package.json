@@ -11,6 +11,7 @@
     "@babel/polyfill": "^7.12.1",
     "axios": "^0.21.0",
     "core-js": "^3.6.5",
+    "crypto-js": "^4.0.0",
     "element-ui": "^2.13.2",
     "github-markdown-css": "^4.0.0",
     "jquery": "^3.5.1",

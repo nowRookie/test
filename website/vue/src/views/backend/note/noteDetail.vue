@@ -53,11 +53,8 @@ import marked from "marked";
 
 import { getOptions, throttle } from "@/utils/utils";
 
-import containerInput from "@/components/container_input_form";
-
 export default {
   name: "newNote",
-  components: { containerInput },
   data() {
     return {
       markdown: "",

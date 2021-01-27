@@ -41,11 +41,8 @@ import moment from "moment";
 
 import { getOptions, formatDate } from "@/utils/utils";
 
-import catClaw from "@/components/page/catClaw.vue";
-
 export default {
   name: "frontend",
-  components: { catClaw },
   data() {
     return {
       recentNoteList: [],

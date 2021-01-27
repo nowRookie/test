@@ -48,12 +48,8 @@ import "github-markdown-css";
 
 import { getOptions } from "@/utils/utils";
 
-import containerInput from "@/components/container_input_form";
-import treeSelect from "@/components/treeSelect";
-
 export default {
   name: "newNote",
-  components: { containerInput, treeSelect },
   data() {
     return {
       markdown: "",

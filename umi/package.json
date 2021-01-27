@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "start": "cross-env umi dev",
+    "start": "cross-env ANALYZE=1 umi dev",
     "build": "umi build",
     "analyze": "ANALYZE=1 umi dev",
     "postinstall": "umi generate tmp",

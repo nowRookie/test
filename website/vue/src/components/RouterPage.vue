@@ -112,10 +112,7 @@ import {
   treeToLinearArray, //树结构转一维数组
 } from "@/utils/utils";
 
-import treeSelect from "@/components/treeSelect";
-
 export default {
-  components: { treeSelect },
   data() {
     return {
       visible: false,
@@ -298,10 +295,10 @@ export default {
       console.log("tree drop: ", dropNode.label, dropType);
     },
     allowDrop(draggingNode, dropNode, type) {
-      return true
+      return true;
     },
     allowDrag(draggingNode) {
-      return true
+      return true;
     },
   },
   mounted() {
